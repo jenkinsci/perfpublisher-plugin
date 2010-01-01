@@ -1,0 +1,18 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+  xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+  xmlns:i="jelly:fmt" xmlns:local="local">
+  
+  <div class="grey">
+  	<p class="title">Categories</p>
+  	<ul>
+  	<li><a href="">Global Report</a></li>
+  	<j:forEach indexVar="index" var="category" items="${it.reports.categories}">
+  		<li><a href="categoryDetails.${index}">${category}</a></li>  	
+  	</j:forEach>
+  	
+  	</ul>
+  </div>
+  
+  
+  
+  </j:jelly>

@@ -1,0 +1,258 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
+  xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
+  xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+  
+  <l:layout norefresh="true">
+  <st:include it="${it.owner}" page="sidepanel.jelly" /> 
+  <st:include page="/tabview/css.jelly" /> 
+  <st:include page="/tabview/css2.jelly" /> 
+    <l:main-panel>
+	<h1>Category Report</h1>
+	      
+	      <div class="progress-container">
+			
+			<j:if test="${it.report.percentOfFailedTestLowFifteen}">
+			 <div id="red" style="width:10%">${it.report.percentOfFailedTest}% (${it.report.numberOfFailedTest})</div>
+			 <div id="blue" style="width:90%;">${it.report.percentOfPassedTest}% (${it.report.numberOfPassedTest})</div>
+			</j:if>
+			<j:if test="${it.report.percentOfFailedTestSupFifteen}">
+			 <div id="red" style="width:${it.report.percentOfFailedTest}%;">${it.report.percentOfFailedTest}% (${it.report.numberOfFailedTest})</div>
+			 <div id="blue" style="width:${it.report.percentOfPassedTest}%;">${it.report.percentOfPassedTest}% (${it.report.numberOfPassedTest})</div>
+			</j:if>
+			
+	      	
+	      	
+	      </div>
+	      <br style="clear:left;"/>
+	      <div class="content">
+	      	<div class="left">
+	      		<table> 
+            		<tr> 
+                  		<td style="width:55px; text-align:left;"><strong>Number of tests</strong></td> 
+                  		<td style="width:15%">${it.report.numberOfTest}</td> 
+                  		<td style="width:15%">-</td> 
+                  		
+            		</tr> 
+            		
+            		<tr> 
+                  		<td style="text-align:left;">Number of executed tests</td> 
+                  		<td>${it.report.numberOfExecutedTest}</td> 
+                  		<td>${it.report.percentOfExecutedTest}%</td> 
+                  		
+                  	</tr> 
+                  	<tr> 
+                  		<td style="text-align:left;">Number of not executed tests</td> 
+                  		<td>${it.report.numberOfNotExecutedTest}</td> 
+                  		<td>${it.report.percentOfNotExecutedTest}%</td> 
+                  		
+                  	</tr> 
+	      		</table> 
+	      		<table> 
+	      		
+	      		
+	            	<tr> 
+	                	<td style="width:55%; text-align:left;"> 
+	                       
+	                         <strong> Passed tests</strong>
+	                  	</td> 
+	                  	<td style="width:15%">${it.report.numberOfPassedTest}</td> 
+	                  	<td style="width:15%">${it.report.percentOfPassedTest}%</td> 
+	                  	
+	            	</tr> 
+	            	<tr> 
+	                	<td style="text-align:left;"> 
+	                    	
+	                    	 Failed tests 
+	                  	</td> 
+	                  	<td>${it.report.numberOfFailedTest}</td> 
+	                  	<td>${it.report.percentOfFailedTest}%</td> 
+	                  	
+	            	</tr> 
+	      		</table> 
+      			<table style="border:0px;"> 
+            		<tr> 
+                  		<td style="width:55%; text-align:left;"><strong>Analysis points</strong></td> 
+                  		<td style="width:15%;"><strong>N.Measures</strong></td> 
+                  		<td style="width:15%;"><strong>Average</strong></td> 
+            		</tr>
+            		<tr> 
+                  		<td style="text-align:left;"> Compile time</td> 
+                  		<td>${it.report.numberOfCompileTimeTest}</td> 
+                  		<td>${it.report.averageOfCompileTime}</td> 
+						
+            		</tr> 
+            		<tr> 
+                  		<td style="text-align:left;"> Execution time</td> 
+                  		<td>${it.report.numberOfExecutionTimeTest}</td> 
+                  		<td>${it.report.averageOfExecutionTime}</td>	 
+                  		
+            		</tr>
+            		<tr> 
+                  		<td style="text-align:left;"> Performance</td> 
+                  		<td>${it.report.numberOfPerformanceTest}</td>
+                  		<td>${it.report.averageOfPerformance}</td> 
+                  		
+                  	</tr>
+				</table>
+			</div>
+
+ 
+ <br style="clear: left;" />
+ 
+ 
+ 
+ </div>
+
+      <table style="padding:1px;" border="1px" class="pane sortable">
+               <tr>
+         			<td class="pane-header" title="Targets">Targets</td>
+         			<td class="pane-header" title="Test name">Test name</td>
+         			<td class="pane-header" title="Success State">Success State</td>
+         			<td class="pane-header" title="Compile Time">Compile Time</td>
+         			<td class="pane-header" title="Execution time">Execution Time</td>
+         			<td class="pane-header" title="Performance">Performance</td>
+                </tr> 
+               <j:forEach indexVar="index" var="test" items="${it.report.executedTests}">
+               
+	               <j:if test="${test.successfull == 'true'}">
+	               	<tr>
+	               	  <td align="left">
+				      	<j:forEach var="target" items="${test.targets}">
+				      		<small>- <b>${target.name}</b></small> 
+				      	</j:forEach>
+				      </td>
+		              <td align="left">
+				      	<a class="info_bulle" href="../testDetails.${test.nameForUrl}">${test.adaptedName}</a>
+				      	<br />
+				      	<small><i>${test.shortedMessage}</i></small>
+				      </td>
+				      <j:if test="${test.successfull == 'true'}">
+				         <td align="right">YES - ${test.success.state}%</td>
+				      </j:if>
+				      <j:if test="${test.successfull == 'false'}">
+				      	<td align="right">NO - ${test.success.state}%</td>
+				      </j:if>		
+				      
+				      <j:if test="${test.compileTime.measure == '0.0'}">
+				      	<td align="center">-</td>
+				      </j:if>
+				      <j:if test="${test.compileTime.measure != '0.0'}">
+				      	<td align="right">${test.compileTime.measure} (${test.compileTime.unit})</td>
+				      </j:if>
+				      
+				      <j:if test="${test.executionTime.measure == '0.0'}">
+				      	<td align="center">-</td>
+				      </j:if>
+				      <j:if test="${test.executionTime.measure != '0.0'}">
+				      	<td align="right">${test.executionTime.measure} (${test.executionTime.unit})</td>
+				      </j:if>
+				      
+				      <j:if test="${test.performance.measure == '0.0'}">
+				      	<td align="center">-</td>
+				      </j:if>
+				      <j:if test="${test.performance.measure != '0.0'}">
+				      	<td align="right">${test.performance.measure} (${test.performance.unit})</td>
+				      </j:if>	
+				     </tr>
+	               </j:if>
+	               
+	               <j:if test="${test.hasTimedOut == 'true'}">
+	               	<tr style="background-color:yellow">
+		               <td align="left">
+				      	<j:forEach var="target" items="${test.targets}">
+				      		<small>- <b>${target.name}</b></small> 
+				      	</j:forEach>
+				      </td>
+		               	<td align="left">
+				      	<a class="info_bulle" href="../testDetails.${test.nameForUrl}">${test.adaptedName}</a>
+				      	<br />
+				      	<small><i>${test.shortedMessage}</i></small>
+				      </td>
+				      <j:if test="${test.successfull == 'true'}">
+				         <td align="right">YES - ${test.success.state}%</td>
+				      </j:if>
+				      <j:if test="${test.successfull == 'false'}">
+				      	<td align="right">NO - ${test.success.state}%</td>
+				      </j:if>		
+				      
+				      <j:if test="${test.compileTime.measure == '0.0'}">
+				      	<td align="center">-</td>
+				      </j:if>
+				      <j:if test="${test.compileTime.measure != '0.0'}">
+				      	<td align="right">${test.compileTime.measure} (${test.compileTime.unit})</td>
+				      </j:if>
+				      
+				      <j:if test="${test.executionTime.measure == '0.0'}">
+				      	<td align="center">-</td>
+				      </j:if>
+				      <j:if test="${test.executionTime.measure != '0.0'}">
+				      	<td align="right">${test.executionTime.measure} (${test.executionTime.unit})</td>
+				      </j:if>
+				      
+				      <j:if test="${test.performance.measure == '0.0'}">
+				      	<td align="center">-</td>
+				      </j:if>
+				      <j:if test="${test.performance.measure != '0.0'}">
+				      	<td align="right">${test.performance.measure} (${test.performance.unit})</td>
+				      </j:if>	
+				     </tr>
+	               </j:if>
+	               
+	               <j:if test="${test.hasNotTimedOutButHasFailed == 'true'}">
+	               	<tr style="background-color:#ef2929">
+		               	<td align="left">
+				      	<j:forEach var="target" items="${test.targets}">
+				      		<small>- <b>${target.name}</b></small> 
+				      	</j:forEach>
+				      </td>
+		               	<td align="left">
+				      	<a class="info_bulle" href="../testDetails.${test.nameForUrl}">${test.adaptedName}</a>
+				      	<br />
+				      	<small><i>${test.shortedMessage}</i></small>
+				      </td>
+				      <j:if test="${test.successfull == 'true'}">
+				         <td align="right">YES - ${test.success.state}%</td>
+				      </j:if>
+				      <j:if test="${test.successfull == 'false'}">
+				      	<td align="right">NO - ${test.success.state}%</td>
+				      </j:if>		
+				      
+				      <j:if test="${test.compileTime.measure == '0.0'}">
+				      	<td align="center">-</td>
+				      </j:if>
+				      <j:if test="${test.compileTime.measure != '0.0'}">
+				      	<td align="right">${test.compileTime.measure} (${test.compileTime.unit})</td>
+				      </j:if>
+				      
+				      <j:if test="${test.executionTime.measure == '0.0'}">
+				      	<td align="center">-</td>
+				      </j:if>
+				      <j:if test="${test.executionTime.measure != '0.0'}">
+				      	<td align="right">${test.executionTime.measure} (${test.executionTime.unit})</td>
+				      </j:if>
+				      
+				      <j:if test="${test.performance.measure == '0.0'}">
+				      	<td align="center">-</td>
+				      </j:if>
+				      <j:if test="${test.performance.measure != '0.0'}">
+				      	<td align="right">${test.performance.measure} (${test.performance.unit})</td>
+				      </j:if>	
+				     </tr>
+	               </j:if>
+               
+			      
+			     </j:forEach>		      
+            </table>
+ 
+ 
+	      
+	      
+	      
+	      
+	      
+	      
+	      
+	      	
+    </l:main-panel>
+</l:layout>
+</j:jelly>

@@ -1,0 +1,18 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+  xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+  xmlns:i="jelly:fmt" xmlns:local="local">
+  
+  <div class="grey">
+  	<p class="title">Files - [<a href="diff">Download diff version</a>]</p>
+  	<ul>
+  	<j:forEach indexVar="index" var="file" items="${it.reports.files}">
+  		<li><a href="filesDetails.${index}">${file}</a></li>
+  	
+  	</j:forEach>
+  	
+  	</ul>
+  </div>
+  
+  
+  
+  </j:jelly>

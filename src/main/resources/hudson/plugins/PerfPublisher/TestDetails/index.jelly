@@ -1,0 +1,142 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
+  xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
+  xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+  
+  <l:layout norefresh="true">
+  <st:include it="${it.owner}" page="sidepanel.jelly" /> 
+  <st:include page="/tabview/css3.jelly" /> 
+    <l:main-panel>
+		
+		<div class="entete">
+			# ${it.test.name}
+			<j:forEach var="target" items="${it.test.targets}">
+					<div id="target">
+						${target.name}
+					</div>
+			</j:forEach>
+		</div>
+		
+		<div id="description">
+			${it.test.description}
+		</div>
+		<div class="success_graph">			
+				 ${it.successGraph}	
+		</div>
+		     <br style="clear:both;" />
+		     
+		<div class="cadre_bleu">
+		<b>Les ressources associées :</b><br />
+			<ul>
+			<j:forEach var="ressource" items="${it.test.ressources}">
+				<li><b>${ressource.name}</b> : <a href="${ressource.url}">${ressource.url}</a></li>
+			</j:forEach>
+			</ul>
+		</div>
+		<div class="cadre_orange">
+			<b>Status :</b> 
+			<j:if test="${it.test.executed == 'true'}">
+				Executed
+			</j:if>
+			
+			<j:if test="${it.test.executed == 'false'}">
+			    Not executed
+			</j:if>	
+			[
+			<j:if test="${it.test.successfull == 'true'}">
+				Passed : ${it.test.success.state} %
+			</j:if>
+			
+			
+			<j:if test="${it.test.successfull == 'false'}">
+				Failed : ${it.test.success.state} %
+			</j:if>		
+			]
+		</div>
+			
+			
+			
+			
+		
+		
+		<div class="cadre_orange">
+			<ul>
+				<j:if test="${it.test.compileTime.measure != '0.0'}">
+					<li>Compile time : <i>${it.test.compileTime.measure} (${it.test.compileTime.unit})</i></li>
+				</j:if>
+				<j:if test="${it.test.executionTime.measure != '0.0'}">
+					<li>Execution time : <i>${it.test.executionTime.measure} (${it.test.executionTime.unit})</i></li> 
+		        </j:if>
+				<j:if test="${it.test.performance.measure != '0.0'}">
+					<li>Performance : <i>${it.test.performance.measure} (${it.test.performance.unit})</i></li>
+				</j:if>
+			</ul>
+		</div>
+		
+		<div class="cadre_bleu">
+			<strong>Platform name : ${it.test.plateforme.name}</strong>
+			<br />
+			OS : <i>${it.test.plateforme.osType}, ${it.test.plateforme.osName}, ${it.test.plateforme.osVersion}, ${it.test.plateforme.osDistribution}</i>
+			<br />
+			Processor : <i>${it.test.plateforme.processor.procArch}, ${it.test.plateforme.processor.procFreq} ${it.test.plateforme.processor.procFreqUnit}</i>
+         	<ul>
+         			<j:forEach var="core" items="${it.test.plateforme.processor.cores}">
+         				<li>Core ${core.coreid} : proc = ${core.proc}, physid = ${core.physid}</li>         			
+         			</j:forEach>
+         	</ul>
+         	Hardware : 
+         	<ul>
+         	<j:forEach var="hardware" items="${it.test.plateforme.hardwares}">
+         				<li>Hardware ${hardware.name} [ 
+         				<j:if test="${hardware.hwa == 'true'}">
+         					hwa activated
+         				</j:if>
+         				<j:if test="${hardware.hwa == 'false'}">
+         					hwa not activated
+         				</j:if>
+         				 ]</li>         			
+         	</j:forEach>  
+         	</ul>
+         	Compilateur : 
+         	<ul>
+         	<j:forEach var="compilateur" items="${it.test.plateforme.compilers}">
+         				<li>Compilateur ${compilateur.name} [ ${compilateur.version} ] : ${compilateur.path}</li>         			
+         	</j:forEach>
+         	</ul>			
+		</div>
+		<div class="cadre_bleu">
+			<b>Parameters</b>
+			<ul>
+			<j:forEach var="param" items="${it.test.parameters}">
+         				<li>${param.name} : ${param.value}</li>         			
+         	</j:forEach>
+         	</ul>
+		</div>
+		<j:forEach var="source" items="${it.test.sources}">
+		<div class="cadre_bleu">
+			<b>Source ${source.language} : ${source.path} ${source.comment}</b>
+        	<br />
+        	${source.source}
+		</div>
+		</j:forEach>
+		<j:forEach var="log" items="${it.test.logs}">
+			<div class="cadre_orange">
+				<b>Log : </b>${log.name}
+				<br />
+				${log.log}
+			</div>
+		</j:forEach>
+
+		<div class="cadre_orange">
+			<center>
+				<img src="compileTimeGraph" height="250" width="800"/>
+				<img src="executionTimeGraph" height="250" width="800"/>
+				<img src="performanceGraph" height="250" width="800"/>
+			</center>
+		</div>
+		
+
+
+	      
+    </l:main-panel>
+</l:layout>
+</j:jelly>

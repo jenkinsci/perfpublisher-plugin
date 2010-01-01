@@ -1,0 +1,32 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
+  xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
+  xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+  
+  <l:layout norefresh="true">
+  <st:include it="${it.owner}" page="sidepanel.jelly" /> 
+  <st:include page="/tabview/css.jelly" /> 
+    <l:main-panel>
+		Broken tests :
+		
+		<table border="1px" class="pane sortable">
+            	<tr>
+         			<td class="pane-header" title="Message">Message</td>
+         			<td class="pane-header" title="Number of tests">Number of test</td>
+                </tr>
+                <j:forEach indexVar="index" var="message" items="${it.report.brokenMessageContainer.errorMessages}">
+	                <tr>
+	         			<td><b>${message.message}</b>
+	         				<j:forEach indexVar="index" var="test" items="${message.tests}">
+	         					<br /><small>- <a href="../testDetails.${test.nameForUrl}">${test.name}</a></small>
+	         				</j:forEach>	
+	         			</td>
+	         			<td>${message.numberOfTest}</td>
+	                </tr>                
+                </j:forEach>
+                
+                
+            </table>
+	      
+    </l:main-panel>
+</l:layout>
+</j:jelly>
