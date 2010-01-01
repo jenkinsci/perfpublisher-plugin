@@ -8,7 +8,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   
-  <artifactId>PerfPublisher</artifactId>
+  <artifactId>perfpublisher</artifactId>
   <packaging>hpi</packaging>
   <version>7.93</version>
   <name>Hudson Performance Publisher plugin</name>

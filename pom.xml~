@@ -123,4 +123,10 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <scm>
+    <connection>scm:svn:https://guest@svn.dev.java.net/svn/hudson/tags/PerfPublisher-7.93</connection>
+    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/tags/PerfPublisher-7.93</developerConnection>
+    <url>https://hudson.dev.java.net/source/browse/hudson/tags/PerfPublisher-7.93</url>
+  </scm>
 </project>
