@@ -6,13 +6,13 @@
   <st:include it="${it.owner}" page="sidepanel.jelly" /> 
   <st:include page="/tabview/css.jelly" /> 
     <l:main-panel>
-		Liste des messages d'erreurs :
+		Liste des messages :
 		<table border="1px" class="pane sortable">
             	<tr>
          			<td class="pane-header" title="Message">Message</td>
          			<td class="pane-header" title="Number of tests">Number of test</td>
                 </tr>
-                <j:forEach indexVar="index" var="message" items="${it.report.errorMessageContainer.errorMessages}">
+                <j:forEach indexVar="index" var="message" items="${it.report.validMessageContainer.errorMessages}">
 	                <tr>
 	         			<td><b>${message.message}</b>
 	         				<j:forEach indexVar="index" var="test" items="${message.tests}">

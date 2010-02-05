@@ -29,9 +29,11 @@ public class Report {
 
 	
 	private ArrayList<Test> tests;
+	private ArrayList<Test> executedTests;
 
 	public Report() {
 		tests = new ArrayList<Test>();
+		executedTests = new ArrayList<Test>();
 	}
 	
 	/**
@@ -121,6 +123,11 @@ public class Report {
 	 * @param tests the tests to set
 	 */
 	public void setTests(ArrayList<Test> tests) {
+		for (int i=0; i<tests.size(); i++) {
+			if (tests.get(i).isExecuted()) {
+				this.executedTests.add(tests.get(i));
+			}
+		}		
 		this.tests = tests;
 	}
 	/**
@@ -128,6 +135,9 @@ public class Report {
 	 */
 	public void addTest(Test test) {
 		this.tests.add(test);
+		if (test.isExecuted()) {
+			this.executedTests.add(test);
+		}
 	}
 
 	/**
@@ -182,15 +192,22 @@ public class Report {
 		}
 		return result;
 	}
-
+	/**
+	 * Getter for all the executed test
+	 * @return an ArrayList<Test> containing all the executed test
+	 */
 	public ArrayList<Test> getExecutedTests() {
-		ArrayList<Test> result = new ArrayList<Test>();
-		for (int i=0; i<tests.size(); i++) {
-			if (tests.get(i).isExecuted()) {
-				result.add(tests.get(i));
-			}	
+		if (this.executedTests==null || this.executedTests.size()==0) {
+			//Verify there is no executed test
+			//Support backward compatibility
+			this.executedTests = new ArrayList<Test>();
+			for (int i=0; i<this.tests.size(); i++) {
+				if (this.tests.get(i).isExecuted()) {
+					this.executedTests.add(tests.get(i));
+				}
+			}
 		}
-		return result;
+		return this.executedTests;
 	}
 	public ArrayList<Test> getNotExecutedTests() {
 		ArrayList<Test> result = new ArrayList<Test>();

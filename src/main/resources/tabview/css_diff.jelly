@@ -58,12 +58,30 @@
     		border:1px solid #000000;
     		background-color:#FFFFFF;
     	}
+    	.legende #link_display {
+    		float:right;
+    		width:200px;
+    		margin:1px;
+    		height:15px;
+    		line-height:15px;
+    		text-align:center;
+    		border:1px solid #000000;
+    		background-color:#FFFFFF;
+    	}
+	    	.legende #link_display a {
+	    		color:#000000;
+	    		text-descoration:underline;
+	    		font-weight:bold;
+	    	}
+	    	.legende #link_display a:hover {
+	    		color:#FF0000;
+	    		font-weight:bold;
+	    	}
 	.line {
 		margin:0px;
 		padding:0px;
 		background-color:#FFFFFF;
-		border-left:1px solid #000000;
-		border-bottom:1px solid #000000;
+		
 		width:100%;
 	}
 		.line div.header {
@@ -99,6 +117,15 @@
 			border-left:1px solid #000;
 			border-top:1px solid #000;
 		}
+		.line a {
+			color:#000000;
+			text-decoration:none;
+		}
+		.line a:hover {
+			color:#FF0000;
+			text-decoration:none;
+		}
+		
 	
     </style>
 </j:jelly>

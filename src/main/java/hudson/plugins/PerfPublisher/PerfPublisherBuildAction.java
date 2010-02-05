@@ -1,6 +1,11 @@
-	package hudson.plugins.PerfPublisher;
+package hudson.plugins.PerfPublisher;
 
+import hudson.Launcher;
+import hudson.matrix.MatrixAggregatable;
+import hudson.matrix.MatrixAggregator;
+import hudson.matrix.MatrixBuild;
 import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 import hudson.model.HealthReport;
 import hudson.model.Result;
 import hudson.model.HealthReportingAction;
@@ -11,6 +16,8 @@ import hudson.plugins.PerfPublisher.Report.Test;
 import hudson.util.ChartUtil;
 import hudson.util.ColorPalette;
 import hudson.util.DataSetBuilder;
+import hudson.util.ShiftedCategoryAxis;
+import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -21,12 +28,19 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PiePlot3D;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.PolarPlot;
+import org.jfree.chart.renderer.DefaultPolarItemRenderer;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.category.StatisticalBarRenderer;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.statistics.DefaultStatisticalCategoryDataset;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleInsets;
 import org.jfree.util.Rotation;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -61,34 +75,34 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	private FileContainer reportsFiles = new FileContainer();
 	/** Parameters for the health report. */
 	private final HealthDescriptor healthDescriptor;
-	
+
 	/** Pre-Loaded stats */
-	private int numberOfTest=-1;
-	private int numberOfExecutedTest=-1;
-	private double percentOfExecutedTest=-1;
-	private int numberOfNotExecutedTest=-1;
-	private double percentOfNotExecutedTest=-1;
-	private int numberOfPassedTest=-1;
-	private double percentOfPassedTest=-1;
-	private int numberOfFailedTest=-1;
-	private double percentOfFailedTest=-1;
-	private int numberOfCompileTimeTest=-1;
-	private double averageOfCompileTime=-1;
-	private int numberOfExecutionTimeTest=-1;
-	private double averageOfExecutionTime=-1;
-	private int numberOfPerformanceTest=-1;
-	private double averageOfPerformance=-1;
-	private int numberOfNewTests=-1;
-	private double percentOfNewTests=-1;
-	private int numberOfDeletedTests=-1;
-	private double percentOfDeletedTests=-1;
+	private int numberOfTest = -1;
+	private int numberOfExecutedTest = -1;
+	private double percentOfExecutedTest = -1;
+	private int numberOfNotExecutedTest = -1;
+	private double percentOfNotExecutedTest = -1;
+	private int numberOfPassedTest = -1;
+	private double percentOfPassedTest = -1;
+	private int numberOfFailedTest = -1;
+	private double percentOfFailedTest = -1;
+	private int numberOfCompileTimeTest = -1;
+	private double averageOfCompileTime = -1;
+	private int numberOfExecutionTimeTest = -1;
+	private double averageOfExecutionTime = -1;
+	private int numberOfPerformanceTest = -1;
+	private double averageOfPerformance = -1;
+	private int numberOfNewTests = -1;
+	private double percentOfNewTests = -1;
+	private int numberOfDeletedTests = -1;
+	private double percentOfDeletedTests = -1;
 	private List<Test> executedTests;
 	private TrendReport trendReport;
 	private int numberOfSuccessStatusChangedTests = -1;
 	private int numberOfExecutionStatusChangedTests = -1;
 	private double percentOfSuccessStatusChangedTests = -1;
 	private double percentOfExecutionStatusChangedTests = -1;
-	
+
 	/**
 	 * Returns the build as owner of this action.
 	 * 
@@ -96,6 +110,10 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 */
 	public final AbstractBuild<?, ?> getOwner() {
 		return build;
+	}
+
+	public String getDisplayName() {
+		return PerfPublisherPlugin.BUILD_DISPLAY_NAME;
 	}
 
 	public PerfPublisherBuildAction(AbstractBuild<?, ?> build,
@@ -199,9 +217,9 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		logger
 				.println("[CapsAnalysis] [--------------------------------------------------]");
 	}
-	
+
 	public List<Test> getExecutedTests() {
-		if (this.executedTests==null || this.executedTests.size()==0) {
+		if (this.executedTests == null || this.executedTests.size() == 0) {
 			this.executedTests = this.reports.getExecutedTests();
 		}
 		return this.executedTests;
@@ -222,6 +240,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	public FileContainer getFiles() {
 		return reportsFiles;
 	}
+
 	/**
 	 * @return List of builds in html options format
 	 */
@@ -232,16 +251,20 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
-				PerfPublisherBuildAction ac = abstractBuild.getAction(PerfPublisherBuildAction.class);
-				if (ac!=null) {
-				strbuilder.append("<option value=\""+abstractBuild.getNumber()+"\"");
-				strbuilder.append(">"+abstractBuild.getNumber()+"</option>\n");
+				PerfPublisherBuildAction ac = abstractBuild
+						.getAction(PerfPublisherBuildAction.class);
+				if (ac != null) {
+					strbuilder.append("<option value=\""
+							+ abstractBuild.getNumber() + "\"");
+					strbuilder.append(">" + abstractBuild.getNumber()
+							+ "</option>\n");
 				}
 			}
 		}
-		
+
 		return strbuilder.toString();
 	}
+
 	public String getHtmlListOfBuildsInOptionsWithSelected() {
 		StringBuilder strbuilder = new StringBuilder();
 		for (Object build : this.build.getProject().getBuilds()) {
@@ -249,17 +272,20 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
-				PerfPublisherBuildAction ac = abstractBuild.getAction(PerfPublisherBuildAction.class);
-				if (ac!=null) {
-				strbuilder.append("<option value=\""+abstractBuild.getNumber()+"\"");
-				if (abstractBuild.getNumber() == this.build.getNumber()) {
-					strbuilder.append(" selected");
-				}
-				strbuilder.append(">"+abstractBuild.getNumber()+"</option>\n");
+				PerfPublisherBuildAction ac = abstractBuild
+						.getAction(PerfPublisherBuildAction.class);
+				if (ac != null) {
+					strbuilder.append("<option value=\""
+							+ abstractBuild.getNumber() + "\"");
+					if (abstractBuild.getNumber() == this.build.getNumber()) {
+						strbuilder.append(" selected");
+					}
+					strbuilder.append(">" + abstractBuild.getNumber()
+							+ "</option>\n");
 				}
 			}
 		}
-		
+
 		return strbuilder.toString();
 	}
 
@@ -273,49 +299,88 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		int tmp2 = this.getNumberOfPassedTest();
 		double tmp3 = this.getPercentOfFailedTest();
 		double tmp4 = this.getPercentOfPassedTest();
-		
-		if (tmp3<15) {
-			strbuilder.append("<div id=\"red\" style=\"width:15%;\">"+tmp1+"</div>");
-			strbuilder.append("<div id=\"blue\" style=\"width:85%;\">"+tmp2+"</div>");
+
+		if (tmp3 < 15) {
+			strbuilder.append("<div id=\"red\" style=\"width:15%;\">" + tmp1
+					+ "</div>");
+			strbuilder.append("<div id=\"blue\" style=\"width:85%;\">" + tmp2
+					+ "</div>");
 		} else {
-			strbuilder.append("<div id=\"red\" style=\"width:"+tmp3+"%;\">"+tmp3+"% ("+tmp1+")</div>");
-			strbuilder.append("<div id=\"blue\" style=\"width:"+tmp4+"%;\">"+tmp4+"% ("+tmp2+")</div>");
+			strbuilder.append("<div id=\"red\" style=\"width:" + tmp3 + "%;\">"
+					+ tmp3 + "% (" + tmp1 + ")</div>");
+			strbuilder.append("<div id=\"blue\" style=\"width:" + tmp4
+					+ "%;\">" + tmp4 + "% (" + tmp2 + ")</div>");
 		}
 		strbuilder.append("</div>");
 		return strbuilder.toString();
 	}
+
 	public String getDetailSummary() {
 		StringBuilder strbuilder = new StringBuilder();
-		
-		strbuilder.append("Number of parsed files : <b>"+reports.getNumberOfFiles()+".</b>");
+
+		strbuilder.append("Number of parsed files : <b>"
+				+ reports.getNumberOfFiles() + ".</b>");
 		strbuilder.append("<br />");
-		strbuilder.append("Number of executed tests : <b>"+this.getNumberOfExecutedTest()+".</b>");
+		strbuilder.append("Number of executed tests : <b>"
+				+ this.getNumberOfExecutedTest() + ".</b>");
 		strbuilder.append("<br />");
-		
+
 		return strbuilder.toString();
 	}
-	
+
 	public String getRegression() {
-		
+
 		StringBuilder strb = new StringBuilder();
 		List<Test> regressions = new ArrayList<Test>();
-		List<Test> tmpTests = this.getTrendReport().getSuccessStatusChangedTests();
-		for (int i=0; i<tmpTests.size(); i++) {
-			System.out.println("test = "+tmpTests.get(i).getName()+" -> "+tmpTests.get(i).getSuccess().isPassed());
-			if (!tmpTests.get(i).isSuccessfull()) {
-				regressions.add(tmpTests.get(i));
+		if (this.getTrendReport() != null) {
+			List<Test> tmpTests = this.getTrendReport()
+					.getSuccessStatusChangedTests();
+			for (int i = 0; i < tmpTests.size(); i++) {
+				if (!tmpTests.get(i).isSuccessfull()) {
+					regressions.add(tmpTests.get(i));
+				}
+			}
+			if (!regressions.isEmpty()) {
+				strb.append("<div class=\"warning_regression\">");
+				strb.append("This build has discovered " + regressions.size()
+						+ " regression(s).");
+				strb.append("</div>");
 			}
 		}
-		if (!regressions.isEmpty()) {
-			strb.append("<div class=\"warning_regression\">");
-			strb.append("This build has discovered "+regressions.size()+" regression(s).");
-			strb.append("</div>");
-		}
-		
-		
+
 		return strb.toString();
 	}
+
+	public void doPolarGraph(StaplerRequest request, StaplerResponse response)
+			throws IOException {
+		ChartUtil.generateGraph(request, response, createPolarGraph(), 250, 250);
+	}
 	
+	private JFreeChart createPolarGraph() {
+		XYSeries s1=new XYSeries("a");
+		//Add the number of executed test to Y axis
+		s1.add(0, this.getNumberOfExecutedTest());
+		//Add the performance to the x axis
+	    s1.add(90, this.getAverageOfPerformance());
+	    //Add the execution time to the -Y axis
+	    s1.add(180, this.getAverageOfExecutionTime());
+	    //Add the compile time to the -X axis
+		s1.add(270, this.getAverageOfCompileTime());
+	   
+	    XYSeriesCollection data=new XYSeriesCollection();
+	    data.addSeries(s1);
+	    XYDataset dataset=data;
+	    JFreeChart chart = ChartFactory.createPolarChart
+	    ("Polar Chart",dataset,false,false, false);
+	    chart.setBackgroundPaint(Color.WHITE);
+	    chart.setTextAntiAlias(true);
+	    final PolarPlot plot = (PolarPlot) chart.getPlot();
+        final DefaultPolarItemRenderer renderer = (DefaultPolarItemRenderer) plot.getRenderer();
+        renderer.setSeriesFilled(0, true);
+	    
+	    
+	    return chart;
+	}
 
 	/**
 	 * @return the associated trend report
@@ -326,6 +391,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		}
 		return this.trendReport;
 	}
+
 	private TrendReport computeTrendReport() {
 		Object ob = build.getPreviousNotFailedBuild();
 		AbstractBuild build = (AbstractBuild) ob;
@@ -473,42 +539,51 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 				resultat = new ChangedStatusTestsDetails(getOwner(),
 						getTrendReport());
 			}
-		}
-		 else if (link.startsWith("reportsDiff")) {			
-			 if (request.getParameter("build1")!=null && request.getParameter("build2")!=null && request.getParameter("build3")!=null) {
-				
+		} else if (link.startsWith("reportsDiff")) {
+			if (request.getParameter("build1") != null
+					&& request.getParameter("build2") != null
+					&& request.getParameter("build3") != null) {
+
 				int nb_build1 = 0;
 				int nb_build2 = 0;
 				int nb_build3 = 0;
 				AbstractBuild build1 = null;
 				AbstractBuild build2 = null;
 				AbstractBuild build3 = null;
-				ReportContainer report1=null, report2=null, report3=null;
+				ReportContainer report1 = null, report2 = null, report3 = null;
 				if (!request.getParameter("build1").equals("none")) {
-					nb_build1 = Integer.parseInt(request.getParameter("build1"));
+					nb_build1 = Integer
+							.parseInt(request.getParameter("build1"));
 					build1 = build.getProject().getBuildByNumber(nb_build1);
-					PerfPublisherBuildAction ac = build1.getAction(PerfPublisherBuildAction.class);
+					PerfPublisherBuildAction ac = build1
+							.getAction(PerfPublisherBuildAction.class);
 					if (ac != null) {
-						 report1 = ac.getReports();
+						report1 = ac.getReports();
 					}
 				}
 				if (!request.getParameter("build2").equals("none")) {
-					nb_build2 = Integer.parseInt(request.getParameter("build2"));
+					nb_build2 = Integer
+							.parseInt(request.getParameter("build2"));
 					build2 = build.getProject().getBuildByNumber(nb_build2);
-					PerfPublisherBuildAction ac2 = build2.getAction(PerfPublisherBuildAction.class);
+					PerfPublisherBuildAction ac2 = build2
+							.getAction(PerfPublisherBuildAction.class);
 					if (ac2 != null) {
 						report2 = ac2.getReports();
 					}
 				}
 				if (!request.getParameter("build3").equals("none")) {
-					nb_build3 = Integer.parseInt(request.getParameter("build3"));
+					nb_build3 = Integer
+							.parseInt(request.getParameter("build3"));
 					build3 = build.getProject().getBuildByNumber(nb_build3);
-					PerfPublisherBuildAction ac3 = build3.getAction(PerfPublisherBuildAction.class);
+					PerfPublisherBuildAction ac3 = build3
+							.getAction(PerfPublisherBuildAction.class);
 					if (ac3 != null) {
 						report3 = ac3.getReports();
 					}
-				}				
-				resultat = new ReportsDiff(getOwner(), nb_build1,report1, nb_build2,report2, nb_build3, report3);
+				}
+
+				resultat = new ReportsDiff(getOwner(), request, nb_build1,
+						report1, nb_build2, report2, nb_build3, report3);
 				return resultat;
 			}
 		}
@@ -549,9 +624,9 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the numberOfTest
 	 */
 	public int getNumberOfTest() {
-		if (this.numberOfTest==-1 || this.numberOfTest==0) {
+		if (this.numberOfTest == -1 || this.numberOfTest == 0) {
 			this.numberOfTest = this.getReports().getNumberOfTest();
-		} 
+		}
 		return this.numberOfTest;
 	}
 
@@ -559,8 +634,9 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the numberOfExecutedTest
 	 */
 	public int getNumberOfExecutedTest() {
-		if (this.numberOfExecutedTest==-1 || this.numberOfExecutedTest==0) {
-			this.numberOfExecutedTest = this.getReports().getNumberOfExecutedTest();
+		if (this.numberOfExecutedTest == -1 || this.numberOfExecutedTest == 0) {
+			this.numberOfExecutedTest = this.getReports()
+					.getNumberOfExecutedTest();
 		}
 		return this.numberOfExecutedTest;
 	}
@@ -569,8 +645,9 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the percentOfExecutedTest
 	 */
 	public double getPercentOfExecutedTest() {
-		if (this.percentOfExecutedTest == -1 || this.percentOfExecutedTest==0) {
-			this.percentOfExecutedTest = this.getReports().getPercentOfExecutedTest();
+		if (this.percentOfExecutedTest == -1 || this.percentOfExecutedTest == 0) {
+			this.percentOfExecutedTest = this.getReports()
+					.getPercentOfExecutedTest();
 		}
 		return this.percentOfExecutedTest;
 	}
@@ -579,8 +656,10 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the numberOfNotExecutedTest
 	 */
 	public int getNumberOfNotExecutedTest() {
-		if (this.numberOfNotExecutedTest==-1 || this.numberOfNotExecutedTest==0) {
-			this.numberOfNotExecutedTest = this.getReports().getNumberOfNotExecutedTest();
+		if (this.numberOfNotExecutedTest == -1
+				|| this.numberOfNotExecutedTest == 0) {
+			this.numberOfNotExecutedTest = this.getReports()
+					.getNumberOfNotExecutedTest();
 		}
 		return this.numberOfNotExecutedTest;
 	}
@@ -589,8 +668,10 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the percentOfNotExecutedTest
 	 */
 	public double getPercentOfNotExecutedTest() {
-		if (this.percentOfNotExecutedTest==-1 || this.percentOfNotExecutedTest==0) {
-			this.percentOfNotExecutedTest = this.getReports().getPercentOfNotExecutedTest();
+		if (this.percentOfNotExecutedTest == -1
+				|| this.percentOfNotExecutedTest == 0) {
+			this.percentOfNotExecutedTest = this.getReports()
+					.getPercentOfNotExecutedTest();
 		}
 		return this.percentOfNotExecutedTest;
 	}
@@ -599,7 +680,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the numberOfPassedTest
 	 */
 	public int getNumberOfPassedTest() {
-		if (this.numberOfPassedTest==-1 || this.numberOfPassedTest==0) {
+		if (this.numberOfPassedTest == -1 || this.numberOfPassedTest == 0) {
 			this.numberOfPassedTest = this.getReports().getNumberOfPassedTest();
 		}
 		return this.numberOfPassedTest;
@@ -609,8 +690,9 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the percentOfPassedTest
 	 */
 	public double getPercentOfPassedTest() {
-		if (this.percentOfPassedTest==-1 || this.percentOfPassedTest==0) {
-			this.percentOfPassedTest = this.getReports().getPercentOfPassedTest();
+		if (this.percentOfPassedTest == -1 || this.percentOfPassedTest == 0) {
+			this.percentOfPassedTest = this.getReports()
+					.getPercentOfPassedTest();
 		}
 		return this.percentOfPassedTest;
 	}
@@ -619,7 +701,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the numberOfFailedTest
 	 */
 	public int getNumberOfFailedTest() {
-		if (this.numberOfFailedTest==-1 || this.numberOfFailedTest==0) {
+		if (this.numberOfFailedTest == -1 || this.numberOfFailedTest == 0) {
 			this.numberOfFailedTest = this.getReports().getNumberOfFailedTest();
 		}
 		return this.numberOfFailedTest;
@@ -629,8 +711,9 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the percentOfFailedTest
 	 */
 	public double getPercentOfFailedTest() {
-		if (this.percentOfFailedTest==-1 || this.percentOfFailedTest==0) {
-			this.percentOfFailedTest = this.getReports().getPercentOfFailedTest();
+		if (this.percentOfFailedTest == -1 || this.percentOfFailedTest == 0) {
+			this.percentOfFailedTest = this.getReports()
+					.getPercentOfFailedTest();
 		}
 		return this.percentOfFailedTest;
 	}
@@ -639,8 +722,10 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the numberOfCompileTimeTest
 	 */
 	public int getNumberOfCompileTimeTest() {
-		if (this.numberOfCompileTimeTest==-1 || this.numberOfCompileTimeTest==0) {
-			this.numberOfCompileTimeTest = this.getReports().getNumberOfCompileTimeTest();
+		if (this.numberOfCompileTimeTest == -1
+				|| this.numberOfCompileTimeTest == 0) {
+			this.numberOfCompileTimeTest = this.getReports()
+					.getNumberOfCompileTimeTest();
 		}
 		return this.numberOfCompileTimeTest;
 	}
@@ -649,8 +734,9 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the averageOfCompileTime
 	 */
 	public double getAverageOfCompileTime() {
-		if (this.averageOfCompileTime==-1 || this.averageOfCompileTime==0) {
-			this.averageOfCompileTime = this.getReports().getAverageOfCompileTime();
+		if (this.averageOfCompileTime == -1 || this.averageOfCompileTime == 0) {
+			this.averageOfCompileTime = this.getReports()
+					.getAverageOfCompileTime();
 		}
 		return this.averageOfCompileTime;
 	}
@@ -659,8 +745,10 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the numberOfExecutionTimeTest
 	 */
 	public int getNumberOfExecutionTimeTest() {
-		if (this.numberOfExecutionTimeTest==-1 || this.numberOfExecutionTimeTest==0) {
-			this.numberOfExecutionTimeTest = this.getReports().getNumberOfExecutionTimeTest();
+		if (this.numberOfExecutionTimeTest == -1
+				|| this.numberOfExecutionTimeTest == 0) {
+			this.numberOfExecutionTimeTest = this.getReports()
+					.getNumberOfExecutionTimeTest();
 		}
 		return this.numberOfExecutionTimeTest;
 	}
@@ -669,8 +757,10 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the averageOfExecutionTime
 	 */
 	public double getAverageOfExecutionTime() {
-		if (this.averageOfExecutionTime==-1 || this.averageOfExecutionTime==0) {
-			this.averageOfExecutionTime = this.getReports().getAverageOfExecutionTime();
+		if (this.averageOfExecutionTime == -1
+				|| this.averageOfExecutionTime == 0) {
+			this.averageOfExecutionTime = this.getReports()
+					.getAverageOfExecutionTime();
 		}
 		return this.averageOfExecutionTime;
 	}
@@ -679,8 +769,10 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the numberOfPerformanceTest
 	 */
 	public int getNumberOfPerformanceTest() {
-		if (this.numberOfPerformanceTest==-1 || this.numberOfPerformanceTest==0)  {
-			this.numberOfPerformanceTest = this.getReports().getNumberOfPerformanceTest();
+		if (this.numberOfPerformanceTest == -1
+				|| this.numberOfPerformanceTest == 0) {
+			this.numberOfPerformanceTest = this.getReports()
+					.getNumberOfPerformanceTest();
 		}
 		return this.numberOfPerformanceTest;
 	}
@@ -689,8 +781,9 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the averageOfPerformance
 	 */
 	public double getAverageOfPerformance() {
-		if (this.averageOfPerformance==-1 || this.averageOfPerformance==0) {
-			this.averageOfPerformance = this.getReports().getAverageOfPerformance();
+		if (this.averageOfPerformance == -1 || this.averageOfPerformance == 0) {
+			this.averageOfPerformance = this.getReports()
+					.getAverageOfPerformance();
 		}
 		return this.averageOfPerformance;
 	}
@@ -699,7 +792,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the numberOfNewTests
 	 */
 	public int getNumberOfNewTests() {
-		if (this.numberOfNewTests==-1 || this.numberOfNewTests==0) {
+		if (this.numberOfNewTests == -1 || this.numberOfNewTests == 0) {
 			this.numberOfNewTests = this.getTrendReport().getNumberOfNewTests();
 		}
 		return this.numberOfNewTests;
@@ -709,8 +802,9 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the percentOfNewTests
 	 */
 	public double getPercentOfNewTests() {
-		if (this.percentOfNewTests==-1 || this.percentOfNewTests==0) {
-			this.percentOfNewTests = this.getTrendReport().getPercentOfNewTests();
+		if (this.percentOfNewTests == -1 || this.percentOfNewTests == 0) {
+			this.percentOfNewTests = this.getTrendReport()
+					.getPercentOfNewTests();
 		}
 		return this.percentOfNewTests;
 	}
@@ -719,8 +813,9 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the numberOfDeletedTests
 	 */
 	public int getNumberOfDeletedTests() {
-		if (this.numberOfDeletedTests==-1 || this.numberOfDeletedTests==0) {
-			this.numberOfDeletedTests = this.getTrendReport().getNumberOfDeletedTests();
+		if (this.numberOfDeletedTests == -1 || this.numberOfDeletedTests == 0) {
+			this.numberOfDeletedTests = this.getTrendReport()
+					.getNumberOfDeletedTests();
 		}
 		return this.numberOfDeletedTests;
 	}
@@ -729,8 +824,9 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the percentOfDeletedTests
 	 */
 	public double getPercentOfDeletedTests() {
-		if (this.percentOfDeletedTests==-1 || this.percentOfDeletedTests==0) {
-			this.percentOfDeletedTests = this.getTrendReport().getPercentOfDeletedTests();
+		if (this.percentOfDeletedTests == -1 || this.percentOfDeletedTests == 0) {
+			this.percentOfDeletedTests = this.getTrendReport()
+					.getPercentOfDeletedTests();
 		}
 		return this.percentOfDeletedTests;
 	}
@@ -739,31 +835,39 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * @return the numberOfStatusChangedTests
 	 */
 	public int getNumberOfSuccessStatusChangedTests() {
-		if (this.numberOfSuccessStatusChangedTests  == -1 || this.numberOfSuccessStatusChangedTests == 0) {
-			this.numberOfSuccessStatusChangedTests = this.getTrendReport().getNumberOfSuccessStatusChangedTests();
+		if (this.numberOfSuccessStatusChangedTests == -1
+				|| this.numberOfSuccessStatusChangedTests == 0) {
+			this.numberOfSuccessStatusChangedTests = this.getTrendReport()
+					.getNumberOfSuccessStatusChangedTests();
 		}
 		return this.numberOfSuccessStatusChangedTests;
 	}
+
 	public double getPercentOfSuccessStatusChangedTests() {
-		if (this.percentOfSuccessStatusChangedTests == -1 || this.percentOfSuccessStatusChangedTests  == 0) {
-			this.percentOfSuccessStatusChangedTests = this.getTrendReport().getPercentOfSuccessStatusChangedTests();
+		if (this.percentOfSuccessStatusChangedTests == -1
+				|| this.percentOfSuccessStatusChangedTests == 0) {
+			this.percentOfSuccessStatusChangedTests = this.getTrendReport()
+					.getPercentOfSuccessStatusChangedTests();
 		}
 		return this.percentOfSuccessStatusChangedTests;
 	}
-	
+
 	public int getNumberOfExecutionStatusChangedTests() {
-		if (this.numberOfExecutionStatusChangedTests  == -1 || this.numberOfExecutionStatusChangedTests == 0) {
-			this.numberOfExecutionStatusChangedTests = this.getTrendReport().getNumberOfExecutionStatusChangedTests();
+		if (this.numberOfExecutionStatusChangedTests == -1
+				|| this.numberOfExecutionStatusChangedTests == 0) {
+			this.numberOfExecutionStatusChangedTests = this.getTrendReport()
+					.getNumberOfExecutionStatusChangedTests();
 		}
 		return this.numberOfExecutionStatusChangedTests;
 	}
+
 	public double getPercentOfExecutionStatusChangedTests() {
-		if (this.percentOfExecutionStatusChangedTests == -1 || this.percentOfExecutionStatusChangedTests  == 0) {
-			this.percentOfExecutionStatusChangedTests = this.getTrendReport().getPercentOfExecutionStatusChangedTests();
+		if (this.percentOfExecutionStatusChangedTests == -1
+				|| this.percentOfExecutionStatusChangedTests == 0) {
+			this.percentOfExecutionStatusChangedTests = this.getTrendReport()
+					.getPercentOfExecutionStatusChangedTests();
 		}
-		return this.percentOfExecutionStatusChangedTests ;
+		return this.percentOfExecutionStatusChangedTests;
 	}
-	
-	
 
 }

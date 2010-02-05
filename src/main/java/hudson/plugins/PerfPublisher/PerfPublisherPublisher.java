@@ -1,8 +1,16 @@
 package hudson.plugins.PerfPublisher;
 
 import hudson.Launcher;
+import hudson.matrix.MatrixAggregatable;
+import hudson.matrix.MatrixAggregator;
+import hudson.matrix.MatrixBuild;
+import hudson.matrix.MatrixConfiguration;
+import hudson.matrix.MatrixProject;
 import hudson.model.*;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
+import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherFreestyleProjectAction;
+import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixConfigurationAction;
+import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixProjectAction;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 
@@ -23,7 +31,7 @@ import java.util.Date;
  * 
  * @author Georges Bossert
  */
-public class PerfPublisherPublisher extends HealthPublisher {
+public class PerfPublisherPublisher extends HealthPublisher implements MatrixAggregatable {
 
 	private String name;
 	private String threshold;
@@ -75,6 +83,9 @@ public class PerfPublisherPublisher extends HealthPublisher {
 
 	public Descriptor<Publisher> getDescriptor() {
 		return DESCRIPTOR;
+	}
+	public MatrixAggregator createAggregator(final MatrixBuild matrixBuild, Launcher launcher, BuildListener listener) {
+		return new PerfPublisherResultAggregator(matrixBuild, launcher, listener);
 	}
 
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
@@ -132,6 +143,7 @@ public class PerfPublisherPublisher extends HealthPublisher {
 		try {
 			build.addAction(new PerfPublisherBuildAction(build, filesToParse,
 					logger, hl));
+			
 		} catch (PerfPublisherParseException gpe) {
 			logger
 					.println("[CapsAnalysis] generating reports analysis failed!");
@@ -140,8 +152,15 @@ public class PerfPublisherPublisher extends HealthPublisher {
 		return true;
 	}
 
-	public Action getProjectAction(hudson.model.Project project) {
-		return new PerfPublisherProjectAction(project);
+	public Action getProjectAction(AbstractProject project) {
+		if (project instanceof MatrixProject) {
+			return new PerfPublisherMatrixProjectAction((MatrixProject)project);
+		}else if (project instanceof MatrixConfiguration) {
+			return new PerfPublisherMatrixConfigurationAction((MatrixConfiguration) project);
+		}else if (project instanceof FreeStyleProject) {
+			return new PerfPublisherFreestyleProjectAction((FreeStyleProject)project);
+		}
+		return null;
 	}
 
 	public static final Descriptor<Publisher> DESCRIPTOR = new DescriptorImpl();
@@ -152,7 +171,7 @@ public class PerfPublisherPublisher extends HealthPublisher {
 		}
 
 		public String getDisplayName() {
-			return PerfPublisherPlugin.DISPLAY_NAME;
+			return PerfPublisherPlugin.CONFIG_DISPLAY_NAME;
 		}
 	}
 

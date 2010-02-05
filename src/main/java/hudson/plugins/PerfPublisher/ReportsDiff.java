@@ -4,7 +4,12 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -30,19 +35,52 @@ import hudson.util.DataSetBuilder;
 import hudson.util.ShiftedCategoryAxis;
 import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 
+/**
+ * This class is dedicated to the report diff display
+ * it prepares and generate the content of the diff
+ * @see hudson.model.ModelObject
+ * @author gbossert
+ *
+ */
 public class ReportsDiff implements ModelObject {
 
 	private final AbstractBuild<?, ?> _owner;
 
+	/**
+	 * The 2 reports to compare
+	 */
 	private ReportContainer report1;
 	private ReportContainer report2;
 	private ReportContainer report3;
-	
+	/**
+	 * The 3 builds numbers
+	 */
 	private int nb_build1;
 	private int nb_build2;
 	private int nb_build3;
+	/**
+	 * Activate or not the short diff
+	 */
+	private boolean shortDiff;
 	
-	public ReportsDiff(final AbstractBuild<?, ?> owner, int nb_build1, ReportContainer report1, int nb_build2, ReportContainer report2, int nb_build3, ReportContainer report3) {
+	/**
+	 * The stappler request
+	 */
+	private String link;
+	
+	
+	/**
+	 * The constructor
+	 * @param owner
+	 * @param shortDiff activate or not the short display
+	 * @param nb_build1 number of the first build
+	 * @param report1 first report
+	 * @param nb_build2 number of the second build
+	 * @param report2 second report
+	 * @param nb_build3 number of the third build
+	 * @param report3 third report
+	 */
+	public ReportsDiff(final AbstractBuild<?, ?> owner, StaplerRequest request, int nb_build1, ReportContainer report1, int nb_build2, ReportContainer report2, int nb_build3, ReportContainer report3) {
 		this._owner = owner;
 		this.report1 = report1;
 		this.report2 = report2;
@@ -52,35 +90,89 @@ public class ReportsDiff implements ModelObject {
 		this.nb_build2 = nb_build2;
 		this.nb_build3 = nb_build3;
 		
+		
+		this.link="?build1="+this.nb_build1+"&build2="+this.nb_build2;
+		if (this.nb_build3==0) {
+			this.link+="&build3=none";
+		} else {
+			this.link+="&build3="+this.nb_build3;
+		}
+		
+		
+		// Activate or not the short display
+		this.shortDiff = false;
+		
+		if (request.getParameter("short")!=null && request.getParameter("short").equals("yes")) {
+			this.shortDiff = true;		
+			this.link+="&short=no";
+		} else {
+			this.link+="&short=yes";
+		}
+		
 	}
+	
+	/**
+	 * Getter for the first build number
+	 * @return the first build number
+	 */
 	public String getBuild1Number() {
 		return ""+nb_build1;
 	}
+	/**
+	 * Getter for the second build number
+	 * @return the second build number
+	 */
 	public String getBuild2Number() {
 		return ""+nb_build2;
 	}
+	/**
+	 * Getter for the third build number
+	 * @return the third build number
+	 */
 	public String getBuild3Number() {
 		return ""+nb_build3;
 	}
 
+	/**
+	 * Getter for the first report
+	 * @return the first report
+	 */
 	public ReportContainer getReport1() {
 		return this.report1;
 	}
+	/**
+	 * Getter for the tests list of the first report
+	 * @return all the tests from the first report
+	 */
 	public List<Test> getReport1Tests() {
 		return this.report1.getTests();
 	}
+	/**
+	 * Getter for the second report
+	 * @return the second report
+	 */
 	public ReportContainer getReport2() {
 		return this.report2;
 	}
+	/**
+	 * Getter for the tests of the second report
+	 * @return all the tests from the second report
+	 */
 	public List<Test> getReport2Tests() {
 		return this.report2.getTests();
 	}
+	
+	/**
+	 * Getter for the third report
+	 * @return the third report
+	 */	
 	public ReportContainer getReport3() {
 		return this.report3;
 	}
 	public List<Test> getReport3Tests() {
 		return this.report3.getTests();
 	}
+
 	
 	public String getHtmlTestsDiff() {
 		String style="Threecolumn";
@@ -167,11 +259,22 @@ public class ReportsDiff implements ModelObject {
 		strb.append("<div id=\"red\">FAILED</div>");
 		strb.append("<div id=\"green\">SUCCESSFULL</div>");
 		strb.append("<div id=\"white\">DOESN'T EXIST</div>");
+		strb.append("<div id=\"link_display\">");
+		if (this.shortDiff) {
+			strb.append("<a href=\""+this.link+"\">Display the full diff</a>");
+		} else {
+			strb.append("<a href=\""+this.link+"\">Display the short diff</a>");
+		}
+		strb.append("</div>");
+		
 		strb.append("</div>");
 		
 		
 		/**
-		 * Get all the tests executed in the three builds
+		 * if short display :
+		 * 	Get all the tests executed in the three builds
+		 * else 
+		 * 	Get all the changed status tests in the three builds
 		 */
 		ArrayList<Test> global_test = new ArrayList<Test>();
 		global_test.addAll(this.report1.getTests());
@@ -202,8 +305,7 @@ public class ReportsDiff implements ModelObject {
 		}
 		Collections.sort(global_test);
 		for (int i=0; i<global_test.size(); i++) {
-			strb.append("<div class=\"line\">");
-			strb.append("<div class=\"header\">"+global_test.get(i).getName()+"</div>");
+			
 			
 			String color1="#fff";
 			String color2="#fff";
@@ -213,8 +315,8 @@ public class ReportsDiff implements ModelObject {
 			String txt3="-";
 			
 			if (this.report1.getTestWithName(global_test.get(i).getName()) != null) {
-				txt1="x";
 				Test test1 = this.report1.getTestWithName(global_test.get(i).getName());
+				txt1="<a href=\"../../../"+this.nb_build1+"/PerfPublisher/testDetails."+test1.getNameForUrl()+"\">x</a>";
 				if (!test1.isExecuted()) {
 					color1="grey";
 				} else {
@@ -227,11 +329,11 @@ public class ReportsDiff implements ModelObject {
 					}
 				}
 			}
-			strb.append("<div class=\""+style+"\" style=\"background-color:"+color1+"\"> "+txt1+" </div>");
+			
 			
 			if (this.report2.getTestWithName(global_test.get(i).getName()) != null) {
-				txt2="x";
 				Test test2 = this.report2.getTestWithName(global_test.get(i).getName());
+				txt2="<a href=\"../../../"+this.nb_build2+"/PerfPublisher/testDetails."+test2.getNameForUrl()+"\">x</a>";
 				if (!test2.isExecuted()) {
 					color2="grey";
 				} else {
@@ -244,11 +346,11 @@ public class ReportsDiff implements ModelObject {
 					}
 				}
 			}
-			strb.append("<div class=\""+style+"\" style=\"background-color:"+color2+"\"> "+txt2+" </div>");
+			
 			if (nb_build3!=0) {
 				if (this.report3.getTestWithName(global_test.get(i).getName()) != null) {
-					txt3="x";
 					Test test3 = this.report3.getTestWithName(global_test.get(i).getName());
+					txt3="<a href=\"../../../"+this.nb_build3+"/PerfPublisher/testDetails."+test3.getNameForUrl()+"\">x</a>";
 					if (!test3.isExecuted()) {
 						color3="grey";
 					} else {
@@ -261,9 +363,37 @@ public class ReportsDiff implements ModelObject {
 						}
 					}
 				}
-				strb.append("<div class=\""+style+"\" style=\"background-color:"+color3+"\"> "+txt3+" </div>");
+				if (shortDiff && (color1!=color2 || color1!=color3 || color2!=color3)) {
+					strb.append("<div class=\"line\">");
+					strb.append("<div class=\"header\">"+global_test.get(i).getName()+"</div>");
+					strb.append("<div class=\""+style+"\" style=\"background-color:"+color1+"\"> "+txt1+" </div>");
+					strb.append("<div class=\""+style+"\" style=\"background-color:"+color2+"\"> "+txt2+" </div>");
+					strb.append("<div class=\""+style+"\" style=\"background-color:"+color3+"\"> "+txt3+" </div>");
+					strb.append("</div>\n");
+				} else if (!shortDiff) {
+					strb.append("<div class=\"line\">");
+					strb.append("<div class=\"header\">"+global_test.get(i).getName()+"</div>");
+					strb.append("<div class=\""+style+"\" style=\"background-color:"+color1+"\"> "+txt1+" </div>");
+					strb.append("<div class=\""+style+"\" style=\"background-color:"+color2+"\"> "+txt2+" </div>");
+					strb.append("<div class=\""+style+"\" style=\"background-color:"+color3+"\"> "+txt3+" </div>");
+					strb.append("</div>\n");
+				}
+			} else {
+				if (shortDiff && (color1!=color2)) {
+					strb.append("<div class=\"line\">");
+					strb.append("<div class=\"header\">"+global_test.get(i).getName()+"</div>");
+					strb.append("<div class=\""+style+"\" style=\"background-color:"+color1+"\"> "+txt1+" </div>");
+					strb.append("<div class=\""+style+"\" style=\"background-color:"+color2+"\"> "+txt2+" </div>");
+					strb.append("</div>\n");
+				} else if (!shortDiff) {
+					strb.append("<div class=\"line\">");
+					strb.append("<div class=\"header\">"+global_test.get(i).getName()+"</div>");
+					strb.append("<div class=\""+style+"\" style=\"background-color:"+color1+"\"> "+txt1+" </div>");
+					strb.append("<div class=\""+style+"\" style=\"background-color:"+color2+"\"> "+txt2+" </div>");
+					strb.append("</div>\n");
+				}
 			}
-			strb.append("</div>\n");
+			
 		}
 		
 		

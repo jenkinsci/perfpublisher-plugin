@@ -1,5 +1,5 @@
 /**
- * Hudson Serenitec plugin
+ * Hudson PerfPublisher plugin
  *
  * @author Georges Bossert <gbossert@gmail.com>
  */

@@ -40,6 +40,10 @@ public class PerfPublisherProjectAction extends AbstractPerfPublisherAction {
 	public PerfPublisherProjectAction(Project project) {
 		this.project = project;
 	}
+	
+	public String getDisplayName() {
+	      return PerfPublisherPlugin.DISPLAY_NAME;
+	   }
 
 	public Project getProject() {
 		return project;

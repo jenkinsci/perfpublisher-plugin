@@ -335,7 +335,7 @@ public class ReportContainer {
 		return floor(resultat, 2);
 	}
 
-	private double getNumberOfTrueFalseTest() {
+	public double getNumberOfTrueFalseTest() {
 		int result = 0;
 		for (int i = 0; i < getNumberOfReports(); i++) {
 			result += reports.get(i).getNumberOfSuccessTest();
