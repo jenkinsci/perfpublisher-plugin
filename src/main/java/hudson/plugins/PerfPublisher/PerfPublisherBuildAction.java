@@ -48,10 +48,12 @@ import org.kohsuke.stapler.StaplerResponse;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Paint;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -128,10 +130,10 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 
 		for (int i = 0; i < files.size(); i++) {
 			String current_report = files.get(i);
-			InputStream is;
+			URI is;
 			try {
-				is = build.getProject().getWorkspace().child(current_report)
-						.read();
+				is = build.getWorkspace().child(current_report).toURI();
+				
 				logger.println("[CapsAnalysis] Parsing du Report : "
 						+ current_report);
 				ReportReader rs = new ReportReader(is, logger);
@@ -143,11 +145,16 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 				logger.println("[CapsAnalysis] Impossible to analyse report "
 						+ current_report + ", file can't be read.");
 				build.setResult(Result.UNSTABLE);
+			} catch (InterruptedException e) {
+				logger.println("[CapsAnalysis] Impossible to analyse report "
+						+ current_report + ", file can't be read.");
+				build.setResult(Result.UNSTABLE);
 			}
 			if (healthDescriptor.getUnstableHealth() > 0
 					&& reports.getNumberOfFailedTest() > healthDescriptor
 							.getUnstableHealth()) {
 				build.setResult(Result.UNSTABLE);
+				logger.println("[CapsAnalysis] Build status set to UNSTABLE (number of failed test greater than acceptable health level");
 			}
 		}
 		/**

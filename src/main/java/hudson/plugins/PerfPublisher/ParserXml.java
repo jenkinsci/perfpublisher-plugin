@@ -23,8 +23,10 @@ import hudson.plugins.PerfPublisher.Report.Success;
 import hudson.plugins.PerfPublisher.Report.Target;
 import hudson.plugins.PerfPublisher.Report.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -479,14 +481,14 @@ public class ParserXml {
 
 	// Attribute
 	private static Report resultat;
-	private static InputStream xml;
+	private static URI xml_path;
 
 	/**
-	 * @param xml1
+	 * @param xml URI Path to the xml file
 	 */
-	public ParserXml(final InputStream xml1) {
+	public ParserXml(final URI xml) {
 		resultat = new Report();
-		xml = xml1;
+		xml_path = xml;
 	}
 
 	/**
@@ -500,7 +502,7 @@ public class ParserXml {
 		final SAXParserFactory fabrique = SAXParserFactory.newInstance();
 		final SAXParser parseur = fabrique.newSAXParser();
 		final DefaultHandler gestionnaire = new Analyse();
-		parseur.parse(xml, gestionnaire);
+		parseur.parse(new File(xml_path), gestionnaire);
 	}
 
 	/**

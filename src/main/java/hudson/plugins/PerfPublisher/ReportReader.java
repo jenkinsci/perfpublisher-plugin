@@ -2,9 +2,11 @@ package hudson.plugins.PerfPublisher;
 
 import hudson.plugins.PerfPublisher.Report.Report;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -36,12 +38,12 @@ public class ReportReader {
 	 * @throws PerfPublisherParseException
 	 *             Thrown if the parsing fails.
 	 */
-	public ReportReader(InputStream is, PrintStream logger) {
+	public ReportReader(URI is, PrintStream logger) {
 		hudsonConsoleWriter = logger;
 		parse(is);
 	}
 
-	private void parse(InputStream is) {
+	private void parse(URI is) {
 		if (is == null) {
 			throw new PerfPublisherParseException("Empty input stream");
 		}

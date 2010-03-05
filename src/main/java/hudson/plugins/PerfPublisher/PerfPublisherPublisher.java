@@ -11,6 +11,7 @@ import hudson.plugins.PerfPublisher.Report.ReportContainer;
 import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherFreestyleProjectAction;
 import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixConfigurationAction;
 import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixProjectAction;
+import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 
@@ -124,7 +125,8 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
 		ArrayList<String> filesToParse = new ArrayList<String>();
 		for (int i = 0; i < files.length; i++) {
 			FileSet fileSet = new FileSet();
-			File workspace = new File(build.getProject().getWorkspace().toString());
+			File workspace = new File(build.getWorkspace().toURI());
+			
 			fileSet.setDir(workspace);
 			fileSet.setIncludes(files[i].trim());
 			Project antProject = new Project();
@@ -163,15 +165,25 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
 		return null;
 	}
 
-	public static final Descriptor<Publisher> DESCRIPTOR = new DescriptorImpl();
-
-	public static final class DescriptorImpl extends Descriptor<Publisher> {
-		protected DescriptorImpl() {
+	public static final Descriptor<Publisher> DESCRIPTOR = new PerfPublisherDescriptor();
+	/**
+	 * Descriptor for the PerfPublisher plugin
+	 * Must extends BuildStepDescriptor since issue HUDSON-5612
+	 * @author gbossert
+	 *
+	 */
+	public static final class PerfPublisherDescriptor extends BuildStepDescriptor<Publisher> {
+		protected PerfPublisherDescriptor() {
 			super(PerfPublisherPublisher.class);
 		}
 
 		public String getDisplayName() {
 			return PerfPublisherPlugin.CONFIG_DISPLAY_NAME;
+		}
+
+		@Override
+		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+			return true;
 		}
 	}
 

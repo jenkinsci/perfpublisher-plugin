@@ -12,7 +12,7 @@
          			<td class="pane-header" title="Message">Message</td>
          			<td class="pane-header" title="Number of tests">Number of test</td>
                 </tr>
-                <j:forEach indexVar="index" var="message" items="${it.report.validMessageContainer.errorMessages}">
+                <j:forEach indexVar="index" var="message" items="${it.report.errorMessageContainer.errorMessages}">
 	                <tr>
 	         			<td><b>${message.message}</b>
 	         				<j:forEach indexVar="index" var="test" items="${message.tests}">
