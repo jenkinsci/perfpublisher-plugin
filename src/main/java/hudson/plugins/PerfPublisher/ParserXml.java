@@ -27,6 +27,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -40,6 +43,9 @@ public class ParserXml {
 
 	static class Analyse extends DefaultHandler {
 		private Report report;
+		private Collection<String> metrics_name;
+		private Map<String, Double> metrics;
+		
 		private StringBuffer buffer;
 		
 		private Platform tmp_platform;
@@ -106,6 +112,7 @@ public class ParserXml {
 		private boolean f_success = false;
 		private boolean f_compiletime = false;
 		private boolean f_executiontime = false;
+		private boolean f_metrics = false;
 		private boolean f_performance = false;
 		private boolean f_end = false;
 		private boolean f_end_date = false;
@@ -116,10 +123,11 @@ public class ParserXml {
 		/**
 		 * Analyse
 		 */
-		public Analyse() {
+		public Analyse(Collection<String> metrics) {
 			super();
 			report = new Report();
 			tmp_platform = new Platform();
+			this.metrics_name = metrics;			
 		}
 
 		/**
@@ -264,7 +272,11 @@ public class ParserXml {
 				f_performance = false;
 				tmp_test.setPerformance(tmp_performance);
 				buffer = new StringBuffer();
-			}  else if (qName.equals("errorlog") && f_report && f_test && f_result && f_errorlog) {
+			} else if (qName.equals("metrics") && f_report && f_test && f_result && f_metrics) {
+				f_metrics = false;
+				tmp_test.setMetrics(metrics);
+				buffer = new StringBuffer();
+			}else if (qName.equals("errorlog") && f_report && f_test && f_result && f_errorlog) {
 				f_errorlog = false;
 				if (!buffer.toString().equals("") && buffer.toString().length()>1) {
 					tmp_test.setMessage(buffer.toString());
@@ -453,6 +465,18 @@ public class ParserXml {
 				tmp_performance.setRelevant(Boolean.parseBoolean(attributes.getValue("isRelevant")));
 				tmp_test.setIsPerformance(true);
 				buffer = new StringBuffer();
+			} else if (qName.equals("metrics") && f_report && f_test && f_result) {
+				f_metrics = true;
+				this.metrics = new HashMap<String, Double>();
+				buffer = new StringBuffer();
+			} else if (this.metrics_name.contains(qName) && f_report && f_test && f_result && f_metrics) {
+				//We have discovered a metric
+				//It should have attribute value
+				if (attributes.getValue("mesure")!=null) {
+					double value = Double.parseDouble(attributes.getValue("mesure"));
+					this.metrics.put(qName, value);
+					buffer = new StringBuffer();
+				}
 			} else if (qName.equals("errorlog") && f_report && f_test && f_result) {
 				f_errorlog = true;
 				buffer = new StringBuffer();
@@ -482,13 +506,14 @@ public class ParserXml {
 	// Attribute
 	private static Report resultat;
 	private static URI xml_path;
-
+	private static Collection<String> metrics;
 	/**
 	 * @param xml URI Path to the xml file
 	 */
-	public ParserXml(final URI xml) {
-		resultat = new Report();
-		xml_path = xml;
+	public ParserXml(final URI xml, Collection<String> metrics) {
+		this.resultat = new Report();
+		this.xml_path = xml;
+		this.metrics = metrics;
 	}
 
 	/**
@@ -501,7 +526,7 @@ public class ParserXml {
 
 		final SAXParserFactory fabrique = SAXParserFactory.newInstance();
 		final SAXParser parseur = fabrique.newSAXParser();
-		final DefaultHandler gestionnaire = new Analyse();
+		final DefaultHandler gestionnaire = new Analyse(metrics);
 		parseur.parse(new File(xml_path), gestionnaire);
 	}
 

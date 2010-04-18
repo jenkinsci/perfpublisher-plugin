@@ -3,6 +3,7 @@ package hudson.plugins.PerfPublisher;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import hudson.plugins.PerfPublisher.Report.FileContainer;
 import hudson.plugins.PerfPublisher.Report.Report;
@@ -371,6 +372,29 @@ public class TrendReport {
 		resultat = (double) getNumberOfSuccessStatusChangedTests()
 				/ (double) actualResult.getNumberOfTest() * 100.0;
 		return floor(resultat, 2);
+	}
+
+	public boolean containsMetrics(String metricName) {
+		Map<String,String> old_metrics = this.oldResult.getMetricsName();
+		if (null == old_metrics) {
+			return false;
+		}
+		
+		return (this.oldResult.getAverageValuePerMetrics().get(metricName)!=null);
+	}
+
+	public boolean isAverageOfMetricValueHasIncreased(String metricName) {
+		if (!containsMetrics(metricName)) {
+			return false;
+		}
+		return (this.actualResult.getAverageValuePerMetrics().get(metricName) > this.oldResult.getAverageValuePerMetrics().get(metricName));
+	}
+	
+	public boolean isAverageOfMetricValueHasDecreased(String metricName) {
+		if (!containsMetrics(metricName)) {
+			return false;
+		}
+		return (this.actualResult.getAverageValuePerMetrics().get(metricName) < this.oldResult.getAverageValuePerMetrics().get(metricName));
 	}
 
 }

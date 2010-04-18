@@ -35,9 +35,13 @@ public class Test implements java.lang.Comparable<Test> {
 	private Platform plateforme;
 	
 	private boolean isPerformance;
+	
+
 	private boolean isCompileTime;
 	private boolean isExecutionTime;
 	private boolean isSuccess;
+	
+	private Map<String, Double> metrics;
 	
 	public Test() {
 		targets = new ArrayList<Target>();
@@ -49,6 +53,7 @@ public class Test implements java.lang.Comparable<Test> {
 		executionTime = new ExecutionTime();
 		performance = new Performance();
 		logs = new ArrayList<Log>();
+		metrics = new HashMap<String, Double>();
 
 	}
 
@@ -458,34 +463,50 @@ public class Test implements java.lang.Comparable<Test> {
 		this.description = description;
 	}
 	
-	
+	public Map<String, Double> getMetrics() {
+		return metrics;
+	}
+
+	public void setMetrics(Map<String, Double> metrics) {
+		this.metrics = metrics;
+	}
 	
 	
 	
 	@Override
 	public String toString() {
-		String result = "Test "+getName();
-		result += "\n Description of the platform :"+plateforme.getName();
-		result += "\n Os Name :"+plateforme.getOsName();
-		result += "\n---------------------------------------";
+		StringBuffer strb = new StringBuffer();
+		strb.append("Test "+getName());
+		strb.append("\n Description of the platform :"+plateforme.getName());
+		strb.append("\n Os Name :"+plateforme.getOsName());
+		strb.append("\n---------------------------------------");
 		if (isCompileTime) {
-			result += "\nCompile Time : "+compileTime.getMeasure()+" "+compileTime.getUnit();	
+			strb.append("\nCompile Time : "+compileTime.getMeasure()+" "+compileTime.getUnit());
 		}
 		if (isExecutionTime) {
-			result += "\nExecution Time : "+executionTime.getMeasure()+" "+executionTime.getUnit();	
+			strb.append("\nExecution Time : "+executionTime.getMeasure()+" "+executionTime.getUnit());	
 		}
 		if (isPerformance) {
-			result += "\nPerformance : "+performance.getMeasure()+" "+performance.getUnit();	
+			strb.append("\nPerformance : "+performance.getMeasure()+" "+performance.getUnit());	
 		}
 		if (isSuccess) {
-			result += "\nSuccess State : "+success.getState()+" %";	
+			strb.append("\nSuccess State : "+success.getState()+" %");
 		}
-		return result;
+		if (metrics.size()>0) {
+			strb.append("\nYour metrics : ");
+			for (String metric_name : this.metrics.keySet()) {
+				strb.append("\n"+metric_name+" : "+this.metrics.get(metric_name));
+			}
+		}
+		
+		return strb.toString();
 	}
 
 	public int compareTo(Test test) {
 		return this.name.compareTo(test.getName());
 	}
+
+	
 
 	
 	

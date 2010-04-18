@@ -1,0 +1,12 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
+	xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
+	xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+	<st:include page="/tabview/css2.jelly" />	
+	<t:summary icon="graph.gif">
+	
+	${it.summary}
+	
+	${it.detailSummary}
+	${it.regression}
+	</t:summary>
+</j:jelly>

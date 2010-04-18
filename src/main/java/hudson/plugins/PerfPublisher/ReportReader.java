@@ -8,7 +8,10 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -38,12 +41,12 @@ public class ReportReader {
 	 * @throws PerfPublisherParseException
 	 *             Thrown if the parsing fails.
 	 */
-	public ReportReader(URI is, PrintStream logger) {
+	public ReportReader(URI is, PrintStream logger, Map<String, String> metrics) {
 		hudsonConsoleWriter = logger;
-		parse(is);
+		parse(is, metrics.values());
 	}
 
-	private void parse(URI is) {
+	private void parse(URI is, Collection<String> metrics) {
 		if (is == null) {
 			throw new PerfPublisherParseException("Empty input stream");
 		}
@@ -51,21 +54,21 @@ public class ReportReader {
 			report = new Report();
 		}		
 		try {
-			ParserXml parseur = new ParserXml(is);
+			ParserXml parseur = new ParserXml(is, metrics);
 			parseur.parse();
 			report = parseur.result();
 		} catch (IOException e) {
-			String errMsg = "[CapsAnalysis] Problem parsing Performance report file";
+			String errMsg = "[PerfPublisher] Problem parsing Performance report file";
 	        hudsonConsoleWriter.println(errMsg + ": " + e.getMessage());
 	        e.printStackTrace(hudsonConsoleWriter);
 	        throw new PerfPublisherParseException(errMsg, e);
 		} catch (ParserConfigurationException e) {
-			String errMsg = "[CapsAnalysis] Problem parsing Performance report file";
+			String errMsg = "[PerfPublisher] Problem parsing Performance report file";
 	        hudsonConsoleWriter.println(errMsg + ": " + e.getMessage());
 	        e.printStackTrace(hudsonConsoleWriter);
 	        throw new PerfPublisherParseException(errMsg, e);
 		} catch (SAXException e) {
-			String errMsg = "[CapsAnalysis] Problem parsing Performance report file";
+			String errMsg = "[PerfPublisher] Problem parsing Performance report file";
 	        hudsonConsoleWriter.println(errMsg + ": " + e.getMessage());
 	        e.printStackTrace(hudsonConsoleWriter);
 	        throw new PerfPublisherParseException(errMsg, e);

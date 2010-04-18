@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -77,6 +78,8 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	private FileContainer reportsFiles = new FileContainer();
 	/** Parameters for the health report. */
 	private final HealthDescriptor healthDescriptor;
+	/** Personnalizable metrics */
+	private final Map<String, String> metrics;
 
 	/** Pre-Loaded stats */
 	private int numberOfTest = -1;
@@ -120,33 +123,47 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 
 	public PerfPublisherBuildAction(AbstractBuild<?, ?> build,
 			ArrayList<String> files, PrintStream logger,
-			HealthDescriptor healthDescriptor) {
+			HealthDescriptor healthDescriptor, Map<String, String> metrics) {
 		this.build = build;
 		this.executedTests = new ArrayList<Test>();
 		/**
 		 * Compute the healthDescription
 		 */
 		this.healthDescriptor = healthDescriptor;
-
+		this.metrics = metrics;
+		/**
+		 * Log the metrics
+		 */
+		if (metrics.keySet().size()>0) {
+			logger.println("[PerfPublisher] The following metrics will be computed");
+		} else {
+			logger.println("[PerfPublisher] No metrics configured.");
+		}
+		for (String metric_name : metrics.keySet()) {
+			logger.println("[PerfPublisher] Metric : "+metric_name);
+		}
+		
+		
+		
 		for (int i = 0; i < files.size(); i++) {
 			String current_report = files.get(i);
 			URI is;
 			try {
 				is = build.getWorkspace().child(current_report).toURI();
 				
-				logger.println("[CapsAnalysis] Parsing du Report : "
+				logger.println("[PerfPublisher] Parsing du Report : "
 						+ current_report);
-				ReportReader rs = new ReportReader(is, logger);
+				ReportReader rs = new ReportReader(is, logger, metrics);
 				report = rs.getReport();
 				report.setFile(current_report);
 				reports.addReport(report, false);
 				reports.addFile(current_report);
 			} catch (IOException e) {
-				logger.println("[CapsAnalysis] Impossible to analyse report "
+				logger.println("[PerfPublisher] Impossible to analyse report "
 						+ current_report + ", file can't be read.");
 				build.setResult(Result.UNSTABLE);
 			} catch (InterruptedException e) {
-				logger.println("[CapsAnalysis] Impossible to analyse report "
+				logger.println("[PerfPublisher] Impossible to analyse report "
 						+ current_report + ", file can't be read.");
 				build.setResult(Result.UNSTABLE);
 			}
@@ -154,75 +171,88 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 					&& reports.getNumberOfFailedTest() > healthDescriptor
 							.getUnstableHealth()) {
 				build.setResult(Result.UNSTABLE);
-				logger.println("[CapsAnalysis] Build status set to UNSTABLE (number of failed test greater than acceptable health level");
+				logger.println("[PerfPublisher] Build status set to UNSTABLE (number of failed test greater than acceptable health level");
 			}
 		}
 		/**
+		 * Insert name metrics
+		 */
+		reports.setMetricsName(this.metrics);
+		/**
 		 * Compute Reports Stats
 		 */
-		logger.println("[CapsAnalysis] Compute global statistics...");
+		logger.println("[PerfPublisher] Compute global statistics...");
 		reports.computeStats();
 
 		logger
-				.println("[CapsAnalysis] [--------------------------------------------------]");
-		logger.println("[CapsAnalysis] Number of parsed files : "
+				.println("[PerfPublisher] [--------------------------------------------------]");
+		logger.println("[PerfPublisher] Number of parsed files : "
 				+ reports.getNumberOfFiles());
-		logger.println("[CapsAnalysis] Number of reports : "
+		logger.println("[PerfPublisher] Number of reports : "
 				+ reports.getNumberOfReports());
-		logger.println("[CapsAnalysis] Number of test : "
+		logger.println("[PerfPublisher] Number of test : "
 				+ reports.getNumberOfTest());
-		logger.println("[CapsAnalysis] Number of executed test : "
+		logger.println("[PerfPublisher] Number of executed test : "
 				+ reports.getNumberOfExecutedTest());
-		logger.println("[CapsAnalysis] Number of not executed test : "
+		logger.println("[PerfPublisher] Number of not executed test : "
 				+ reports.getNumberOfNotExecutedTest());
-		logger.println("[CapsAnalysis] Number of passed test : "
+		logger.println("[PerfPublisher] Number of passed test : "
 				+ reports.getNumberOfPassedTest());
-		logger.println("[CapsAnalysis] Number of failed test : "
+		logger.println("[PerfPublisher] Number of failed test : "
 				+ reports.getNumberOfFailedTest());
 
 		for (int i = 0; i < reports.getCategories().size(); i++) {
 			logger
-					.println("[CapsAnalysis] ---------------------------------------------------");
-			logger.println("[CapsAnalysis] Category : "
+					.println("[PerfPublisher] ---------------------------------------------------");
+			logger.println("[PerfPublisher] Category : "
 					+ reports.getCategories().get(i));
-			logger.println("[CapsAnalysis]  - Number of test : "
+			logger.println("[PerfPublisher]  - Number of test : "
 					+ reports.getReportOfThisCategorie(
 							reports.getCategories().get(i)).getNumberOfTest());
 		}
 
 		for (int j = 0; j < reports.getNumberOfTest(); j++) {
-			logger.println("[CapsAnalysis] "
-					+ reports.getTests().get(j).getName());
+			Test test = reports.getTests().get(j);
+			logger.println("[PerfPublisher] "
+					+ test.getName()+" : "+ test.getDescription());
 		}
 
 		logger
-				.println("[CapsAnalysis] ---------------------------------------------------");
-		logger.println("[CapsAnalysis] Analysis :");
+				.println("[PerfPublisher] ---------------------------------------------------");
+		logger.println("[PerfPublisher] Analysis :");
 		logger
-				.println("[CapsAnalysis] ---------------------------------------------------");
-		logger.println("[CapsAnalysis] Performance :");
-		logger.println("[CapsAnalysis]  - Worst Perfomance : "
+				.println("[PerfPublisher] ---------------------------------------------------");
+		logger.println("[PerfPublisher] Performance :");
+		logger.println("[PerfPublisher]  - Worst Perfomance : "
 				+ getReports().getWorstPerformanceTestValue());
-		logger.println("[CapsAnalysis]  - Best Perfomance : "
+		logger.println("[PerfPublisher]  - Best Perfomance : "
 				+ getReports().getBestPerformanceTestValue());
-		logger.println("[CapsAnalysis]  - Average Perfomance : "
+		logger.println("[PerfPublisher]  - Average Perfomance : "
 				+ getReports().getAverageOfPerformance());
-		logger.println("[CapsAnalysis] Execution Time :");
-		logger.println("[CapsAnalysis]  - Worst Execution Time : "
+		logger.println("[PerfPublisher] Execution Time :");
+		logger.println("[PerfPublisher]  - Worst Execution Time : "
 				+ getReports().getWorstExecutionTimeTestValue());
-		logger.println("[CapsAnalysis]  - Best Execution Time : "
+		logger.println("[PerfPublisher]  - Best Execution Time : "
 				+ getReports().getBestExecutionTimeTestValue());
-		logger.println("[CapsAnalysis]  - Average Execution Time : "
+		logger.println("[PerfPublisher]  - Average Execution Time : "
 				+ getReports().getAverageOfExecutionTime());
-		logger.println("[CapsAnalysis] Compile Time :");
-		logger.println("[CapsAnalysis]  - Worst Compile Time : "
+		logger.println("[PerfPublisher] Compile Time :");
+		logger.println("[PerfPublisher]  - Worst Compile Time : "
 				+ getReports().getWorstCompileTimeTestValue());
-		logger.println("[CapsAnalysis]  - Best Compile Time : "
+		logger.println("[PerfPublisher]  - Best Compile Time : "
 				+ getReports().getBestCompileTimeTestValue());
-		logger.println("[CapsAnalysis]  - Average Compile Time : "
+		logger.println("[PerfPublisher]  - Average Compile Time : "
 				+ getReports().getAverageOfCompileTime());
+		for (String metric_name : this.metrics.keySet()) {
+			logger.println("[PerfPublisher] "+metric_name+" :");
+			logger.println("[PerfPublisher]  - Highest value : "+getReports().getBestValuePerMetrics().get(this.metrics.get(metric_name)));
+			logger.println("[PerfPublisher]  - Lowest value : "+getReports().getWorstValuePerMetrics().get(this.metrics.get(metric_name)));
+			logger.println("[PerfPublisher]  - Average value : "+getReports().getAverageValuePerMetrics().get(this.metrics.get(metric_name)));
+		}
+		
+		
 		logger
-				.println("[CapsAnalysis] [--------------------------------------------------]");
+				.println("[PerfPublisher] [--------------------------------------------------]");
 	}
 
 	public List<Test> getExecutedTests() {
@@ -246,6 +276,38 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 
 	public FileContainer getFiles() {
 		return reportsFiles;
+	}
+	public String getHtmlTableHeaderForMetrics() {
+		StringBuilder strb = new StringBuilder();
+		for (String name : this.getReports().getMetricsName().keySet()) {	
+			strb.append("<td class=\"pane-header\" title=\""+name+"\">"+name+"</td>");
+		}
+		return strb.toString();
+	}
+	public String getHtmlMetricTable() {
+		StringBuilder strb = new StringBuilder();
+		
+		for (String name : this.getReports().getMetricsName().keySet()) {	
+		strb.append("<tr>\n"); 
+  		strb.append("<td style=\"text-align:left;\">"+name+"</td>\n");
+  		strb.append("<td>"+this.getReports().getNbValuePerMetric().get(this.getReports().getMetricsName().get(name))+"</td>\n");
+  		strb.append("<td>"+this.getReports().getAverageValuePerMetrics().get(this.getReports().getMetricsName().get(name))+"</td>\n"); 
+  		strb.append("<td>");
+  		//Compute trend evolution of the metric
+      	if (getTrendReport().containsMetrics(this.getReports().getMetricsName().get(name))) {
+      		if (getTrendReport().isAverageOfMetricValueHasIncreased(this.getReports().getMetricsName().get(name))) {
+      			strb.append("<img src=\"/plugin/PerfPublisher/icons/arrow_up_green.gif\" alt=\"UP\" />");
+      		} else if (getTrendReport().isAverageOfMetricValueHasDecreased(this.getReports().getMetricsName().get(name))) {
+      			strb.append("<img src=\"/plugin/PerfPublisher/icons/arrow_down_red.gif\" alt=\"DOWN\" />");
+      		} else {
+      			strb.append("<img src=\"/plugin/PerfPublisher/icons/arrow_stable_black.gif\" alt=\"STABLE\" />");
+      		}
+      	}
+  		
+  		
+  		strb.append("</td>");
+		}
+		return strb.toString();
 	}
 
 	/**

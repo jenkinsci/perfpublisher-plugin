@@ -1,0 +1,30 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+	<l:layout xmlns:g="/hudson/plugins/PerfPublisher/tags">
+		<st:include it="${it.project}" page="sidepanel.jelly" />
+		<l:main-panel>
+	      <h1>Global Test Report</h1>
+	      <div style="width: 800px; margin-left: auto; margin-right: auto; text-align:left;">
+	        <img src="successGraph" height="250" width="800"/>
+            <img src="compileTimeGraph" height="250" width="800"/>
+            <img src="executionTimeGraph" height="250" width="800"/>
+            <img src="performanceGraph" height="250" width="800"/>
+         </div>
+         <table border="1px" class="pane sortable">
+               <tr>
+         			<td class="pane-header" title="Build number">Build number</td>
+         			<td class="pane-header" title="Number of test">Nb. test</td>
+         			<td class="pane-header" title="Number of executed test">Nb. executed test</td>
+         			<td class="pane-header" title="Number of passed test">Nb. passed test</td>
+         			<td class="pane-header" title="Number of failed test">Nb. failed test</td>
+         			<td class="pane-header" title="Average compile time">Avg. compile time</td>
+         			<td class="pane-header" title="Average execution time">Avg. execution time</td>
+         			<td class="pane-header" title="Average performance">Avg. performance</td>
+                </tr> 
+                <j:forEach var="build" items="${it.project.builds}">
+                  <g:tableTest it="${it.getActionByBuildNumber(build.number).reports}" link="../${build.number}/PerfPublisher" id="#${build.number}"/>
+                </j:forEach>               	      
+          </table>
+      </l:main-panel>
+	</l:layout>
+</j:jelly>

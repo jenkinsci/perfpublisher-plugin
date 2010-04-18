@@ -203,6 +203,7 @@
 							</j:if>  
                   		</td>
                   	</tr>
+                  	${it.htmlMetricTable}
 				</table>
 				<table style="border:0px;"> 
 					<tr> 

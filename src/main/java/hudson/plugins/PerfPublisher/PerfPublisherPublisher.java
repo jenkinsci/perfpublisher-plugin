@@ -14,18 +14,28 @@ import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixProjectAct
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
+import hudson.util.FormFieldValidator;
 
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.ServletException;
 
 /**
  * The publisher creates the results we want from the PerfPublisher execution.
@@ -38,10 +48,11 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
 	private String threshold;
 	private String healthy;
 	private String unhealthy;
+	private String metrics;
 
 	@DataBoundConstructor
 	public PerfPublisherPublisher(String name, String threshold,
-			String healthy, String unhealthy) {
+			String healthy, String unhealthy, String metrics) {
 		this.name = name;
 		if (threshold != "") {
 			this.threshold = threshold;
@@ -58,6 +69,14 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
 		} else {
 			this.unhealthy = "0";
 		}
+		this.metrics = metrics;
+	}
+	/**
+	 * Return the metrics
+	 * @return
+	 */
+	public String getMetrics() {
+		return metrics;
 	}
 
 	/**
@@ -81,6 +100,18 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
 	public String getName() {
 		return name;
 	}
+	public void doValidateMetricsConfiguration(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
+		new FormFieldValidator(req,rsp,true) {
+	        protected void check() throws IOException, ServletException {
+	            try {
+	                ok("Success");
+	            } catch (Exception e) {
+	                error("Client error : "+e.getMessage());
+	            }
+	        }
+	    }.process();
+	}
+	
 
 	public Descriptor<Publisher> getDescriptor() {
 		return DESCRIPTOR;
@@ -93,7 +124,22 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
 			BuildListener listener) throws InterruptedException, IOException {
 
 		PrintStream logger = listener.getLogger();
-
+		/**
+		 * Compute metrics parametring
+		 */
+		Map<String, String> list_metrics = new HashMap<String, String>();
+		//Parse the field to understand the metrics
+		//Format : name=xmlfield;
+		if (metrics!=null && metrics.length()>0) {
+			List<String> tmps = Arrays.asList(this.metrics.split(";"));
+			for (String tmp : tmps) {
+				List<String> f = Arrays.asList(tmp.split("="));
+				if (f.size()==2 && f.get(0).trim().length()>0 && f.get(1).length()>0) {
+					list_metrics.put(f.get(0).trim(), f.get(1).trim());
+				}
+			}
+		}
+		
 		/**
 		 * Compute the HealthDescription
 		 */
@@ -144,7 +190,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
 
 		try {
 			build.addAction(new PerfPublisherBuildAction(build, filesToParse,
-					logger, hl));
+					logger, hl, list_metrics));
 			
 		} catch (PerfPublisherParseException gpe) {
 			logger
