@@ -296,11 +296,11 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
   		//Compute trend evolution of the metric
       	if (getTrendReport().containsMetrics(this.getReports().getMetricsName().get(name))) {
       		if (getTrendReport().isAverageOfMetricValueHasIncreased(this.getReports().getMetricsName().get(name))) {
-      			strb.append("<img src=\"/plugin/PerfPublisher/icons/arrow_up_green.gif\" alt=\"UP\" />");
+      			strb.append("<img src=\"/plugin/perfpublisher/icons/arrow_up_green.gif\" alt=\"UP\" />");
       		} else if (getTrendReport().isAverageOfMetricValueHasDecreased(this.getReports().getMetricsName().get(name))) {
-      			strb.append("<img src=\"/plugin/PerfPublisher/icons/arrow_down_red.gif\" alt=\"DOWN\" />");
+      			strb.append("<img src=\"/plugin/perfpublisher/icons/arrow_down_red.gif\" alt=\"DOWN\" />");
       		} else {
-      			strb.append("<img src=\"/plugin/PerfPublisher/icons/arrow_stable_black.gif\" alt=\"STABLE\" />");
+      			strb.append("<img src=\"/plugin/perfpublisher/icons/arrow_stable_black.gif\" alt=\"STABLE\" />");
       		}
       	}
   		

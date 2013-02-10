@@ -66,9 +66,9 @@ public class ChangedStatusTestsDetails implements ModelObject {
 	 			Test t = tests.get(i);
 	 			stb.append("<tr><td><a class=\"info_bulle\" href=\"../testDetails."+t.getNameForUrl()+"\">"+t.getName()+"</a></td>");
 	 			if (t.isExecuted()){
-	 				stb.append("<td>Not executed <img border=\"0\" src=\"/plugin/PerfPublisher/icons/bullet_go.png\" /> <b>Executed</b></td>");
+	 				stb.append("<td>Not executed <img border=\"0\" src=\"/plugin/perfpublisher/icons/bullet_go.png\" /> <b>Executed</b></td>");
 	 			}else {
-	 				stb.append("<td>Executed <img border=\"0\" src=\"/plugin/PerfPublisher/icons/bullet_go.png\" /> <b>Not executed</b></td>");
+	 				stb.append("<td>Executed <img border=\"0\" src=\"/plugin/perfpublisher/icons/bullet_go.png\" /> <b>Not executed</b></td>");
 	 			}
 	 			stb.append("</tr>");
 	 		}
@@ -93,9 +93,9 @@ public class ChangedStatusTestsDetails implements ModelObject {
 	 			Test t = tests.get(i);
 	 			stb.append("<tr><td><a class=\"info_bulle\" href=\"../testDetails."+t.getNameForUrl()+"\">"+t.getName()+"</a></td>");
 	 			if (t.isSuccessfull()){
-	 				stb.append("<td>Failed <img border=\"0\" src=\"/plugin/PerfPublisher/icons/bullet_go.png\" /> <b>Successfull</b></td>");
+	 				stb.append("<td>Failed <img border=\"0\" src=\"/plugin/perfpublisher/icons/bullet_go.png\" /> <b>Successfull</b></td>");
 	 			}else {
-	 				stb.append("<td>Successfull <img border=\"0\" src=\"/plugin/PerfPublisher/icons/bullet_go.png\" /> <b>Failed</b></td>");
+	 				stb.append("<td>Successfull <img border=\"0\" src=\"/plugin/perfpublisher/icons/bullet_go.png\" /> <b>Failed</b></td>");
 	 			}
 	 			stb.append("</tr>");
 	 		}
