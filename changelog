@@ -1,8 +1,12 @@
+What's new in 8.0 :
+	- Update build script to work with Jenkins 1.500
+	- Update paths to icons to be compatible with Jenkins 1.500
+
 What's new in 7.95 :
 	- Optimizes FreeStyle Project analysis
 	- Reduces "New Executed Tests" statistics computation time
 	- Offers direct links between Diff Display and associated results
-	- Add a filter option to the diff display 
+	- Add a filter option to the diff display
 	- Supports Multi-Configuration projects
 		- Offers a "Global test report" including build trend for each combinations
 		- Aggregates axes results of a build in a summary report
@@ -10,4 +14,3 @@ What's new in 7.95 :
 	- Prepare the support of official Test Result plugins
 	- Update source code annotations and javadoc comments
 	- Prepare the support of multi-languages via associated Plugin
-	
