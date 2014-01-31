@@ -94,7 +94,7 @@ div.progress-container {
  	height:32px;
  	font-weight:bold;
  	background-color:#FFFFFF;
- 	background-image:url("/plugin/PerfPublisher/icons/warning.gif");
+ 	background-image:url("/plugin/perfpublisher/icons/warning.gif");
  	background-repeat:no-repeat;
  	padding-left:40px;
  	margin:0px;

@@ -16,13 +16,13 @@
          			<td align="right"> - </td>
          			<td align="right">
          				<j:if test="${it.trendReport.numberOfTestHasIncrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_up_green.gif" alt="UP" />
+							<img src="/plugin/perfpublisher/icons/arrow_up_green.gif" alt="UP" />
 						</j:if>
 						<j:if test="${it.trendReport.numberOfTestHasDecrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_down_red.gif" alt="DOWN" />
+							<img src="/plugin/perfpublisher/icons/arrow_down_red.gif" alt="DOWN" />
 						</j:if>
 						<j:if test="${it.trendReport.numberOfTestStable}">
-							<img src="/plugin/PerfPublisher/icons/arrow_stable_black.gif" alt="STABLE" />
+							<img src="/plugin/perfpublisher/icons/arrow_stable_black.gif" alt="STABLE" />
 						</j:if>
          			</td>
                 </tr>
@@ -32,13 +32,13 @@
          			<td align="right">${it.reports.percentOfExecutedTest}%</td>
          			<td align="right">
          				<j:if test="${it.trendReport.numberOfExecutedTestHasIncreased}">
-							<img src="/plugin/PerfPublisher/icons/arrow_up_green.gif" alt="UP" />
+							<img src="/plugin/perfpublisher/icons/arrow_up_green.gif" alt="UP" />
 						</j:if>
 						<j:if test="${it.trendReport.numberOfExecutedTestHasDeacrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_down_red.gif" alt="DOWN" />
+							<img src="/plugin/perfpublisher/icons/arrow_down_red.gif" alt="DOWN" />
 						</j:if>
 						<j:if test="${it.trendReport.numberOfExecutedTestStable}">
-							<img src="/plugin/PerfPublisher/icons/arrow_stable_black.gif" alt="STABLE" />
+							<img src="/plugin/perfpublisher/icons/arrow_stable_black.gif" alt="STABLE" />
 						</j:if>         			
          			</td>
                 </tr>
@@ -48,13 +48,13 @@
          			<td align="right">${it.reports.percentOfNotExecutedTest}%</td>
          			<td align="right">
          				<j:if test="${it.trendReport.numberOfNotExecutedTestHasIncreased}">
-							<img src="/plugin/PerfPublisher/icons/arrow_up_red.gif" alt="UP" />
+							<img src="/plugin/perfpublisher/icons/arrow_up_red.gif" alt="UP" />
 						</j:if>
 						<j:if test="${it.trendReport.numberOfNotExecutedTestHasDeacrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_down_green.gif" alt="DOWN" />
+							<img src="/plugin/perfpublisher/icons/arrow_down_green.gif" alt="DOWN" />
 						</j:if>
 						<j:if test="${it.trendReport.numberOfNotExecutedTestStable}">
-							<img src="/plugin/PerfPublisher/icons/arrow_stable_black.gif" alt="STABLE" />
+							<img src="/plugin/perfpublisher/icons/arrow_stable_black.gif" alt="STABLE" />
 						</j:if>         			
          			</td>
                 </tr>
@@ -72,13 +72,13 @@
          			<td align="right">${it.reports.percentOfPassedTest}%</td>
          			<td align="right">
          				<j:if test="${it.trendReport.percentOfPassedTestHasIncrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_up_green.gif" alt="UP" />
+							<img src="/plugin/perfpublisher/icons/arrow_up_green.gif" alt="UP" />
 						</j:if>
 						<j:if test="${it.trendReport.percentOfPassedTestHasDecrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_down_red.gif" alt="DOWN" />
+							<img src="/plugin/perfpublisher/icons/arrow_down_red.gif" alt="DOWN" />
 						</j:if>
 						<j:if test="${it.trendReport.percentOfPassedTestStable}">
-							<img src="/plugin/PerfPublisher/icons/arrow_stable_black.gif" alt="STABLE" />
+							<img src="/plugin/perfpublisher/icons/arrow_stable_black.gif" alt="STABLE" />
 						</j:if>   
          			</td>
                 </tr>
@@ -88,13 +88,13 @@
          			<td align="right">${it.reports.percentOfFailedTest}%</td>
          			<td align="right">
          				<j:if test="${it.trendReport.percentOfFailedTestHasIncrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_up_red.gif" alt="UP" />
+							<img src="/plugin/perfpublisher/icons/arrow_up_red.gif" alt="UP" />
 						</j:if>
 						<j:if test="${it.trendReport.percentOfFailedTestHasDecrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_down_green.gif" alt="DOWN" />
+							<img src="/plugin/perfpublisher/icons/arrow_down_green.gif" alt="DOWN" />
 						</j:if>
 						<j:if test="${it.trendReport.percentOfFailedTestStable}">
-							<img src="/plugin/PerfPublisher/icons/arrow_stable_black.gif" alt="STABLE" />
+							<img src="/plugin/perfpublisher/icons/arrow_stable_black.gif" alt="STABLE" />
 						</j:if>  
          			</td>
                 </tr>                
@@ -114,13 +114,13 @@
          			<td align="right">${it.reports.averageOfCompileTime}</td>
          			<td align="right">
          				<j:if test="${it.trendReport.averageOfCompileTimeHasIncrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_up_red.gif" alt="UP" />
+							<img src="/plugin/perfpublisher/icons/arrow_up_red.gif" alt="UP" />
 						</j:if>
 						<j:if test="${it.trendReport.averageOfCompileTimeHasDecrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_down_green.gif" alt="DOWN" />
+							<img src="/plugin/perfpublisher/icons/arrow_down_green.gif" alt="DOWN" />
 						</j:if>
 						<j:if test="${it.trendReport.averageOfCompileTimeStable}">
-							<img src="/plugin/PerfPublisher/icons/arrow_stable_black.gif" alt="STABLE" />
+							<img src="/plugin/perfpublisher/icons/arrow_stable_black.gif" alt="STABLE" />
 						</j:if>   
          			</td>
                 </tr>
@@ -131,13 +131,13 @@
          			<td align="right">${it.reports.averageOfExecutionTime}</td>
          			<td align="right">
          				<j:if test="${it.trendReport.averageOfExecutionTimeHasIncrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_up_red.gif" alt="UP" />
+							<img src="/plugin/perfpublisher/icons/arrow_up_red.gif" alt="UP" />
 						</j:if>
 						<j:if test="${it.trendReport.averageOfExecutionTimeHasDecrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_down_green.gif" alt="DOWN" />
+							<img src="/plugin/perfpublisher/icons/arrow_down_green.gif" alt="DOWN" />
 						</j:if>
 						<j:if test="${it.trendReport.averageOfExecutionTimeStable}">
-							<img src="/plugin/PerfPublisher/icons/arrow_stable_black.gif" alt="STABLE" />
+							<img src="/plugin/perfpublisher/icons/arrow_stable_black.gif" alt="STABLE" />
 						</j:if>   
          			</td>
                 </tr>
@@ -148,13 +148,13 @@
          			<td align="right">${it.reports.averageOfPerformance}</td>
          			<td align="right">
          				<j:if test="${it.trendReport.averageOfPerformanceHasIncrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_up_green.gif" alt="UP" />
+							<img src="/plugin/perfpublisher/icons/arrow_up_green.gif" alt="UP" />
 						</j:if>
 						<j:if test="${it.trendReport.averageOfPerformanceHasDecrease}">
-							<img src="/plugin/PerfPublisher/icons/arrow_down_red.gif" alt="DOWN" />
+							<img src="/plugin/perfpublisher/icons/arrow_down_red.gif" alt="DOWN" />
 						</j:if>
 						<j:if test="${it.trendReport.averageOfPerformanceStable}">
-							<img src="/plugin/PerfPublisher/icons/arrow_stable_black.gif" alt="STABLE" />
+							<img src="/plugin/perfpublisher/icons/arrow_stable_black.gif" alt="STABLE" />
 						</j:if>   
          			</td>
                 </tr>

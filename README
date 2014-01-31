@@ -8,7 +8,7 @@
 
 This document will introduce how to compile and run
 the PerfPublisher Plugin. More globaly, this "how to"
-can be use for any Hudson plugin.
+can be used for any Jenkins plugin.
 
 Summary
 ----------------------------------------------------
@@ -26,7 +26,7 @@ Summary
 1. Tools needed
 ----------------------------------------------------
 	a. JDK 6.0
-In order to compile, run and debug any Hudson Plugin, 
+In order to compile, run and debug any Jenkins Plugin, 
 few tools need to be install.
 First, JAVA and it's JDK ( min. 6.0 ), since it's
 mainly developped in JAVA.
@@ -59,49 +59,71 @@ Internet.
 				Java version: 1.6.0_03
 				OS name: "linux" version: "2.6.22-14-generic" arch: "i386" Family: "unix"
 ------------------------------------------------------------------------------------------------
-We also have to register Hudson repositories into
-Hudson. Edit ~/.m2/settings.xml to be sure to have 
+We also have to register Jenkins repositories into
+Jenkins. Edit ~/.m2/settings.xml to be sure to have 
 this declaration :
 
 <settings>
 
-<profiles>
-  <profile>
-    <id>hudson</id>
+  <pluginGroups>
+    <pluginGroup>org.jenkins-ci.tools</pluginGroup>
+  </pluginGroups>
 
-    <activation>
-      <activeByDefault />
-    </activation>
+  <profiles>
 
-    <pluginRepositories>
-      <pluginRepository>
-        <id>m.g.o-public</id>
-        <url>http://maven.glassfish.org/content/groups/public/</url>
-      </pluginRepository>
-    </pluginRepositories>
-    <repositories>
-      <repository>
-        <id>m.g.o-public</id>
-        <url>http://maven.glassfish.org/content/groups/public/</url>
-      </repository>
-    </repositories>
-  </profile>
-</profiles>
+    <profile>
+      <id>jenkins</id>
 
-<activeProfiles>
-  <activeProfile>hudson</activeProfile>
-</activeProfiles>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
 
-<pluginGroups>
-  <pluginGroup>org.jvnet.hudson.tools</pluginGroup>
-</pluginGroups>
+      <repositories>
+        <repository>
+          <id>repo.jenkins-ci.org</id>
+          <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+        <repository>
+          <id>m.g.o-public</id>
+          <url>http://maven.glassfish.org/content/groups/public/</url>
+        </repository>
+      </repositories>
+
+      <pluginRepositories>
+        <pluginRepository>
+          <id>repo.jenkins-ci.org</id>
+          <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+        <pluginRepository>
+          <id>m.g.o-public</id>
+          <url>http://maven.glassfish.org/content/groups/public/</url>
+        </pluginRepository>
+      </pluginRepositories>
+
+    </profile>
+
+  </profiles>
+
+  <mirrors>
+
+    <mirror>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
+      <mirrorOf>m.g.o-public</mirrorOf>
+    </mirror>
+
+  </mirrors>
+
+  <activeProfiles>
+    <activeProfile>jenkins</activeProfile>
+  </activeProfiles>
 
 </settings>
 
 ----------------------------------------------------
 2. Files and Workspace layout
 ----------------------------------------------------
-PerfPublisher as any Hudson Plugin is mainly
+PerfPublisher as any Jenkins Plugin is mainly
 based on 4 types of data.
 
 > pom.xml :
@@ -142,7 +164,7 @@ maven command :
 > mvn hpi:run
 
 If you open http://localhost:8080/ in your browser, 
-you should see the Hudson page running in Jetty. 
+you should see the Jenkins page running in Jetty. 
 The MAVEN_OPTS portion launches this whole thing 
 with the debugger port 8000, so you should be able 
 to start a debug session to this port from your IDE.
@@ -164,5 +186,5 @@ this file used to install the plugin .
 ----------------------------------------------------
 Maven2 :
 http://maven.apache.org/
-Hudson :
-http://hudson.dev.java.net
+Jenkins :
+http://jenkins-ci.org/
