@@ -1,6 +1,9 @@
 package hudson.plugins.PerfPublisher;
 
 import hudson.Launcher;
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.Util;
 import hudson.matrix.MatrixAggregatable;
 import hudson.matrix.MatrixAggregator;
 import hudson.matrix.MatrixBuild;
@@ -11,6 +14,7 @@ import hudson.plugins.PerfPublisher.Report.ReportContainer;
 import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherFreestyleProjectAction;
 import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixConfigurationAction;
 import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixProjectAction;
+import hudson.remoting.VirtualChannel;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
@@ -165,22 +169,34 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
     if (files.length > 1) {
       logger.println("[CapsAnalysis] Multiple reports detected.");
     }
-    ArrayList<String> filesToParse = new ArrayList<String>();
+    ArrayList<FilePath> filesToParse = new ArrayList<FilePath>();
+	
+    final FilePath[] moduleRoots = build.getModuleRoots();
+    final boolean multipleModuleRoots = moduleRoots != null && moduleRoots.length > 1;
+    final FilePath moduleRoot = multipleModuleRoots ? build.getWorkspace() : build.getModuleRoot();
+    final File buildCoberturaDir = build.getRootDir();
+    FilePath buildTarget = new FilePath(buildCoberturaDir);
+		
     for (int i = 0; i < files.length; i++) {
-      FileSet fileSet = new FileSet();
-      File workspace = new File(build.getWorkspace().toURI());
-
-      fileSet.setDir(workspace);
-      fileSet.setIncludes(files[i].trim());
-      Project antProject = new Project();
-      fileSet.setProject(antProject);
-      String[] tmp_files = fileSet.getDirectoryScanner(antProject).getIncludedFiles();
-      for (int j=0; j<tmp_files.length; j++) {
-        if (build.getProject().getWorkspace().child(tmp_files[j]).exists()) {
-          filesToParse.add(tmp_files[j]);
-        } else {
-          logger.println("[CapsAnalysis] Impossible to analyse report " + tmp_files[j] + " file not found!");
-          build.setResult(Result.UNSTABLE);
+      FilePath[] reports = new FilePath[0];
+      try {
+        reports = moduleRoot.act(new ParseReportCallable(files[i]));
+      } catch (IOException e) {
+        Util.displayIOException(e, listener);
+        e.printStackTrace(listener.fatalError("Unable to find coverage results"));
+        build.setResult(Result.FAILURE);
+      }
+      
+      for (int j = 0; j < reports.length; j++) {
+        logger.println("[CapsAnalysis] FilePath Found and copied to master: " + reports[j].getRemote());
+        final FilePath targetPath = new FilePath(buildTarget, reports[j].getName());
+        try {
+          reports[j].copyTo(targetPath);
+          filesToParse.add(targetPath);
+        } catch (IOException e) {
+          Util.displayIOException(e, listener);
+          e.printStackTrace(listener.fatalError("Unable to copy coverage from " + reports[j] + " to " + buildTarget));
+          build.setResult(Result.FAILURE);
         }
       }
     }
@@ -229,5 +245,21 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
 
   public BuildStepMonitor getRequiredMonitorService() {
     return BuildStepMonitor.BUILD;
+  }
+	
+  public static class ParseReportCallable implements FilePath.FileCallable<FilePath[]> {
+    
+    private static final long serialVersionUID = 1L;
+    private final String reportFilePath;
+    
+    public ParseReportCallable(String reportFilePath) {
+      this.reportFilePath = reportFilePath;
+    }
+
+    public FilePath[] invoke(File f, VirtualChannel channel) throws IOException, InterruptedException {
+            
+      FilePath[] r = new FilePath(f).list(reportFilePath);
+      return r;
+    }
   }
 }

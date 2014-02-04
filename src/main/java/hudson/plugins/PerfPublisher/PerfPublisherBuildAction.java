@@ -1,6 +1,7 @@
 package hudson.plugins.PerfPublisher;
 
 import hudson.Launcher;
+import hudson.FilePath;
 import hudson.matrix.MatrixAggregatable;
 import hudson.matrix.MatrixAggregator;
 import hudson.matrix.MatrixBuild;
@@ -122,7 +123,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	}
 
 	public PerfPublisherBuildAction(AbstractBuild<?, ?> build,
-			ArrayList<String> files, PrintStream logger,
+			ArrayList<FilePath> files, PrintStream logger,
 			HealthDescriptor healthDescriptor, Map<String, String> metrics) {
 		this.build = build;
 		this.executedTests = new ArrayList<Test>();
@@ -142,22 +143,19 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		for (String metric_name : metrics.keySet()) {
 			logger.println("[PerfPublisher] Metric : "+metric_name);
 		}
-		
-		
-		
+
 		for (int i = 0; i < files.size(); i++) {
-			String current_report = files.get(i);
+			FilePath current_report = files.get(i);
 			URI is;
 			try {
-				is = build.getWorkspace().child(current_report).toURI();
-				
+				is = current_report.toURI();
 				logger.println("[PerfPublisher] Parsing du Report : "
 						+ current_report);
 				ReportReader rs = new ReportReader(is, logger, metrics);
 				report = rs.getReport();
-				report.setFile(current_report);
+				report.setFile(current_report.getName());
 				reports.addReport(report, false);
-				reports.addFile(current_report);
+				reports.addFile(current_report.getName());
 			} catch (IOException e) {
 				logger.println("[PerfPublisher] Impossible to analyse report "
 						+ current_report + ", file can't be read.");
