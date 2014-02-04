@@ -38,6 +38,7 @@ import java.awt.Stroke;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -59,6 +60,7 @@ public class PerfPublisherMatrixProjectAction extends
 	 * The associated matrix project
 	 */
 	private final MatrixProject project;
+	private final Map<String, String> metrics;
 
 	/**
 	 * The maximum number of build to display
@@ -71,8 +73,21 @@ public class PerfPublisherMatrixProjectAction extends
 	 * @param project
 	 *            the current matrix project
 	 */
-	public PerfPublisherMatrixProjectAction(MatrixProject project) {
+	public PerfPublisherMatrixProjectAction(MatrixProject project, Map<String, String> metrics) {
 		this.project = project;
+		this.metrics = metrics;
+	}
+	
+	public Set<String> getMetricNames() {
+	  return metrics.keySet();
+	}
+	
+	public Collection<String> getMetricValues() {
+	  return metrics.values();
+	}
+	
+	public Map<String, String> getMetrics() {
+	  return metrics;
 	}
 
 	/**

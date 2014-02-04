@@ -122,17 +122,12 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
     return new PerfPublisherResultAggregator(matrixBuild, launcher, listener);
   }
 
-  public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-
-    PrintStream logger = listener.getLogger();
-    /**
-     * Compute metrics parametring
-     */
+  private Map<String, String> parseMetrics(String metricsString) { 
     Map<String, String> list_metrics = new HashMap<String, String>();
     //Parse the field to understand the metrics
     //Format : name=xmlfield;
-    if (metrics!=null && metrics.length()>0) {
-      List<String> tmps = Arrays.asList(this.metrics.split(";"));
+    if (metricsString != null && metricsString.length() > 0) {
+      List<String> tmps = Arrays.asList(metricsString.split(";"));
       for (String tmp : tmps) {
         List<String> f = Arrays.asList(tmp.split("="));
         if (f.size()==2 && f.get(0).trim().length()>0 && f.get(1).length()>0) {
@@ -140,6 +135,16 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
         }
       }
     }
+    return list_metrics;
+  }
+
+  public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+
+    PrintStream logger = listener.getLogger();
+    /**
+     * Compute metrics parametring
+     */
+    Map<String, String> list_metrics = parseMetrics(metrics);
 
     /**
      * Compute the HealthDescription
@@ -211,12 +216,13 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
   }
 
   public Action getProjectAction(AbstractProject project) {
+    Map<String, String> list_metrics = parseMetrics(metrics);
     if (project instanceof MatrixProject) {
-      return new PerfPublisherMatrixProjectAction((MatrixProject)project);
+      return new PerfPublisherMatrixProjectAction((MatrixProject)project, list_metrics);
     }else if (project instanceof MatrixConfiguration) {
       return new PerfPublisherMatrixConfigurationAction((MatrixConfiguration) project);
     }else if (project instanceof FreeStyleProject) {
-      return new PerfPublisherFreestyleProjectAction((FreeStyleProject)project);
+      return new PerfPublisherFreestyleProjectAction((FreeStyleProject)project, list_metrics);
     }
     return null;
   }

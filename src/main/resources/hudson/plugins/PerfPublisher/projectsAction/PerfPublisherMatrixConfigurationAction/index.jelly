@@ -20,10 +20,13 @@
          			<td class="pane-header" title="Average compile time">Avg. compile time</td>
          			<td class="pane-header" title="Average execution time">Avg. execution time</td>
          			<td class="pane-header" title="Average performance">Avg. performance</td>
+                    <j:forEach indexVar="metricNameIndex" var="metric" items="${it.metricNames}">
+                      <td class="pane-header" title="${metric}">${metric}</td>
+         	        </j:forEach>
                 </tr> 
                 <j:forEach var="build" items="${it.project.builds}">
-                  <g:tableTest it="${it.getActionByBuildNumber(build.number).reports}" link="../${build.number}/PerfPublisher" id="#${build.number}"/>
-                </j:forEach>               	      
+                  <g:tableTest it="${it.getActionByBuildNumber(build.number).reports}" metrics="${it.metricValues}" link="../${build.number}/PerfPublisher" id="#${build.number}"/>
+                </j:forEach>                   	      
           </table>
       </l:main-panel>
 	</l:layout>

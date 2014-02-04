@@ -31,6 +31,12 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+import java.util.Collection;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Action used for PerfPublisher report on project level.
@@ -40,9 +46,31 @@ import java.util.Date;
 public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAction {
 
 	private final Project project;
+  private final Map<String, String> metrics;
 
-	public PerfPublisherFreestyleProjectAction(FreeStyleProject project) {
+	public PerfPublisherFreestyleProjectAction(FreeStyleProject project, Map<String, String> metrics) {
 		this.project = project;
+		this.metrics = metrics;
+	}
+	
+	public Set<String> getMetricNames() {
+	  return metrics.keySet();
+	}
+	
+	public Collection<String> getMetricValues() {
+	  return metrics.values();
+	}
+	
+	public Map<String, String> getMetrics() {
+	  return metrics;
+	}
+	
+	public Map<String, String> getMetricsReversed() {
+	  Map<String, String> returnMap = new HashMap<String, String>();
+	  for (String key : metrics.keySet()) {
+	    returnMap.put(metrics.get(key), key);
+	  }
+	  return returnMap;
 	}
 	
 	public String getDisplayName() {
@@ -91,8 +119,17 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 
 	public void doCompileTimeGraph(StaplerRequest request,
 			StaplerResponse response) throws IOException {
-		ChartUtil.generateGraph(request, response, createCompileTimeGraph(),
-				800, 250);
+		    ChartUtil.generateGraph(request, response, createCompileTimeGraph(), 800, 250);
+	}
+	
+	public void doMetrics(StaplerRequest request,
+			StaplerResponse response) throws IOException {
+        ChartUtil.generateGraph(request, response, createMetricGraph(request.getRestOfPath().substring(1)), 800, 250);
+	}
+	
+	public void doMiniMetrics(StaplerRequest request,
+			StaplerResponse response) throws IOException {
+        ChartUtil.generateGraph(request, response, createMetricGraph(request.getRestOfPath().substring(1)), 350, 200);
 	}
 
 	public void doMiniCompileTimeGraph(StaplerRequest request,
@@ -207,6 +244,61 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 		renderer.setSeriesPaint(1, ColorPalette.RED);
 		renderer.setSeriesPaint(0, ColorPalette.YELLOW);
 
+		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+
+		// crop extra space around the graph
+		plot.setInsets(new RectangleInsets(0, 0, 0, 5.0));
+
+		return chart;
+	}
+	
+	private JFreeChart createMetricGraph(String metric) {
+		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+		for (Object build : project.getBuilds()) {
+			AbstractBuild abstractBuild = (AbstractBuild) build;
+			if (!abstractBuild.isBuilding()
+					&& abstractBuild.getResult().isBetterOrEqualTo(
+							Result.UNSTABLE)) {
+				PerfPublisherBuildAction action = abstractBuild
+						.getAction(PerfPublisherBuildAction.class);
+				if (action!=null && action.getReports() != null) {
+					builder.add(action.getReports().getWorstValuePerMetrics().get(metric),
+							"Worst Performance", new NumberOnlyBuildLabel(
+									abstractBuild));
+					builder.add(action.getReports().getAverageValuePerMetrics().get(metric),
+							"Average Performance", new NumberOnlyBuildLabel(
+									abstractBuild));
+					builder.add(action.getReports().getBestValuePerMetrics().get(metric), "Best Performance",
+							new NumberOnlyBuildLabel(abstractBuild));
+				}
+			}
+		}
+    
+		JFreeChart chart = ChartFactory.createLineChart3D(
+				getMetricsReversed().get(metric), "Build", "unit",
+				builder.build(), PlotOrientation.VERTICAL, true, true, false);
+
+		chart.setBackgroundPaint(Color.WHITE);
+
+		CategoryPlot plot = chart.getCategoryPlot();
+		plot.setBackgroundPaint(Color.WHITE);
+		plot.setOutlinePaint(null);
+		plot.setForegroundAlpha(0.4f);
+		plot.setRangeGridlinesVisible(true);
+		plot.setRangeGridlinePaint(Color.black);
+
+		CategoryAxis domainAxis = new ShiftedCategoryAxis(null);
+		plot.setDomainAxis(domainAxis);
+		domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+		domainAxis.setLowerMargin(0.0);
+		domainAxis.setUpperMargin(0.0);
+		domainAxis.setCategoryMargin(0.0);
+
+		CategoryItemRenderer renderer = plot.getRenderer();
+		renderer.setSeriesPaint(2, ColorPalette.RED);
+		renderer.setSeriesPaint(1, ColorPalette.BLUE);
+		renderer.setSeriesPaint(0, ColorPalette.GREY);
 		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
 		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 

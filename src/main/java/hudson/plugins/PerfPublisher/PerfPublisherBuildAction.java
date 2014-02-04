@@ -56,6 +56,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -282,6 +283,15 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		}
 		return strb.toString();
 	}
+	
+	public Set<String> getMetricNames() {
+	  return this.getReports().getMetricsName().keySet();
+	}
+	
+	public Collection<String> getMetricValues() {
+	  return this.getReports().getMetricsName().values();
+	}
+	
 	public String getHtmlMetricTable() {
 		StringBuilder strb = new StringBuilder();
 		

@@ -19,5 +19,17 @@
 			      <td align="right">${it.averageOfCompileTime}</td>
 			      <td align="right">${it.averageOfExecutionTime}</td>
 			      <td align="right">${it.averageOfPerformance}</td>
+			      <j:forEach indexVar="metricNameIndex" var="metricKey" items="${metrics}">
+                    <j:set var="included" value="false" />
+                    <j:forEach indexVar="measureValueIndex" var="metricMeasure" items="${it.averageValuePerMetrics}">
+                      <j:if test="${metricKey == metricMeasure.key}">
+				        <td align="right">${metricMeasure.value}</td>
+				        <j:set var="included" value="true" />
+				      </j:if>
+				    </j:forEach>
+				    <j:if test="${included == false}">
+				      <td align="right"></td>
+				    </j:if>
+         		  </j:forEach>
 			      </tr>
 </j:jelly>
