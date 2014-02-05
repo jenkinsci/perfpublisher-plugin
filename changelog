@@ -1,6 +1,23 @@
-What's new in 8.0 :
+What's new in 8.01 :
+	- Fix bug when working in distributed master/slave environment (copies files from slave as prerequisite)
+	- Fix problem with not saved metric settings
+	- Implement support for metrics in reports
+	
+What's new in 8.00 :
 	- Update build script to work with Jenkins 1.500
 	- Update paths to icons to be compatible with Jenkins 1.500
+
+What's new in 7.97:
+  - Error on release process has transformed this version as an unstable one. Should not be used !
+	
+What's new in 7.96 :
+  - Update Matrix support
+  - Resolve a jelly duplicated code section
+  - Resolve few bugs
+  - Optimize loading and memory usage
+  - Offers a filter option in the build diff
+  - Add links in the build diff to directly access tests results
+  - Add a "regression alarm" on the build main page.
 
 What's new in 7.95 :
 	- Optimizes FreeStyle Project analysis
