@@ -555,18 +555,18 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		if (link.startsWith("testDetails.")) {
 			String testName = StringUtils.substringAfter(link, "testDetails.");
 			resultat = new TestDetails(getOwner(), reports.getTestWithName(Test
-					.ResolveTestNameInUrl(testName)));
+					.ResolveTestNameInUrl(testName)), metrics);
 		} else if (link.startsWith("categoryDetails.")) {
 			int indiceCat = Integer.parseInt(StringUtils.substringAfter(link,
 					"categoryDetails."));
 			resultat = new CategoryDetails(getOwner(), reports
 					.getReportOfThisCategorie(reports.getCategories().get(
-							indiceCat)));
+							indiceCat)), metrics);
 		} else if (link.startsWith("filesDetails.")) {
 			int indiceFil = Integer.parseInt(StringUtils.substringAfter(link,
 					"filesDetails."));
 			resultat = new FilesDetails(getOwner(), reports
-					.getReportOfThisFile(reports.getFiles().get(indiceFil)));
+					.getReportOfThisFile(reports.getFiles().get(indiceFil)), metrics);
 		} else if (link.startsWith("diff")) {
 			resultat = new DownloadDiff(getOwner(), reports);
 		} else if (link.startsWith("errorsDetails.")) {
@@ -594,17 +594,17 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 			String message = StringUtils.substringAfter(link,
 					"newTestsDetails.");
 			if (message.equals("all")) {
-				resultat = new NewTestsDetails(getOwner(), getTrendReport());
+				resultat = new NewTestsDetails(getOwner(), getTrendReport(), metrics);
 			} else {
-				resultat = new NewTestsDetails(getOwner(), getTrendReport());
+				resultat = new NewTestsDetails(getOwner(), getTrendReport(), metrics);
 			}
 		} else if (link.startsWith("deletedTestsDetails.")) {
 			String message = StringUtils.substringAfter(link,
 					"deletedTestsDetails.");
 			if (message.equals("all")) {
-				resultat = new DeletedTestsDetails(getOwner(), getTrendReport());
+				resultat = new DeletedTestsDetails(getOwner(), getTrendReport(), metrics);
 			} else {
-				resultat = new DeletedTestsDetails(getOwner(), getTrendReport());
+				resultat = new DeletedTestsDetails(getOwner(), getTrendReport(), metrics);
 			}
 		} else if (link.startsWith("statusChangedTestsDetails.")) {
 			String message = StringUtils.substringAfter(link,

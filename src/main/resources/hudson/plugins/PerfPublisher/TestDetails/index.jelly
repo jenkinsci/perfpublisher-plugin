@@ -64,6 +64,13 @@
         <j:if test="${it.test.performance.measure != '0.0'}">
           <li>Performance : <i>${it.test.performance.measure} (${it.test.performance.unit})</i></li>
         </j:if>
+        <j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
+          <j:forEach indexVar="index_measures" var="measure" items="${it.test.metrics}">
+            <j:if test="${metric.value == measure.key}">
+				      <li>${metric.key} : <i>${measure.value}</i></li>
+				    </j:if>
+				  </j:forEach>
+        </j:forEach>
       </ul>
     </div>
 
@@ -126,6 +133,9 @@
         <img src="compileTimeGraph" height="250" width="800"/>
         <img src="executionTimeGraph" height="250" width="800"/>
         <img src="performanceGraph" height="250" width="800"/>
+        <j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
+          <img src="metrics/${metric.value}" height="250" width="800"/>
+        </j:forEach>
       </center>
     </div>
 
