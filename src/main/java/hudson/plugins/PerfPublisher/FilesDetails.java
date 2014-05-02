@@ -1,6 +1,7 @@
 package hudson.plugins.PerfPublisher;
 
 import java.awt.Color;
+import java.util.Map;
 import java.io.IOException;
 
 import org.jfree.chart.ChartFactory;
@@ -31,14 +32,20 @@ public class FilesDetails implements ModelObject {
 
 	private final ReportContainer report;
 	private final AbstractBuild<?, ?> _owner;
+	private final Map<String, String> metrics;
 
-	public FilesDetails(final AbstractBuild<?, ?> owner, Report rep) {
+	public FilesDetails(final AbstractBuild<?, ?> owner, Report rep, Map<String, String> metrics) {
 
 		report = new ReportContainer();
 		report.addReport(rep);
 		this._owner = owner;
+		this.metrics = metrics;
 	}
 
+	public Map<String, String> getMetrics() {
+		return metrics;
+	}
+	
 	public AbstractBuild<?, ?> getOwner() {
 		return _owner;
 	}

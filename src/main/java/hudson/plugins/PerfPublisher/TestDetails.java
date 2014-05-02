@@ -3,6 +3,8 @@ package hudson.plugins.PerfPublisher;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -30,11 +32,13 @@ public class TestDetails implements ModelObject {
 
 	private final Test test;
 	private final AbstractBuild<?, ?> _owner;
+	private final Map<String, String> metrics;
 
-	public TestDetails(final AbstractBuild<?, ?> owner, Test test) {
+	public TestDetails(final AbstractBuild<?, ?> owner, Test test, Map<String, String> metrics) {
 
 		this.test = test;
 		this._owner = owner;
+		this.metrics = metrics;
 	}
 
 	public AbstractBuild<?, ?> getOwner() {
@@ -43,6 +47,18 @@ public class TestDetails implements ModelObject {
 
 	public String getDisplayName() {
 		return "Details of test " + test.getName();
+	}
+	
+	public Map<String, String> getMetrics() {
+	  return metrics;
+	}
+	
+	public Map<String, String> getMetricsReversed() {
+	  Map<String, String> returnMap = new HashMap<String, String>();
+	  for (String key : metrics.keySet()) {
+	    returnMap.put(metrics.get(key), key);
+	  }
+	  return returnMap;
 	}
 
 	public Test getTest() {
@@ -161,8 +177,65 @@ public class TestDetails implements ModelObject {
 		return chart;
 	}
 	
+	public void doMetrics(StaplerRequest request,
+			StaplerResponse response) throws IOException {
+        ChartUtil.generateGraph(request, response, createMetricGraph(request.getRestOfPath().substring(1)), 800, 250);
+	}
 	
-	public void doExecutionTimeGraph(StaplerRequest request,
+	private JFreeChart createMetricGraph(String metric) {
+		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+		for (Object build : _owner.getProject().getBuilds()) {
+			AbstractBuild abstractBuild = (AbstractBuild) build;
+			if (!abstractBuild.isBuilding()
+					&& abstractBuild.getResult().isBetterOrEqualTo(
+							Result.UNSTABLE)) {
+				PerfPublisherBuildAction action = abstractBuild
+						.getAction(PerfPublisherBuildAction.class);
+				if (action!=null && action.getReports() != null) {
+					for (int i = 0; i < action.getReports().getNumberOfTest(); i++) {
+						if (action.getReports().getTests().get(i).getName()
+								.equals(test.getName()) && action.getReports().getTests().get(i).getMetrics().containsKey(metric)) {
+							builder.add(action.getReports().getTests().get(i).getMetrics().get(metric),
+									getMetricsReversed().get(metric) , new NumberOnlyBuildLabel(
+											abstractBuild));
+						}
+					}
+				}
+			}
+		}
+    
+		JFreeChart chart = ChartFactory.createLineChart3D(
+				getMetricsReversed().get(metric), "Build", "unit",
+				builder.build(), PlotOrientation.VERTICAL, true, true, false);
+
+		chart.setBackgroundPaint(Color.WHITE);
+
+		CategoryPlot plot = chart.getCategoryPlot();
+		plot.setBackgroundPaint(Color.WHITE);
+		plot.setOutlinePaint(null);
+		plot.setForegroundAlpha(0.4f);
+		plot.setRangeGridlinesVisible(true);
+		plot.setRangeGridlinePaint(Color.black);
+
+		CategoryAxis domainAxis = new ShiftedCategoryAxis(null);
+		plot.setDomainAxis(domainAxis);
+		domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+		domainAxis.setLowerMargin(0.0);
+		domainAxis.setUpperMargin(0.0);
+		domainAxis.setCategoryMargin(0.0);
+
+		CategoryItemRenderer renderer = plot.getRenderer();
+		renderer.setSeriesPaint(0, ColorPalette.BLUE);
+		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+
+		// crop extra space around the graph
+		plot.setInsets(new RectangleInsets(0, 0, 0, 5.0));
+
+		return chart;
+	}
+
+  public void doExecutionTimeGraph(StaplerRequest request,
 			StaplerResponse response) throws IOException {
 		ChartUtil.generateGraph(request, response, createExecutionTimeGraph(),
 				800, 250);

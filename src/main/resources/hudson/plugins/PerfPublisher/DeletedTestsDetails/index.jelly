@@ -16,6 +16,9 @@
          			<td class="pane-header" title="Compile Time">Compile Time</td>
          			<td class="pane-header" title="Execution time">Execution Time</td>
          			<td class="pane-header" title="Performance">Performance</td>
+         			<j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
+                 <td class="pane-header" title="Performance">${metric.key}</td> 
+              </j:forEach>
                 </tr> 
                <j:forEach indexVar="index" var="test" items="${it.report.deletedTests}">
                         
@@ -58,6 +61,9 @@
 				      <j:if test="${test.performance.measure != '0.0'}">
 				      	<td align="right">${test.performance.measure} (${test.performance.unit})</td>
 				      </j:if>	
+				      <j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
+                <td align="right">${test.metrics.get(metric.value)}</td>
+         		  </j:forEach>
 				     </tr>
 	               </j:if>
 	               
@@ -100,6 +106,9 @@
 				      <j:if test="${test.performance.measure != '0.0'}">
 				      	<td align="right">${test.performance.measure} (${test.performance.unit})</td>
 				      </j:if>	
+				      <j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
+                <td align="right">${test.metrics.get(metric.value)}</td>
+         		  </j:forEach>
 				     </tr>
 	               </j:if>
 	               
@@ -142,6 +151,9 @@
 				      <j:if test="${test.performance.measure != '0.0'}">
 				      	<td align="right">${test.performance.measure} (${test.performance.unit})</td>
 				      </j:if>	
+				      <j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
+                <td align="right">${test.metrics.get(metric.value)}</td>
+         		  </j:forEach>
 				     </tr>
 	               </j:if>
                

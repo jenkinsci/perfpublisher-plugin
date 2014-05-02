@@ -43,7 +43,7 @@
 			
 			
 	      <f:entry title="Metrics configuration" description="Configure your own metrics to be used and extracted from your xml. Format : metric name=metric_name;exemple of another metric=another_metric">
-	        <f:textbox name="metrics"/>			        
+	        <f:textbox field="metrics"/>			        
 	      </f:entry>
 
    

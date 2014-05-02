@@ -92,7 +92,15 @@
                   		<td>${it.report.numberOfPerformanceTest}</td>
                   		<td>${it.report.averageOfPerformance}</td> 
                   		
-                  	</tr>
+                </tr>
+                <j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
+				          <tr> 
+				             <td style="text-align:left;">${metric.key}</td> 
+                     <td>${it.report.nbValuePerMetric.get(metric.value)}</td>
+                     <td>${it.report.averageValuePerMetrics.get(metric.value)}</td>
+                     <td>${measure.value}</td> 
+                   </tr>
+                </j:forEach>
 				</table>
 			</div>
 
@@ -111,6 +119,9 @@
          			<td class="pane-header" title="Compile Time">Compile Time</td>
          			<td class="pane-header" title="Execution time">Execution Time</td>
          			<td class="pane-header" title="Performance">Performance</td>
+         			<j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
+                 <td class="pane-header" title="Performance">${metric.key}</td> 
+              </j:forEach>
                 </tr> 
                <j:forEach indexVar="index" var="test" items="${it.report.executedTests}">
                
@@ -153,6 +164,9 @@
 				      <j:if test="${test.performance.measure != '0.0'}">
 				      	<td align="right">${test.performance.measure} (${test.performance.unit})</td>
 				      </j:if>	
+				      <j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
+                <td align="right">${test.metrics.get(metric.value)}</td>
+         		  </j:forEach>
 				     </tr>
 	               </j:if>
 	               
@@ -195,6 +209,9 @@
 				      <j:if test="${test.performance.measure != '0.0'}">
 				      	<td align="right">${test.performance.measure} (${test.performance.unit})</td>
 				      </j:if>	
+				      <j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
+                <td align="right">${test.metrics.get(metric.value)}</td>
+         		  </j:forEach>
 				     </tr>
 	               </j:if>
 	               
@@ -237,6 +254,9 @@
 				      <j:if test="${test.performance.measure != '0.0'}">
 				      	<td align="right">${test.performance.measure} (${test.performance.unit})</td>
 				      </j:if>	
+				      <j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
+                <td align="right">${test.metrics.get(metric.value)}</td>
+         		  </j:forEach>
 				     </tr>
 	               </j:if>
                

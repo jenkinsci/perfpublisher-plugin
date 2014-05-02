@@ -1,6 +1,7 @@
 package hudson.plugins.PerfPublisher;
 
 import hudson.Launcher;
+import hudson.FilePath;
 import hudson.matrix.MatrixAggregatable;
 import hudson.matrix.MatrixAggregator;
 import hudson.matrix.MatrixBuild;
@@ -55,6 +56,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -122,7 +124,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	}
 
 	public PerfPublisherBuildAction(AbstractBuild<?, ?> build,
-			ArrayList<String> files, PrintStream logger,
+			ArrayList<FilePath> files, PrintStream logger,
 			HealthDescriptor healthDescriptor, Map<String, String> metrics) {
 		this.build = build;
 		this.executedTests = new ArrayList<Test>();
@@ -142,22 +144,19 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		for (String metric_name : metrics.keySet()) {
 			logger.println("[PerfPublisher] Metric : "+metric_name);
 		}
-		
-		
-		
+
 		for (int i = 0; i < files.size(); i++) {
-			String current_report = files.get(i);
+			FilePath current_report = files.get(i);
 			URI is;
 			try {
-				is = build.getWorkspace().child(current_report).toURI();
-				
+				is = current_report.toURI();
 				logger.println("[PerfPublisher] Parsing du Report : "
 						+ current_report);
 				ReportReader rs = new ReportReader(is, logger, metrics);
 				report = rs.getReport();
-				report.setFile(current_report);
+				report.setFile(current_report.getName());
 				reports.addReport(report, false);
-				reports.addFile(current_report);
+				reports.addFile(current_report.getName());
 			} catch (IOException e) {
 				logger.println("[PerfPublisher] Impossible to analyse report "
 						+ current_report + ", file can't be read.");
@@ -284,6 +283,15 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		}
 		return strb.toString();
 	}
+	
+	public Set<String> getMetricNames() {
+	  return this.getReports().getMetricsName().keySet();
+	}
+	
+	public Collection<String> getMetricValues() {
+	  return this.getReports().getMetricsName().values();
+	}
+	
 	public String getHtmlMetricTable() {
 		StringBuilder strb = new StringBuilder();
 		
@@ -296,11 +304,11 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
   		//Compute trend evolution of the metric
       	if (getTrendReport().containsMetrics(this.getReports().getMetricsName().get(name))) {
       		if (getTrendReport().isAverageOfMetricValueHasIncreased(this.getReports().getMetricsName().get(name))) {
-      			strb.append("<img src=\"/plugin/PerfPublisher/icons/arrow_up_green.gif\" alt=\"UP\" />");
+      			strb.append("<img src=\"/plugin/perfpublisher/icons/arrow_up_green.gif\" alt=\"UP\" />");
       		} else if (getTrendReport().isAverageOfMetricValueHasDecreased(this.getReports().getMetricsName().get(name))) {
-      			strb.append("<img src=\"/plugin/PerfPublisher/icons/arrow_down_red.gif\" alt=\"DOWN\" />");
+      			strb.append("<img src=\"/plugin/perfpublisher/icons/arrow_down_red.gif\" alt=\"DOWN\" />");
       		} else {
-      			strb.append("<img src=\"/plugin/PerfPublisher/icons/arrow_stable_black.gif\" alt=\"STABLE\" />");
+      			strb.append("<img src=\"/plugin/perfpublisher/icons/arrow_stable_black.gif\" alt=\"STABLE\" />");
       		}
       	}
   		
@@ -547,18 +555,18 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		if (link.startsWith("testDetails.")) {
 			String testName = StringUtils.substringAfter(link, "testDetails.");
 			resultat = new TestDetails(getOwner(), reports.getTestWithName(Test
-					.ResolveTestNameInUrl(testName)));
+					.ResolveTestNameInUrl(testName)), metrics);
 		} else if (link.startsWith("categoryDetails.")) {
 			int indiceCat = Integer.parseInt(StringUtils.substringAfter(link,
 					"categoryDetails."));
 			resultat = new CategoryDetails(getOwner(), reports
 					.getReportOfThisCategorie(reports.getCategories().get(
-							indiceCat)));
+							indiceCat)), metrics);
 		} else if (link.startsWith("filesDetails.")) {
 			int indiceFil = Integer.parseInt(StringUtils.substringAfter(link,
 					"filesDetails."));
 			resultat = new FilesDetails(getOwner(), reports
-					.getReportOfThisFile(reports.getFiles().get(indiceFil)));
+					.getReportOfThisFile(reports.getFiles().get(indiceFil)), metrics);
 		} else if (link.startsWith("diff")) {
 			resultat = new DownloadDiff(getOwner(), reports);
 		} else if (link.startsWith("errorsDetails.")) {
@@ -586,17 +594,17 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 			String message = StringUtils.substringAfter(link,
 					"newTestsDetails.");
 			if (message.equals("all")) {
-				resultat = new NewTestsDetails(getOwner(), getTrendReport());
+				resultat = new NewTestsDetails(getOwner(), getTrendReport(), metrics);
 			} else {
-				resultat = new NewTestsDetails(getOwner(), getTrendReport());
+				resultat = new NewTestsDetails(getOwner(), getTrendReport(), metrics);
 			}
 		} else if (link.startsWith("deletedTestsDetails.")) {
 			String message = StringUtils.substringAfter(link,
 					"deletedTestsDetails.");
 			if (message.equals("all")) {
-				resultat = new DeletedTestsDetails(getOwner(), getTrendReport());
+				resultat = new DeletedTestsDetails(getOwner(), getTrendReport(), metrics);
 			} else {
-				resultat = new DeletedTestsDetails(getOwner(), getTrendReport());
+				resultat = new DeletedTestsDetails(getOwner(), getTrendReport(), metrics);
 			}
 		} else if (link.startsWith("statusChangedTestsDetails.")) {
 			String message = StringUtils.substringAfter(link,
