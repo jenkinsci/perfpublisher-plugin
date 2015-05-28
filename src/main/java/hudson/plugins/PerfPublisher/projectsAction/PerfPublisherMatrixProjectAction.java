@@ -3,18 +3,11 @@ package hudson.plugins.PerfPublisher.projectsAction;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixProject;
 import hudson.model.AbstractBuild;
-import hudson.model.Action;
-import hudson.model.FreeStyleProject;
-import hudson.model.Project;
 import hudson.model.Result;
-import hudson.plugins.PerfPublisher.AbstractPerfPublisherAction;
-import hudson.plugins.PerfPublisher.MatrixTestReportAction;
-import hudson.plugins.PerfPublisher.PerfPublisherBuildAction;
-import hudson.plugins.PerfPublisher.PerfPublisherPlugin;
+import hudson.plugins.PerfPublisher.*;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
 import hudson.plugins.PerfPublisher.matrixBuild.PerfPublisherMatrixBuild;
 import hudson.plugins.PerfPublisher.matrixBuild.PerfPublisherMatrixSubBuild;
-import hudson.util.ChartUtil;
 import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 import hudson.util.ColorPalette;
 import hudson.util.DataSetBuilder;
@@ -28,24 +21,13 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.ui.RectangleInsets;
-import org.jfree.ui.StrokeSample;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import java.awt.Color;
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Action used for PerfPublisher report on matrix project level.

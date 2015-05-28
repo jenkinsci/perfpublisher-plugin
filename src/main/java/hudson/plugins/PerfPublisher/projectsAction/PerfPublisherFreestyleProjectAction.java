@@ -5,10 +5,10 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Project;
 import hudson.model.Result;
 import hudson.plugins.PerfPublisher.AbstractPerfPublisherAction;
+import hudson.plugins.PerfPublisher.ChartUtil;
 import hudson.plugins.PerfPublisher.PerfPublisherBuildAction;
 import hudson.plugins.PerfPublisher.PerfPublisherPlugin;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
-import hudson.util.ChartUtil;
 import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 import hudson.util.ColorPalette;
 import hudson.util.DataSetBuilder;
@@ -22,21 +22,15 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.ui.RectangleInsets;
-import org.jfree.ui.StrokeSample;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import java.awt.Color;
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.io.IOException;
-import java.util.Date;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collection;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Action used for PerfPublisher report on project level.

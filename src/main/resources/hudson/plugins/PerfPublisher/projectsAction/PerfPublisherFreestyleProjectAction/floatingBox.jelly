@@ -3,10 +3,10 @@
 		  <div class="test-trend-caption">
 		  </div>
 		  <div>
-	        <br /><img src="PerfPublisher/miniSuccessGraph" height="200" width="350"/>
-	        <br /><img src="PerfPublisher/miniCompileTimeGraph" height="200" width="350"/>
-	        <br /><img src="PerfPublisher/miniExecutionTimeGraph" height="200" width="350"/>
-	        <br /><img src="PerfPublisher/miniPerformanceGraph" height="200" width="350"/>
+	        <br /><img src="PerfPublisher/miniSuccessGraph"/>
+	        <br /><img src="PerfPublisher/miniCompileTimeGraph"/>
+	        <br /><img src="PerfPublisher/miniExecutionTimeGraph"/>
+	        <br /><img src="PerfPublisher/miniPerformanceGraph"/>
 		  </div>
 	      </div>
 </j:jelly>

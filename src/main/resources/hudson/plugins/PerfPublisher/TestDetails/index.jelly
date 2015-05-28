@@ -130,11 +130,11 @@
 
     <div class="cadre_orange">
       <center>
-        <img src="compileTimeGraph" height="250" width="800"/>
-        <img src="executionTimeGraph" height="250" width="800"/>
-        <img src="performanceGraph" height="250" width="800"/>
+        <img src="compileTimeGraph"/>
+        <img src="executionTimeGraph"/>
+        <img src="performanceGraph"/>
         <j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
-          <img src="metrics/${metric.value}" height="250" width="800"/>
+          <img src="metrics/${metric.value}"/>
         </j:forEach>
       </center>
     </div>
