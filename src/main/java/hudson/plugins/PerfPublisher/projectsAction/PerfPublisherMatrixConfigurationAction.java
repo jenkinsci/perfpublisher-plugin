@@ -1,8 +1,18 @@
 package hudson.plugins.PerfPublisher.projectsAction;
 
-import java.awt.Color;
-import java.io.IOException;
-
+import hudson.matrix.MatrixConfiguration;
+import hudson.model.AbstractBuild;
+import hudson.model.Project;
+import hudson.model.Result;
+import hudson.plugins.PerfPublisher.AbstractPerfPublisherAction;
+import hudson.plugins.PerfPublisher.ChartUtil;
+import hudson.plugins.PerfPublisher.PerfPublisherBuildAction;
+import hudson.plugins.PerfPublisher.PerfPublisherPlugin;
+import hudson.plugins.PerfPublisher.Report.ReportContainer;
+import hudson.util.ChartUtil.NumberOnlyBuildLabel;
+import hudson.util.ColorPalette;
+import hudson.util.DataSetBuilder;
+import hudson.util.ShiftedCategoryAxis;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -15,21 +25,8 @@ import org.jfree.ui.RectangleInsets;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import hudson.matrix.MatrixConfiguration;
-import hudson.matrix.MatrixRun;
-import hudson.model.AbstractBuild;
-import hudson.model.Job;
-import hudson.model.Project;
-import hudson.model.Result;
-import hudson.plugins.PerfPublisher.AbstractPerfPublisherAction;
-import hudson.plugins.PerfPublisher.PerfPublisherBuildAction;
-import hudson.plugins.PerfPublisher.PerfPublisherPlugin;
-import hudson.plugins.PerfPublisher.Report.ReportContainer;
-import hudson.util.ChartUtil;
-import hudson.util.ColorPalette;
-import hudson.util.DataSetBuilder;
-import hudson.util.ShiftedCategoryAxis;
-import hudson.util.ChartUtil.NumberOnlyBuildLabel;
+import java.awt.*;
+import java.io.IOException;
 /**
  * This class is in charge of retrieving informations
  * on a single configuration of a Multi-Config project.

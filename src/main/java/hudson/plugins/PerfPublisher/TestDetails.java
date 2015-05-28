@@ -1,11 +1,13 @@
 package hudson.plugins.PerfPublisher;
 
-import java.awt.Color;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
+import hudson.model.AbstractBuild;
+import hudson.model.ModelObject;
+import hudson.model.Result;
+import hudson.plugins.PerfPublisher.Report.Test;
+import hudson.util.ChartUtil.NumberOnlyBuildLabel;
+import hudson.util.ColorPalette;
+import hudson.util.DataSetBuilder;
+import hudson.util.ShiftedCategoryAxis;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -18,15 +20,11 @@ import org.jfree.ui.RectangleInsets;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import hudson.model.ModelObject;
-import hudson.model.AbstractBuild;
-import hudson.model.Result;
-import hudson.plugins.PerfPublisher.Report.Test;
-import hudson.util.ChartUtil;
-import hudson.util.ColorPalette;
-import hudson.util.DataSetBuilder;
-import hudson.util.ShiftedCategoryAxis;
-import hudson.util.ChartUtil.NumberOnlyBuildLabel;
+import java.awt.*;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TestDetails implements ModelObject {
 
