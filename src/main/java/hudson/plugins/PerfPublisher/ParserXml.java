@@ -5,46 +5,28 @@
  */
 package hudson.plugins.PerfPublisher;
 
-import hudson.plugins.PerfPublisher.Report.CommandLine;
-import hudson.plugins.PerfPublisher.Report.CompileTime;
+import hudson.plugins.PerfPublisher.Report.*;
 import hudson.plugins.PerfPublisher.Report.Compiler;
-import hudson.plugins.PerfPublisher.Report.Core;
-import hudson.plugins.PerfPublisher.Report.DataSet;
-import hudson.plugins.PerfPublisher.Report.ExecutionTime;
-import hudson.plugins.PerfPublisher.Report.Hardware;
-import hudson.plugins.PerfPublisher.Report.Log;
-import hudson.plugins.PerfPublisher.Report.Param;
-import hudson.plugins.PerfPublisher.Report.Performance;
-import hudson.plugins.PerfPublisher.Report.Platform;
-import hudson.plugins.PerfPublisher.Report.Processor;
-import hudson.plugins.PerfPublisher.Report.Report;
-import hudson.plugins.PerfPublisher.Report.Source;
-import hudson.plugins.PerfPublisher.Report.Success;
-import hudson.plugins.PerfPublisher.Report.Target;
-import hudson.plugins.PerfPublisher.Report.Test;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ParserXml {
 
 	static class Analyse extends DefaultHandler {
 		private Report report;
 		private Collection<String> metrics_name;
-		private Map<String, Double> metrics;
+		private Map<String, Metric> metrics;
 		
 		private StringBuffer buffer;
 		
@@ -67,7 +49,9 @@ public class ParserXml {
 		private ExecutionTime tmp_executiontime;
 		
 		private Performance tmp_performance;
-		
+
+		private Metric tmp_metric;
+
 		private Processor tmp_processor;
 		
 		private Core tmp_core;
@@ -467,14 +451,18 @@ public class ParserXml {
 				buffer = new StringBuffer();
 			} else if (qName.equals("metrics") && f_report && f_test && f_result) {
 				f_metrics = true;
-				this.metrics = new HashMap<String, Double>();
+				this.metrics = new HashMap<String, Metric>();
 				buffer = new StringBuffer();
 			} else if (this.metrics_name.contains(qName) && f_report && f_test && f_result && f_metrics) {
 				//We have discovered a metric
 				//It should have attribute value
 				if (attributes.getValue("mesure")!=null) {
-					double value = Double.parseDouble(attributes.getValue("mesure"));
-					this.metrics.put(qName, value);
+					tmp_metric = new Metric();
+					tmp_metric.setUnit(attributes.getValue("unit"));
+					tmp_metric.setMeasure(Double.parseDouble(attributes.getValue("mesure")));
+					String isRelevant = attributes.getValue("isRelevant");
+					tmp_metric.setRelevant(isRelevant == null || Boolean.parseBoolean(isRelevant)); // true by default
+					this.metrics.put(qName, tmp_metric);
 					buffer = new StringBuffer();
 				}
 			} else if (qName.equals("errorlog") && f_report && f_test && f_result) {

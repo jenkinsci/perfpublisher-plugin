@@ -392,10 +392,13 @@ public class ReportContainer {
 			for (int j = 0; j < getReports().get(i).getNumberOfExecutedTest(); j++) {
 				if (getReports().get(i).getExecutedTests().get(j).getMetrics()
 						.size() > 0) {
-					Map<String, Double> metric = getReports().get(i)
+					Map<String, Metric> metrics = getReports().get(i)
 							.getExecutedTests().get(j).getMetrics();
-					for (String name : metric.keySet()) {
-						double value = metric.get(name);
+					for (String name : metrics.keySet()) {
+						Metric metric = metrics.get(name);
+						if (!metric.isRelevant())
+							continue;
+						double value = metric.getMeasure();
 						// Compute best metric
 						if (!bestValuePerMetrics.containsKey(name)) {
 							bestValuePerMetrics.put(name, value);

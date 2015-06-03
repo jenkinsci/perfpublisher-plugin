@@ -41,7 +41,7 @@ public class Test implements java.lang.Comparable<Test> {
 	private boolean isExecutionTime;
 	private boolean isSuccess;
 	
-	private Map<String, Double> metrics;
+	private Map<String, Metric> metrics;
 	
 	public Test() {
 		targets = new ArrayList<Target>();
@@ -53,7 +53,7 @@ public class Test implements java.lang.Comparable<Test> {
 		executionTime = new ExecutionTime();
 		performance = new Performance();
 		logs = new ArrayList<Log>();
-		metrics = new HashMap<String, Double>();
+		metrics = new HashMap<String, Metric>();
 
 	}
 
@@ -463,11 +463,11 @@ public class Test implements java.lang.Comparable<Test> {
 		this.description = description;
 	}
 	
-	public Map<String, Double> getMetrics() {
+	public Map<String, Metric> getMetrics() {
 		return metrics;
 	}
 
-	public void setMetrics(Map<String, Double> metrics) {
+	public void setMetrics(Map<String, Metric> metrics) {
 		this.metrics = metrics;
 	}
 	
@@ -475,7 +475,7 @@ public class Test implements java.lang.Comparable<Test> {
 	
 	@Override
 	public String toString() {
-		StringBuffer strb = new StringBuffer();
+		StringBuilder strb = new StringBuilder();
 		strb.append("Test "+getName());
 		strb.append("\n Description of the platform :"+plateforme.getName());
 		strb.append("\n Os Name :"+plateforme.getOsName());
@@ -495,7 +495,8 @@ public class Test implements java.lang.Comparable<Test> {
 		if (metrics.size()>0) {
 			strb.append("\nYour metrics : ");
 			for (String metric_name : this.metrics.keySet()) {
-				strb.append("\n"+metric_name+" : "+this.metrics.get(metric_name));
+				Metric metric = this.metrics.get(metric_name);
+				strb.append("\n"+metric_name+" : "+ metric.getMeasure()+" "+metric.getUnit());
 			}
 		}
 		

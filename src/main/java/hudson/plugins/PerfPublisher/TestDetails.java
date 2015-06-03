@@ -3,6 +3,7 @@ package hudson.plugins.PerfPublisher;
 import hudson.model.AbstractBuild;
 import hudson.model.ModelObject;
 import hudson.model.Result;
+import hudson.plugins.PerfPublisher.Report.Metric;
 import hudson.plugins.PerfPublisher.Report.Test;
 import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 import hudson.util.ColorPalette;
@@ -193,7 +194,9 @@ public class TestDetails implements ModelObject {
 					for (int i = 0; i < action.getReports().getNumberOfTest(); i++) {
 						if (action.getReports().getTests().get(i).getName()
 								.equals(test.getName()) && action.getReports().getTests().get(i).getMetrics().containsKey(metric)) {
-							builder.add(action.getReports().getTests().get(i).getMetrics().get(metric),
+							Object metricByName = action.getReports().getTests().get(i).getMetrics().get(metric); // Object to avoid CCE for old persisted data
+							double measure = metricByName instanceof Metric ? ((Metric)metricByName).getMeasure() : ((Number)metricByName).doubleValue();
+							builder.add(measure,
 									getMetricsReversed().get(metric) , new NumberOnlyBuildLabel(
 											abstractBuild));
 						}
