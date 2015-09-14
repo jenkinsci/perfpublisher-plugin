@@ -1,24 +1,17 @@
 package hudson.plugins.PerfPublisher;
 
-import hudson.Launcher;
 import hudson.FilePath;
-import hudson.matrix.MatrixAggregatable;
-import hudson.matrix.MatrixAggregator;
-import hudson.matrix.MatrixBuild;
 import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
 import hudson.model.HealthReport;
-import hudson.model.Result;
 import hudson.model.HealthReportingAction;
+import hudson.model.Result;
 import hudson.plugins.PerfPublisher.Report.FileContainer;
 import hudson.plugins.PerfPublisher.Report.Report;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
 import hudson.plugins.PerfPublisher.Report.Test;
 import hudson.util.ColorPalette;
 import hudson.util.DataSetBuilder;
-import hudson.util.ShiftedCategoryAxis;
-import hudson.util.ChartUtil.NumberOnlyBuildLabel;
-
+import org.apache.commons.lang.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -26,44 +19,25 @@ import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PiePlot;
-import org.jfree.chart.plot.PiePlot3D;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PolarPlot;
 import org.jfree.chart.renderer.DefaultPolarItemRenderer;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.category.StatisticalBarRenderer;
-import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.statistics.DefaultStatisticalCategoryDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.RectangleInsets;
-import org.jfree.util.Rotation;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Paint;
-import java.io.File;
+import java.awt.*;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Array;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Action used for PerfPublisher report on build level.
@@ -553,8 +527,12 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		Object resultat = null;
 		if (link.startsWith("testDetails.")) {
 			String testName = StringUtils.substringAfter(link, "testDetails.");
-			resultat = new TestDetails(getOwner(), reports.getTestWithName(Test
-					.ResolveTestNameInUrl(testName)), metrics);
+			Test test = reports.getTestWithName(Test.ResolveTestNameInUrl(testName));
+			if (test == null) { // create empty test if requested test not found
+				test = new Test();
+				test.setName(testName);
+			}
+			resultat = new TestDetails(getOwner(), test, metrics);
 		} else if (link.startsWith("categoryDetails.")) {
 			int indiceCat = Integer.parseInt(StringUtils.substringAfter(link,
 					"categoryDetails."));
