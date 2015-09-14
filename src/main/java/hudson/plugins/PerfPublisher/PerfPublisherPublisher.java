@@ -1,16 +1,10 @@
 package hudson.plugins.PerfPublisher;
 
-import hudson.Launcher;
-import hudson.Extension;
 import hudson.FilePath;
+import hudson.Launcher;
 import hudson.Util;
-import hudson.matrix.MatrixAggregatable;
-import hudson.matrix.MatrixAggregator;
-import hudson.matrix.MatrixBuild;
-import hudson.matrix.MatrixConfiguration;
-import hudson.matrix.MatrixProject;
+import hudson.matrix.*;
 import hudson.model.*;
-import hudson.plugins.PerfPublisher.Report.ReportContainer;
 import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherFreestyleProjectAction;
 import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixConfigurationAction;
 import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixProjectAction;
@@ -19,27 +13,15 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.util.FormFieldValidator;
-
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.FileSet;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
+import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.ServletException;
+import java.util.*;
 
 /**
  * The publisher creates the results we want from the PerfPublisher execution.
@@ -123,7 +105,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
   }
 
   private Map<String, String> parseMetrics(String metricsString) { 
-    Map<String, String> list_metrics = new HashMap<String, String>();
+    Map<String, String> list_metrics = new LinkedHashMap<String, String>();
     //Parse the field to understand the metrics
     //Format : name=xmlfield;
     if (metricsString != null && metricsString.length() > 0) {

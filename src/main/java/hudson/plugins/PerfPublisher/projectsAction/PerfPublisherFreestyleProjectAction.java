@@ -28,7 +28,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,7 +60,7 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 	}
 	
 	public Map<String, String> getMetricsReversed() {
-	  Map<String, String> returnMap = new HashMap<String, String>();
+	  Map<String, String> returnMap = new LinkedHashMap<String, String>();
 	  for (String key : metrics.keySet()) {
 	    returnMap.put(metrics.get(key), key);
 	  }
