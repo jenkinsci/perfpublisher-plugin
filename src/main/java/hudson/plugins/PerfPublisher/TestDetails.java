@@ -183,6 +183,7 @@ public class TestDetails implements ModelObject {
 	
 	private JFreeChart createMetricGraph(String metric) {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+		String unit = null;
 		for (Object build : _owner.getProject().getBuilds()) {
 			AbstractBuild abstractBuild = (AbstractBuild) build;
 			if (!abstractBuild.isBuilding()
@@ -195,6 +196,8 @@ public class TestDetails implements ModelObject {
 						if (action.getReports().getTests().get(i).getName()
 								.equals(test.getName()) && action.getReports().getTests().get(i).getMetrics().containsKey(metric)) {
 							Object metricByName = action.getReports().getTests().get(i).getMetrics().get(metric); // Object to avoid CCE for old persisted data
+							if (metricByName instanceof Metric)
+								unit = ((Metric) metricByName).getUnit();
 							double measure = metricByName instanceof Metric ? ((Metric)metricByName).getMeasure() : ((Number)metricByName).doubleValue();
 							builder.add(measure,
 									getMetricsReversed().get(metric) , new NumberOnlyBuildLabel(
@@ -206,7 +209,7 @@ public class TestDetails implements ModelObject {
 		}
     
 		JFreeChart chart = ChartFactory.createLineChart3D(
-				getMetricsReversed().get(metric), "Build", "unit",
+				getMetricsReversed().get(metric), "Build", unit == null || unit.isEmpty() ? "unit" : unit,
 				builder.build(), PlotOrientation.VERTICAL, true, true, false);
 
 		chart.setBackgroundPaint(Color.WHITE);
