@@ -267,7 +267,9 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 									abstractBuild));
 					builder.add(reports.getBestValuePerMetrics().get(metric), "Best Performance",
 							new NumberOnlyBuildLabel(abstractBuild));
-					unit = reports.getUnitPerMetrics().get(metric);
+					if (reports.getUnitPerMetrics() != null) {
+						unit = reports.getUnitPerMetrics().get(metric);
+					}
 				}
 			}
 		}
