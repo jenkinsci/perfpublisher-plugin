@@ -34,6 +34,7 @@ public class ReportContainer {
 	private Map<String, Double> bestValuePerMetrics = new HashMap<String, Double>();
 	private Map<String, Double> worstValuePerMetrics = new HashMap<String, Double>();
 	private Map<String, Double> averageValuePerMetrics = new HashMap<String, Double>();
+	private Map<String, String> unitPerMetrics = new HashMap<String, String>();
 	private Map<String, Integer> nbValuePerMetric = new HashMap<String, Integer>();
 	
 	
@@ -392,10 +393,13 @@ public class ReportContainer {
 			for (int j = 0; j < getReports().get(i).getNumberOfExecutedTest(); j++) {
 				if (getReports().get(i).getExecutedTests().get(j).getMetrics()
 						.size() > 0) {
-					Map<String, Double> metric = getReports().get(i)
+					Map<String, Metric> metrics = getReports().get(i)
 							.getExecutedTests().get(j).getMetrics();
-					for (String name : metric.keySet()) {
-						double value = metric.get(name);
+					for (String name : metrics.keySet()) {
+						Metric metric = metrics.get(name);
+						if (!metric.isRelevant())
+							continue;
+						double value = metric.getMeasure();
 						// Compute best metric
 						if (!bestValuePerMetrics.containsKey(name)) {
 							bestValuePerMetrics.put(name, value);
@@ -421,6 +425,10 @@ public class ReportContainer {
 									averageValuePerMetrics.get(name) + value);
 							getNbValuePerMetric().put(name, getNbValuePerMetric()
 									.get(name) + 1);
+						}
+
+						if (unitPerMetrics.get(name) == null) {
+							unitPerMetrics.put(name, metric.getUnit());
 						}
 					}
 				}
@@ -774,6 +782,10 @@ public class ReportContainer {
 
 	public Map<String, Double> getAverageValuePerMetrics() {
 		return averageValuePerMetrics;
+	}
+
+	public Map<String, String> getUnitPerMetrics() {
+		return unitPerMetrics;
 	}
 
 	/**

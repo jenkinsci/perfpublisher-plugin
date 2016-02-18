@@ -28,7 +28,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,7 +60,7 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 	}
 	
 	public Map<String, String> getMetricsReversed() {
-	  Map<String, String> returnMap = new HashMap<String, String>();
+	  Map<String, String> returnMap = new LinkedHashMap<String, String>();
 	  for (String key : metrics.keySet()) {
 	    returnMap.put(metrics.get(key), key);
 	  }
@@ -248,6 +248,7 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 	}
 	
 	private JFreeChart createMetricGraph(String metric) {
+		String unit = null;
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 		for (Object build : project.getBuilds()) {
 			AbstractBuild abstractBuild = (AbstractBuild) build;
@@ -257,20 +258,24 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 				PerfPublisherBuildAction action = abstractBuild
 						.getAction(PerfPublisherBuildAction.class);
 				if (action!=null && action.getReports() != null) {
-					builder.add(action.getReports().getWorstValuePerMetrics().get(metric),
+					ReportContainer reports = action.getReports();
+					builder.add(reports.getWorstValuePerMetrics().get(metric),
 							"Worst Performance", new NumberOnlyBuildLabel(
 									abstractBuild));
-					builder.add(action.getReports().getAverageValuePerMetrics().get(metric),
+					builder.add(reports.getAverageValuePerMetrics().get(metric),
 							"Average Performance", new NumberOnlyBuildLabel(
 									abstractBuild));
-					builder.add(action.getReports().getBestValuePerMetrics().get(metric), "Best Performance",
+					builder.add(reports.getBestValuePerMetrics().get(metric), "Best Performance",
 							new NumberOnlyBuildLabel(abstractBuild));
+					if (reports.getUnitPerMetrics() != null) {
+						unit = reports.getUnitPerMetrics().get(metric);
+					}
 				}
 			}
 		}
     
 		JFreeChart chart = ChartFactory.createLineChart3D(
-				getMetricsReversed().get(metric), "Build", "unit",
+				getMetricsReversed().get(metric), "Build", unit == null || unit.isEmpty() ? "unit" : unit,
 				builder.build(), PlotOrientation.VERTICAL, true, true, false);
 
 		chart.setBackgroundPaint(Color.WHITE);
