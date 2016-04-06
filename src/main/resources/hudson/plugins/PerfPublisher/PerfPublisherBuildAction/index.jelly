@@ -313,12 +313,14 @@
                   <td align="right" data="${test.performance.measure}">${test.performance.measure} (${test.performance.unit})</td>
                 </j:if>
                 <j:forEach indexVar="metricNameIndex" var="metricName" items="${it.metricValues}">
-                  <j:forEach indexVar="index_measures" var="measure" items="${test.metrics}">
-                    <j:if test="${metricName == measure.key}">
-				      <td align="right" data="${measure.value.measure}">${measure.value}</td>
-				    </j:if>
-				  </j:forEach>
-         		</j:forEach>
+                  <j:set var="measure" value="${test.metrics[metricName]}"/>
+                  <j:if test="${not empty measure}">
+                    <td align="right" data="${measure.measure}">${measure}</td>
+                  </j:if>
+                  <j:if test="${empty measure}">
+                    <td align="center">-</td>
+                  </j:if>
+                </j:forEach>
               </tr>
           </j:forEach>
         </table>
