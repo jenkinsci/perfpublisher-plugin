@@ -81,7 +81,7 @@ public class TestDetails implements ModelObject {
 			String color = "white";
 			AbstractBuild abstractBuild = (AbstractBuild) build;
 						
-			if (!abstractBuild.isBuilding()	&& abstractBuild.getResult().isBetterOrEqualTo(Result.SUCCESS)) {				
+			if (!abstractBuild.isBuilding()	&& abstractBuild.getResult().isBetterOrEqualTo(Result.FAILURE)) {
 				PerfPublisherBuildAction action = abstractBuild.getAction(PerfPublisherBuildAction.class);
 				
 				if (action!=null && action.getReport() != null) {
