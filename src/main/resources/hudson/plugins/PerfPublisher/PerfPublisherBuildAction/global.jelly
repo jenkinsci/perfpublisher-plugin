@@ -190,21 +190,21 @@
 			      	<td align="center">-</td>
 			      </j:if>
 			      <j:if test="${test.compileTime.measure != '0.0'}">
-			      	<td align="right">${test.compileTime.measure} (${test.compileTime.unit})</td>
+			      	<td align="right" data="${test.compileTime.measure}">${test.compileTime.measure} (${test.compileTime.unit})</td>
 			      </j:if>
 			      
 			      <j:if test="${test.executionTime.measure == '0.0'}">
 			      	<td align="center">-</td>
 			      </j:if>
 			      <j:if test="${test.executionTime.measure != '0.0'}">
-			      	<td align="right">${test.executionTime.measure} (${test.executionTime.unit})</td>
+			      	<td align="right" data="${test.executionTime.measure}">${test.executionTime.measure} (${test.executionTime.unit})</td>
 			      </j:if>
 			      
 			      <j:if test="${test.performance.measure == '0.0'}">
 			      	<td align="center">-</td>
 			      </j:if>
 			      <j:if test="${test.performance.measure != '0.0'}">
-			      	<td align="right">${test.performance.measure} (${test.performance.unit})</td>
+			      	<td align="right" data="${test.performance.measure}">${test.performance.measure} (${test.performance.unit})</td>
 			      </j:if>	      	      
 	
 			     </tr>

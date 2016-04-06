@@ -267,8 +267,19 @@
          	</j:forEach>
           </tr>
           <j:forEach indexVar="index" var="test" items="${it.executedTests}">
-            <j:if test="${test.successfull == 'true'}">
-              <tr>
+              <j:choose>
+                 <j:when test="${test.hasTimedOut == 'true'}">
+                    <j:set var="row_style" value="background-color:yellow"/>
+                 </j:when>
+                 <j:when test="${test.hasNotTimedOutButHasFailed == 'true'}">
+                    <j:set var="row_style" value="background-color:#ef2929"/>
+                 </j:when>
+                 <j:otherwise>
+                    <j:set var="row_style" value=""/>
+                 </j:otherwise>
+              </j:choose>
+
+              <tr style="${row_style}">
                 <td align="left">
                   ${test.htmlDefinitionOfTargets}
                 </td>
@@ -287,115 +298,28 @@
                   <td align="center">-</td>
                 </j:if>
                 <j:if test="${test.compileTime.measure != '0.0'}">
-                  <td align="right">${test.compileTime.measure} (${test.compileTime.unit})</td>
+                  <td align="right" data="${test.compileTime.measure}">${test.compileTime.measure} (${test.compileTime.unit})</td>
                 </j:if>
                 <j:if test="${test.executionTime.measure == '0.0'}">
                   <td align="center">-</td>
                 </j:if>
                 <j:if test="${test.executionTime.measure != '0.0'}">
-                  <td align="right">${test.executionTime.measure} (${test.executionTime.unit})</td>
+                  <td align="right" data="${test.executionTime.measure}">${test.executionTime.measure} (${test.executionTime.unit})</td>
                 </j:if>
                 <j:if test="${test.performance.measure == '0.0'}">
                   <td align="center">-</td>
                 </j:if>
                 <j:if test="${test.performance.measure != '0.0'}">
-                  <td align="right">${test.performance.measure} (${test.performance.unit})</td>
+                  <td align="right" data="${test.performance.measure}">${test.performance.measure} (${test.performance.unit})</td>
                 </j:if>
                 <j:forEach indexVar="metricNameIndex" var="metricName" items="${it.metricValues}">
                   <j:forEach indexVar="index_measures" var="measure" items="${test.metrics}">
                     <j:if test="${metricName == measure.key}">
-				      <td align="right">${measure.value}</td>
+				      <td align="right" data="${measure.value.measure}">${measure.value}</td>
 				    </j:if>
 				  </j:forEach>
          		</j:forEach>
               </tr>
-            </j:if>
-            <j:if test="${test.hasTimedOut == 'true'}">
-              <tr style="background-color:yellow">
-                <td align="left">
-                  ${test.htmlDefinitionOfTargets}
-                </td>
-                <td align="left">
-                  <a class="info_bulle" href="testDetails.${test.nameForUrl}">${test.adaptedName}</a>
-                  <br />
-                  <small><i>${test.shortedMessage}</i></small>
-                </td>
-                <j:if test="${test.successfull == 'true'}">
-                  <td align="right">YES - ${test.success.state}%</td>
-                </j:if>
-                <j:if test="${test.successfull == 'false'}">
-                  <td align="right">NO - ${test.success.state}%</td>
-                </j:if>
-                <j:if test="${test.compileTime.measure == '0.0'}">
-                  <td align="center">-</td>
-                </j:if>
-                <j:if test="${test.compileTime.measure != '0.0'}">
-                  <td align="right">${test.compileTime.measure} (${test.compileTime.unit})</td>
-                </j:if>
-                <j:if test="${test.executionTime.measure == '0.0'}">
-                  <td align="center">-</td>
-                </j:if>
-                <j:if test="${test.executionTime.measure != '0.0'}">
-                  <td align="right">${test.executionTime.measure} (${test.executionTime.unit})</td>
-                </j:if>
-                <j:if test="${test.performance.measure == '0.0'}">
-                  <td align="center">-</td>
-                </j:if>
-                <j:if test="${test.performance.measure != '0.0'}">
-                  <td align="right">${test.performance.measure} (${test.performance.unit})</td>
-                </j:if>
-                <j:forEach indexVar="metricNameIndex" var="metricName" items="${it.metricValues}">
-                  <j:forEach indexVar="index_measures" var="measure" items="${test.metrics}">
-                    <j:if test="${metricName == measure.key}">
-				      <td align="right">${measure.value}</td>
-				    </j:if>
-				  </j:forEach>
-         		</j:forEach>
-              </tr>
-            </j:if>
-            <j:if test="${test.hasNotTimedOutButHasFailed == 'true'}">
-              <tr style="background-color:#ef2929">
-                <td align="left">
-                  ${test.htmlDefinitionOfTargets}
-                </td>
-                <td align="left">
-                  <a class="info_bulle" href="testDetails.${test.nameForUrl}">${test.adaptedName}</a>
-                  <br />
-                  <small><i>${test.shortedMessage}</i></small>
-                </td>
-                <j:if test="${test.successfull == 'true'}">
-                  <td align="right">YES - ${test.success.state}%</td>
-                </j:if>
-                <j:if test="${test.successfull == 'false'}">
-                  <td align="right">NO - ${test.success.state}%</td>
-                </j:if>
-                <j:if test="${test.compileTime.measure == '0.0'}">
-                  <td align="center">-</td>
-                </j:if>
-                <j:if test="${test.compileTime.measure != '0.0'}">
-                  <td align="right">${test.compileTime.measure} (${test.compileTime.unit})</td>
-                </j:if>
-                <j:if test="${test.executionTime.measure == '0.0'}">
-                  <td align="center">-</td>
-                </j:if>
-                <j:if test="${test.executionTime.measure != '0.0'}">
-                  <td align="right">${test.executionTime.measure} (${test.executionTime.unit})</td>
-                </j:if>
-                <j:if test="${test.performance.measure == '0.0'}">
-                  <td align="center">-</td>
-                </j:if>
-                <j:if test="${test.performance.measure != '0.0'}">
-                  <td align="right">${test.performance.measure} (${test.performance.unit})</td>
-                </j:if>
-                <j:forEach indexVar="metricNameIndex" var="metricName" items="${it.metricValues}">
-                  <j:forEach indexVar="index_measures" var="measure" items="${test.metrics}">
-                    <j:if test="${metricName == measure.key}">
-				      <td align="right">${measure.value}</td>
-				    </j:if>
-				  </j:forEach>
-         		</j:forEach>
-              </tr>
-            </j:if>
           </j:forEach>
         </table>
       </l:main-panel>
