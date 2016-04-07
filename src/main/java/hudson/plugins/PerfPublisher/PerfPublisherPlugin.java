@@ -1,9 +1,6 @@
 package hudson.plugins.PerfPublisher;
 
-import java.util.Date;
-
 import hudson.Plugin;
-import hudson.tasks.BuildStep;
 
 /**
  * Entry point for the PerfPublisher plugin.
@@ -21,10 +18,4 @@ public class PerfPublisherPlugin extends Plugin {
 	public static final String MATRIX_CONFIGURATION_DISPLAY_NAME = "Matrix configuration test report";
 	
 	public static final String URL = "PerfPublisher";
-	
-
-	@Override
-	public void start() throws Exception {
-		BuildStep.PUBLISHERS.addRecorder(PerfPublisherPublisher.DESCRIPTOR);
-	}
 }

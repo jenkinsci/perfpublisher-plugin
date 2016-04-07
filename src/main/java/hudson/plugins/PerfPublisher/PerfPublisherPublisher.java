@@ -1,5 +1,6 @@
 package hudson.plugins.PerfPublisher;
 
+import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
@@ -209,6 +210,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
     return null;
   }
 
+  @Extension
   public static final Descriptor<Publisher> DESCRIPTOR = new PerfPublisherDescriptor();
   /**
    * Descriptor for the PerfPublisher plugin
