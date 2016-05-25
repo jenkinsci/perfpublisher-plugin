@@ -427,8 +427,8 @@ public class ReportContainer {
 									.get(name) + 1);
 						}
 
-						if (unitPerMetrics.get(name) == null) {
-							unitPerMetrics.put(name, metric.getUnit());
+						if (metric.getUnit() != null) {
+							unitPerMetrics.put(name, metric.getUnit()); // use unit from latest report
 						}
 					}
 				}
