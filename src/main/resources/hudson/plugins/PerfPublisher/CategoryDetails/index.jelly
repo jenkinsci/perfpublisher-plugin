@@ -175,7 +175,7 @@
 				      	<td align="right" data="${test.performance.measure}">${test.performance.measure} (${test.performance.unit})</td>
 				      </j:if>	
 				      <j:forEach indexVar="metricNameIndex" var="metric" items="${it.metrics}">
-                <td align="right">${test.metrics.get(metric.value)}</td>
+                <td align="right" data="${test.metrics.get(metric.value).measure}">${test.metrics.get(metric.value)}</td>
          		  </j:forEach>
 				     </tr>
 			     </j:forEach>		      
