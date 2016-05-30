@@ -23,7 +23,7 @@
                     <j:set var="included" value="false" />
                     <j:forEach indexVar="measureValueIndex" var="metricMeasure" items="${it.averageValuePerMetrics}">
                       <j:if test="${metricKey == metricMeasure.key}">
-				        <td align="right">${metricMeasure.value}</td>
+				        <td align="right" data="${metricMeasure.value}">${metricMeasure.value}</td>
 				        <j:set var="included" value="true" />
 				      </j:if>
 				    </j:forEach>
