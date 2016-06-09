@@ -40,17 +40,16 @@
 	      vertical-align: middle; 
 	      text-align: center; 
 	      background-color: #608ec2; 
-	      line-height: 20px; 
 	      height: 20px;
 	      font-weight:bold;
 	      color:#FFFFFF;
-	      //font-size:50%;
 	 }
 
 	 div.success_graph>div#blue>a {
 	      font-weight:bold;
 	      color:#FFFFFF;
 	      font-size:50%;
+	      line-height: 20px;
 	 }
 	 
 	 
@@ -59,17 +58,16 @@
 	      vertical-align: middle; 
 	      text-align: center; 
 	      background-color: #ef2929; 
-	      line-height: 20px; 
 	      height: 20px;
 	      font-weight:bold;
 	      color:#FFFFFF;
-	      //font-size:50%;
 	 }
 
    div.success_graph>div#red>a {
         font-weight:bold;
         color:#FFFFFF;
         font-size:50%;
+        line-height: 20px;
    }
 
 	 div.success_graph>div#grey { 
