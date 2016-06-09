@@ -300,14 +300,12 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 			AbstractBuild abstractBuild = (AbstractBuild) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
-							Result.UNSTABLE)) {
+							Result.FAILURE)) {
 				PerfPublisherBuildAction ac = abstractBuild
 						.getAction(PerfPublisherBuildAction.class);
 				if (ac != null) {
-					strbuilder.append("<option value=\""
-							+ abstractBuild.getNumber() + "\"");
-					strbuilder.append(">" + abstractBuild.getNumber()
-							+ "</option>\n");
+					strbuilder.append("<option value=\"").append(abstractBuild.getNumber()).append("\"");
+					strbuilder.append(">").append(abstractBuild.getNumber()).append("</option>\n");
 				}
 			}
 		}
@@ -321,17 +319,15 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 			AbstractBuild abstractBuild = (AbstractBuild) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
-							Result.UNSTABLE)) {
+							Result.FAILURE)) {
 				PerfPublisherBuildAction ac = abstractBuild
 						.getAction(PerfPublisherBuildAction.class);
 				if (ac != null) {
-					strbuilder.append("<option value=\""
-							+ abstractBuild.getNumber() + "\"");
+					strbuilder.append("<option value=\"").append(abstractBuild.getNumber()).append("\"");
 					if (abstractBuild.getNumber() == this.build.getNumber()) {
 						strbuilder.append(" selected");
 					}
-					strbuilder.append(">" + abstractBuild.getNumber()
-							+ "</option>\n");
+					strbuilder.append(">").append(abstractBuild.getNumber()).append("</option>\n");
 				}
 			}
 		}
