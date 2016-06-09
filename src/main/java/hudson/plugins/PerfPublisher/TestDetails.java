@@ -23,6 +23,7 @@ import org.kohsuke.stapler.StaplerResponse;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,20 +65,19 @@ public class TestDetails implements ModelObject {
 		return test;
 	}
 
-	public String getSuccessGraph() {
-		String result = "";
-		Object ob_builds = (Object)_owner.getProject().getBuilds();		
+	public List<SuccessGraphBuild> getSuccessGraph() {
+		Object ob_builds = _owner.getProject().getBuilds();
 		List<Object> builds = (List<Object>) ob_builds;
-		
-		
-		
-		float taille_case = 100.0f/Math.min(builds.size(), 25);
+
+		int buildsCount = Math.min(builds.size(), 25);
+		List<SuccessGraphBuild> result = new ArrayList<SuccessGraphBuild>(buildsCount);
+
+		float taille_case = 100.0f/ buildsCount;
 		int total = 0;
 		int indice_build = 0;
 		
-		for (int j=0; j<Math.min(builds.size(), 25); j++) {
+		for (int j = 0; j< buildsCount; j++) {
 			Object build = builds.get(j);
-			String numberBuild = "#";
 			String color = "white";
 			AbstractBuild abstractBuild = (AbstractBuild) build;
 						
@@ -103,14 +103,13 @@ public class TestDetails implements ModelObject {
 				}
 			}
 			
-			numberBuild = "#"+abstractBuild.getNumber();
 			total +=taille_case;
 			
-			if (indice_build==Math.min(builds.size(), 25)-1 && total<100) {
+			if (indice_build== buildsCount-1 && total<100) {
 				taille_case +=100-total;
 			}
-			result+="<div id=\""+color+"\" style=\"width:"+taille_case+"%;\">"+numberBuild+"</div>";
-			
+			result.add(new SuccessGraphBuild(color, taille_case, abstractBuild.getNumber()));
+
 		}
 		return result;
 	}
@@ -360,4 +359,27 @@ public class TestDetails implements ModelObject {
 		return chart;
 	}
 
+	public static class SuccessGraphBuild {
+		private String color;
+		private float width;
+		private int number;
+
+		public SuccessGraphBuild(String color, float width, int number) {
+			this.color = color;
+			this.width = width;
+			this.number = number;
+		}
+
+		public String getColor() {
+			return color;
+		}
+
+		public float getWidth() {
+			return width;
+		}
+
+		public int getNumber() {
+			return number;
+		}
+	}
 }

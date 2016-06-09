@@ -44,7 +44,13 @@
 	      height: 20px;
 	      font-weight:bold;
 	      color:#FFFFFF;
-	      font-size:50%; 
+	      //font-size:50%;
+	 }
+
+	 div.success_graph>div#blue>a {
+	      font-weight:bold;
+	      color:#FFFFFF;
+	      font-size:50%;
 	 }
 	 
 	 
@@ -57,8 +63,15 @@
 	      height: 20px;
 	      font-weight:bold;
 	      color:#FFFFFF;
-	      font-size:50%; 
-	 } 
+	      //font-size:50%;
+	 }
+
+   div.success_graph>div#red>a {
+        font-weight:bold;
+        color:#FFFFFF;
+        font-size:50%;
+   }
+
 	 div.success_graph>div#grey { 
 	      float: left; 
 	      vertical-align: middle; 
