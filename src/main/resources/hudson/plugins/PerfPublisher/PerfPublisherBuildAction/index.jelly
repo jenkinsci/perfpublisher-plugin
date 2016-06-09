@@ -37,7 +37,7 @@
           ${it.reports.targetsGraphic}
         </div>
 
-        <br style="clear:left;"/>
+        <div>&#160;</div>
         <div class="content">
           <div class="left">
             <table>
