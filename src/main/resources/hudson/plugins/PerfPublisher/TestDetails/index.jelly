@@ -31,8 +31,9 @@
               </div>
           </j:forEach>
     </div>
-         <br style="clear:both;" />
+    <div>&#160;</div>
 
+    <j:if test="${!(it.test.ressources == null || it.test.ressources.isEmpty())}">
     <div class="cadre_bleu">
     <b>Resources associated :</b><br />
       <ul>
@@ -41,6 +42,8 @@
       </j:forEach>
       </ul>
     </div>
+    </j:if>
+
     <div class="cadre_orange">
       <b>Status :</b>
       <j:if test="${it.test.executed == 'true'}">
@@ -83,6 +86,7 @@
       </ul>
     </div>
 
+    <j:if test="${it.test.plateforme != null}">
     <div class="cadre_bleu">
       <strong>Platform name : ${it.test.plateforme.name}</strong>
       <br />
@@ -94,6 +98,8 @@
                  <li>Core ${core.coreid} : proc = ${core.proc}, physid = ${core.physid}</li>
                </j:forEach>
            </ul>
+
+           <j:if test="${!it.test.plateforme.hardwares.isEmpty()}">
            Hardware :
            <ul>
            <j:forEach var="hardware" items="${it.test.plateforme.hardwares}">
@@ -107,13 +113,20 @@
                   ]</li>
            </j:forEach>
            </ul>
+           </j:if>
+
+           <j:if test="${!it.test.plateforme.compilers.isEmpty()}">
            Compiler :
            <ul>
            <j:forEach var="compilateur" items="${it.test.plateforme.compilers}">
                  <li>Compilateur ${compilateur.name} [ ${compilateur.version} ] : ${compilateur.path}</li>
            </j:forEach>
            </ul>
+           </j:if>
     </div>
+    </j:if>
+
+    <j:if test="${!it.test.parameters.isEmpty()}">
     <div class="cadre_bleu">
       <b>Parameters</b>
       <ul>
@@ -122,6 +135,8 @@
            </j:forEach>
            </ul>
     </div>
+    </j:if>
+
     <j:forEach var="source" items="${it.test.sources}">
     <div class="cadre_bleu">
       <b>Source ${source.language} : ${source.path} ${source.comment}</b>
