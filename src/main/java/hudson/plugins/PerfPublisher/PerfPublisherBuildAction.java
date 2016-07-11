@@ -106,6 +106,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		 */
 		this.healthDescriptor = healthDescriptor;
 		this.metrics = metrics;
+		int failedTests = 0;
 		/**
 		 * Log the metrics
 		 */
@@ -139,12 +140,12 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 						+ current_report + ", file can't be read.");
 				build.setResult(Result.UNSTABLE);
 			}
-			if (healthDescriptor.getUnstableHealth() > 0
-					&& reports.getNumberOfFailedTest() > healthDescriptor
-							.getUnstableHealth()) {
-				build.setResult(Result.UNSTABLE);
-				logger.println("[PerfPublisher] Build status set to UNSTABLE (number of failed test greater than acceptable health level");
-			}
+			failedTests += reports.getNumberOfFailedTest();
+		}
+		if (healthDescriptor.getUnstableHealth() > 0
+				&& failedTests >= healthDescriptor.getUnstableHealth()) {
+			build.setResult(Result.UNSTABLE);
+			logger.println("[PerfPublisher] Build status set to UNSTABLE (number of failed test greater than acceptable health level");
 		}
 		/**
 		 * Insert name metrics
