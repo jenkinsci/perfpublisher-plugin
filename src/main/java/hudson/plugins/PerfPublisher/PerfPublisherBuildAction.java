@@ -106,20 +106,20 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		 */
 		this.healthDescriptor = healthDescriptor;
 		this.metrics = metrics;
+		int failedTests = 0;
 		/**
 		 * Log the metrics
 		 */
-		if (metrics.keySet().size()>0) {
+		if (metrics.keySet().size() > 0) {
 			logger.println("[PerfPublisher] The following metrics will be computed");
 		} else {
 			logger.println("[PerfPublisher] No metrics configured.");
 		}
 		for (String metric_name : metrics.keySet()) {
-			logger.println("[PerfPublisher] Metric : "+metric_name);
+			logger.println("[PerfPublisher] Metric : " + metric_name);
 		}
 
-		for (int i = 0; i < files.size(); i++) {
-			FilePath current_report = files.get(i);
+		for (FilePath current_report : files) {
 			URI is;
 			try {
 				is = current_report.toURI();
@@ -139,12 +139,13 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 						+ current_report + ", file can't be read.");
 				build.setResult(Result.UNSTABLE);
 			}
-			if (healthDescriptor.getUnstableHealth() > 0
-					&& reports.getNumberOfFailedTest() > healthDescriptor
-							.getUnstableHealth()) {
-				build.setResult(Result.UNSTABLE);
-				logger.println("[PerfPublisher] Build status set to UNSTABLE (number of failed test greater than acceptable health level");
-			}
+			failedTests += reports.getNumberOfFailedTest();
+		}
+
+		if (healthDescriptor.getUnstableHealth() >= 0
+				&& failedTests > healthDescriptor.getUnstableHealth()) {
+			build.setResult(Result.UNSTABLE);
+			logger.println("[PerfPublisher] Build status set to UNSTABLE (number of failed test greater than acceptable health level");
 		}
 		/**
 		 * Insert name metrics
@@ -221,8 +222,8 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 			logger.println("[PerfPublisher]  - Lowest value : "+getReports().getWorstValuePerMetrics().get(this.metrics.get(metric_name)));
 			logger.println("[PerfPublisher]  - Average value : "+getReports().getAverageValuePerMetrics().get(this.metrics.get(metric_name)));
 		}
-		
-		
+
+
 		logger
 				.println("[PerfPublisher] [--------------------------------------------------]");
 	}
@@ -251,28 +252,28 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	}
 	public String getHtmlTableHeaderForMetrics() {
 		StringBuilder strb = new StringBuilder();
-		for (String name : this.getReports().getMetricsName().keySet()) {	
+		for (String name : this.getReports().getMetricsName().keySet()) {
 			strb.append("<td class=\"pane-header\" title=\""+name+"\">"+name+"</td>");
 		}
 		return strb.toString();
 	}
-	
+
 	public Set<String> getMetricNames() {
 	  return this.getReports().getMetricsName().keySet();
 	}
-	
+
 	public Collection<String> getMetricValues() {
 	  return this.getReports().getMetricsName().values();
 	}
-	
+
 	public String getHtmlMetricTable() {
 		StringBuilder strb = new StringBuilder();
-		
-		for (String name : this.getReports().getMetricsName().keySet()) {	
-		strb.append("<tr>\n"); 
+
+		for (String name : this.getReports().getMetricsName().keySet()) {
+		strb.append("<tr>\n");
   		strb.append("<td style=\"text-align:left;\">"+name+"</td>\n");
   		strb.append("<td>"+this.getReports().getNbValuePerMetric().get(this.getReports().getMetricsName().get(name))+"</td>\n");
-  		strb.append("<td>"+this.getReports().getAverageValuePerMetrics().get(this.getReports().getMetricsName().get(name))+"</td>\n"); 
+  		strb.append("<td>"+this.getReports().getAverageValuePerMetrics().get(this.getReports().getMetricsName().get(name))+"</td>\n");
   		strb.append("<td>");
   		//Compute trend evolution of the metric
       	if (getTrendReport().containsMetrics(this.getReports().getMetricsName().get(name))) {
@@ -284,8 +285,8 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
       			strb.append("<img src=\"/plugin/perfpublisher/icons/arrow_stable_black.gif\" alt=\"STABLE\" />");
       		}
       	}
-  		
-  		
+
+
   		strb.append("</td>");
 		}
 		return strb.toString();
@@ -401,7 +402,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 			throws IOException {
 		ChartUtil.generateGraph(request, response, createPolarGraph(), 250, 250);
 	}
-	
+
 	private JFreeChart createPolarGraph() {
 		XYSeries s1=new XYSeries("a");
 		//Add the number of executed test to Y axis
@@ -412,7 +413,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	    s1.add(180, this.getAverageOfExecutionTime());
 	    //Add the compile time to the -X axis
 		s1.add(270, this.getAverageOfCompileTime());
-	   
+
 	    XYSeriesCollection data=new XYSeriesCollection();
 	    data.addSeries(s1);
 	    XYDataset dataset=data;
@@ -423,8 +424,8 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	    final PolarPlot plot = (PolarPlot) chart.getPlot();
         final DefaultPolarItemRenderer renderer = (DefaultPolarItemRenderer) plot.getRenderer();
         renderer.setSeriesFilled(0, true);
-	    
-	    
+
+
 	    return chart;
 	}
 
@@ -508,7 +509,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 
 	/**
 	 * Returns the dynamic result
-	 * 
+	 *
 	 * @param link
 	 *            the link to identify the sub page to show
 	 * @param request
@@ -642,7 +643,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 
 	/**
 	 * Returns the healthDescriptor.
-	 * 
+	 *
 	 * @return the healthDescriptor
 	 */
 	public HealthDescriptor getHealthDescriptor() {
@@ -651,7 +652,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 
 	/**
 	 * Returns the associated health report builder.
-	 * 
+	 *
 	 * @return the associated health report builder
 	 */
 	public final HealthReportBuilder getHealthReportBuilder() {

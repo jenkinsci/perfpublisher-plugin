@@ -146,7 +146,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
     try {
       hl.setUnstableHealth(Integer.parseInt(threshold));
     } catch (java.lang.NumberFormatException e) {
-      hl.setUnstableHealth(0);
+      hl.setUnstableHealth(-1);
     }
 
     /**

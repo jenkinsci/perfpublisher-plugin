@@ -13,7 +13,7 @@ public class HealthDescriptor {
 		this.maxHealth = 0;
 		this.minHealth = 0;
 		this.HealthAnalyse = false;
-		this.unstableHealth = 0;
+		this.unstableHealth = -1;
 	}
 
 	/**
@@ -71,8 +71,4 @@ public class HealthDescriptor {
 	public void setUnstableHealth(int unstableHealth) {
 		this.unstableHealth = unstableHealth;
 	}
-	
-	
-	
-	
 }
