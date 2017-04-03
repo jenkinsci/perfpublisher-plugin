@@ -3,6 +3,7 @@ package hudson.plugins.PerfPublisher;
 import hudson.model.AbstractBuild;
 import hudson.model.ModelObject;
 import hudson.model.Result;
+import hudson.model.Run;
 import hudson.plugins.PerfPublisher.Report.Metric;
 import hudson.plugins.PerfPublisher.Report.Test;
 import hudson.util.ChartUtil.NumberOnlyBuildLabel;
@@ -30,356 +31,361 @@ import java.util.Map;
 
 public class TestDetails implements ModelObject {
 
-	private final Test test;
-	private final AbstractBuild<?, ?> _owner;
-	private final Map<String, String> metrics;
+    private final Test test;
+    private final Run<?, ?> _owner;
+    private final Map<String, String> metrics;
 
-	public TestDetails(final AbstractBuild<?, ?> owner, Test test, Map<String, String> metrics) {
+    public TestDetails(final Run<?, ?> owner, Test test, Map<String, String> metrics) {
 
-		this.test = test;
-		this._owner = owner;
-		this.metrics = metrics;
-	}
+        this.test = test;
+        this._owner = owner;
+        this.metrics = metrics;
+    }
 
-	public AbstractBuild<?, ?> getOwner() {
-		return _owner;
-	}
+    public Run<?, ?> getOwner() {
+        return _owner;
+    }
 
-	public String getDisplayName() {
-		return "Details of test " + test.getName();
-	}
-	
-	public Map<String, String> getMetrics() {
-	  return metrics;
-	}
-	
-	public Map<String, String> getMetricsReversed() {
-	  Map<String, String> returnMap = new HashMap<String, String>();
-	  for (String key : metrics.keySet()) {
-	    returnMap.put(metrics.get(key), key);
-	  }
-	  return returnMap;
-	}
+    public String getDisplayName() {
+        return "Details of test " + test.getName();
+    }
 
-	public Test getTest() {
-		return test;
-	}
+    public Map<String, String> getMetrics() {
+        return metrics;
+    }
 
-	public List<SuccessGraphBuild> getSuccessGraph() {
-		Object ob_builds = _owner.getProject().getBuilds();
-		List<Object> builds = (List<Object>) ob_builds;
+    public Map<String, String> getMetricsReversed() {
+        Map<String, String> returnMap = new HashMap<String, String>();
+        for (String key : metrics.keySet()) {
+            returnMap.put(metrics.get(key), key);
+        }
+        return returnMap;
+    }
 
-		int buildsCount = Math.min(builds.size(), 25);
-		List<SuccessGraphBuild> result = new ArrayList<SuccessGraphBuild>(buildsCount);
+    public Test getTest() {
+        return test;
+    }
 
-		float taille_case = 100.0f/ buildsCount;
-		int total = 0;
-		int indice_build = 0;
-		
-		for (int j = 0; j< buildsCount; j++) {
-			Object build = builds.get(j);
-			String color = "white";
-			AbstractBuild abstractBuild = (AbstractBuild) build;
-						
-			if (!abstractBuild.isBuilding()	&& abstractBuild.getResult().isBetterOrEqualTo(Result.FAILURE)) {
-				PerfPublisherBuildAction action = abstractBuild.getAction(PerfPublisherBuildAction.class);
-				
-				if (action!=null && action.getReport() != null) {
-					Test prev_test = action.getReports().getTestWithName(this.test.getName());
-					if (prev_test!=null) {
-						
-						if (!prev_test.isExecuted()) {
-							color="orange";
-						} else {
-							if (prev_test.isSuccessfull() && prev_test.isExecuted()) {
-								color="blue";
-							} else {
-								color="red";
-							}
-						}						
-					} else {
-						color = "grey";
-					}
-				}
-			}
-			
-			total +=taille_case;
-			
-			if (indice_build== buildsCount-1 && total<100) {
-				taille_case +=100-total;
-			}
-			result.add(new SuccessGraphBuild(color, taille_case, abstractBuild.getNumber()));
+    public List<SuccessGraphBuild> getSuccessGraph() {
+        Object ob_builds = getBuilds();
+        List<Object> builds = (List<Object>) ob_builds;
 
-		}
-		return result;
-	}
-	
-	public void doPerformanceGraph(StaplerRequest request,
-			StaplerResponse response) throws IOException {
-		ChartUtil.generateGraph(request, response, createPerformanceGraph(),
-				800, 250);
-		
-	}
+        int buildsCount = Math.min(builds.size(), 25);
+        List<SuccessGraphBuild> result = new ArrayList<SuccessGraphBuild>(buildsCount);
 
-	private JFreeChart createPerformanceGraph() {
-		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+        float taille_case = 100.0f / buildsCount;
+        int total = 0;
+        int indice_build = 0;
 
-		for (Object build : _owner.getProject().getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
-			if (!abstractBuild.isBuilding()
-					&& abstractBuild.getResult().isBetterOrEqualTo(
-							Result.SUCCESS)) {
-				PerfPublisherBuildAction action = abstractBuild
-						.getAction(PerfPublisherBuildAction.class);
-				if (action!=null && action.getReport() != null) {
-					for (int i = 0; i < action.getReports().getNumberOfTest(); i++) {
-						if (action.getReports().getTests().get(i).getName()
-								.equals(test.getName()) && action.getReports().getTests().get(i).isPerformance()) {
-							builder.add(action.getReports().getTests().get(i)
-									.getPerformance().getMeasure(),
-									"Performance", new NumberOnlyBuildLabel(
-											abstractBuild));
-						}
-					}
-				}
-			}
-		}
-		JFreeChart chart = ChartFactory.createLineChart3D(
-				"Evolution of Performance", "Build", "Performance", builder
-						.build(), PlotOrientation.VERTICAL, true, true, false);
+        for (int j = 0; j < buildsCount; j++) {
+            Object build = builds.get(j);
+            String color = "white";
+            Run abstractBuild = (Run) build;
 
-		chart.setBackgroundPaint(Color.WHITE);
+            if (!abstractBuild.isBuilding() && abstractBuild.getResult().isBetterOrEqualTo(Result.FAILURE)) {
+                PerfPublisherBuildAction action = abstractBuild.getAction(PerfPublisherBuildAction.class);
 
-		CategoryPlot plot = chart.getCategoryPlot();
-		plot.setBackgroundPaint(Color.WHITE);
-		plot.setOutlinePaint(null);
-		plot.setForegroundAlpha(0.4f);
-		plot.setRangeGridlinesVisible(true);
-		plot.setRangeGridlinePaint(Color.black);
+                if (action != null && action.getReport() != null) {
+                    Test prev_test = action.getReports().getTestWithName(this.test.getName());
+                    if (prev_test != null) {
 
-		CategoryAxis domainAxis = new ShiftedCategoryAxis(null);
-		plot.setDomainAxis(domainAxis);
-		domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
-		domainAxis.setLowerMargin(0.0);
-		domainAxis.setUpperMargin(0.0);
-		domainAxis.setCategoryMargin(0.0);
+                        if (!prev_test.isExecuted()) {
+                            color = "orange";
+                        } else {
+                            if (prev_test.isSuccessfull() && prev_test.isExecuted()) {
+                                color = "blue";
+                            } else {
+                                color = "red";
+                            }
+                        }
+                    } else {
+                        color = "grey";
+                    }
+                }
+            }
 
-		CategoryItemRenderer renderer = plot.getRenderer();
-		renderer.setSeriesPaint(0, ColorPalette.BLUE);
-		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+            total += taille_case;
 
-		// crop extra space around the graph
-		plot.setInsets(new RectangleInsets(0, 0, 0, 5.0));
+            if (indice_build == buildsCount - 1 && total < 100) {
+                taille_case += 100 - total;
+            }
+            result.add(new SuccessGraphBuild(color, taille_case, abstractBuild.getNumber()));
 
-		return chart;
-	}
-	
-	public void doMetrics(StaplerRequest request,
-			StaplerResponse response) throws IOException {
+        }
+        return result;
+    }
+
+    private List<Object> getBuilds() {
+//        return _owner.getProject().getBuilds();
+        return null;
+    }
+
+    public void doPerformanceGraph(StaplerRequest request,
+                                   StaplerResponse response) throws IOException {
+        ChartUtil.generateGraph(request, response, createPerformanceGraph(),
+                800, 250);
+
+    }
+
+    private JFreeChart createPerformanceGraph() {
+        DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+
+        for (Object build : getBuilds()) {
+            Run abstractBuild = (Run) build;
+            if (!abstractBuild.isBuilding()
+                    && abstractBuild.getResult().isBetterOrEqualTo(
+                    Result.SUCCESS)) {
+                PerfPublisherBuildAction action = abstractBuild
+                        .getAction(PerfPublisherBuildAction.class);
+                if (action != null && action.getReport() != null) {
+                    for (int i = 0; i < action.getReports().getNumberOfTest(); i++) {
+                        if (action.getReports().getTests().get(i).getName()
+                                .equals(test.getName()) && action.getReports().getTests().get(i).isPerformance()) {
+                            builder.add(action.getReports().getTests().get(i)
+                                            .getPerformance().getMeasure(),
+                                    "Performance", new NumberOnlyBuildLabel(
+                                            (Run<?, ?>) abstractBuild));
+                        }
+                    }
+                }
+            }
+        }
+        JFreeChart chart = ChartFactory.createLineChart3D(
+                "Evolution of Performance", "Build", "Performance", builder
+                        .build(), PlotOrientation.VERTICAL, true, true, false);
+
+        chart.setBackgroundPaint(Color.WHITE);
+
+        CategoryPlot plot = chart.getCategoryPlot();
+        plot.setBackgroundPaint(Color.WHITE);
+        plot.setOutlinePaint(null);
+        plot.setForegroundAlpha(0.4f);
+        plot.setRangeGridlinesVisible(true);
+        plot.setRangeGridlinePaint(Color.black);
+
+        CategoryAxis domainAxis = new ShiftedCategoryAxis(null);
+        plot.setDomainAxis(domainAxis);
+        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+        domainAxis.setLowerMargin(0.0);
+        domainAxis.setUpperMargin(0.0);
+        domainAxis.setCategoryMargin(0.0);
+
+        CategoryItemRenderer renderer = plot.getRenderer();
+        renderer.setSeriesPaint(0, ColorPalette.BLUE);
+        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+
+        // crop extra space around the graph
+        plot.setInsets(new RectangleInsets(0, 0, 0, 5.0));
+
+        return chart;
+    }
+
+    public void doMetrics(StaplerRequest request,
+                          StaplerResponse response) throws IOException {
         ChartUtil.generateGraph(request, response, createMetricGraph(request.getRestOfPath().substring(1)), 800, 250);
-	}
-	
-	private JFreeChart createMetricGraph(String metric) {
-		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
-		String unit = null;
-		for (Object build : _owner.getProject().getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
-			if (!abstractBuild.isBuilding()
-					&& abstractBuild.getResult().isBetterOrEqualTo(
-							Result.UNSTABLE)) {
-				PerfPublisherBuildAction action = abstractBuild
-						.getAction(PerfPublisherBuildAction.class);
-				if (action!=null && action.getReports() != null) {
-					for (int i = 0; i < action.getReports().getNumberOfTest(); i++) {
-						if (action.getReports().getTests().get(i).getName()
-								.equals(test.getName()) && action.getReports().getTests().get(i).getMetrics().containsKey(metric)) {
-							Object metricByName = action.getReports().getTests().get(i).getMetrics().get(metric); // Object to avoid CCE for old persisted data
-							if (metricByName instanceof Metric)
-								unit = ((Metric) metricByName).getUnit();
-							double measure = metricByName instanceof Metric ? ((Metric)metricByName).getMeasure() : ((Number)metricByName).doubleValue();
-							builder.add(measure,
-									getMetricsReversed().get(metric) , new NumberOnlyBuildLabel(
-											abstractBuild));
-						}
-					}
-				}
-			}
-		}
-    
-		JFreeChart chart = ChartFactory.createLineChart3D(
-				getMetricsReversed().get(metric), "Build", unit == null || unit.isEmpty() ? "unit" : unit,
-				builder.build(), PlotOrientation.VERTICAL, true, true, false);
+    }
 
-		chart.setBackgroundPaint(Color.WHITE);
+    private JFreeChart createMetricGraph(String metric) {
+        DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+        String unit = null;
+        for (Object build : getBuilds()) {
+            Run abstractBuild = (Run) build;
+            if (!abstractBuild.isBuilding()
+                    && abstractBuild.getResult().isBetterOrEqualTo(
+                    Result.UNSTABLE)) {
+                PerfPublisherBuildAction action = abstractBuild
+                        .getAction(PerfPublisherBuildAction.class);
+                if (action != null && action.getReports() != null) {
+                    for (int i = 0; i < action.getReports().getNumberOfTest(); i++) {
+                        if (action.getReports().getTests().get(i).getName()
+                                .equals(test.getName()) && action.getReports().getTests().get(i).getMetrics().containsKey(metric)) {
+                            Object metricByName = action.getReports().getTests().get(i).getMetrics().get(metric); // Object to avoid CCE for old persisted data
+                            if (metricByName instanceof Metric)
+                                unit = ((Metric) metricByName).getUnit();
+                            double measure = metricByName instanceof Metric ? ((Metric) metricByName).getMeasure() : ((Number) metricByName).doubleValue();
+                            builder.add(measure,
+                                    getMetricsReversed().get(metric), new NumberOnlyBuildLabel(
+                                            (Run<?, ?>) abstractBuild));
+                        }
+                    }
+                }
+            }
+        }
 
-		CategoryPlot plot = chart.getCategoryPlot();
-		plot.setBackgroundPaint(Color.WHITE);
-		plot.setOutlinePaint(null);
-		plot.setForegroundAlpha(0.4f);
-		plot.setRangeGridlinesVisible(true);
-		plot.setRangeGridlinePaint(Color.black);
+        JFreeChart chart = ChartFactory.createLineChart3D(
+                getMetricsReversed().get(metric), "Build", unit == null || unit.isEmpty() ? "unit" : unit,
+                builder.build(), PlotOrientation.VERTICAL, true, true, false);
 
-		CategoryAxis domainAxis = new ShiftedCategoryAxis(null);
-		plot.setDomainAxis(domainAxis);
-		domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
-		domainAxis.setLowerMargin(0.0);
-		domainAxis.setUpperMargin(0.0);
-		domainAxis.setCategoryMargin(0.0);
+        chart.setBackgroundPaint(Color.WHITE);
 
-		CategoryItemRenderer renderer = plot.getRenderer();
-		renderer.setSeriesPaint(0, ColorPalette.BLUE);
-		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        CategoryPlot plot = chart.getCategoryPlot();
+        plot.setBackgroundPaint(Color.WHITE);
+        plot.setOutlinePaint(null);
+        plot.setForegroundAlpha(0.4f);
+        plot.setRangeGridlinesVisible(true);
+        plot.setRangeGridlinePaint(Color.black);
 
-		// crop extra space around the graph
-		plot.setInsets(new RectangleInsets(0, 0, 0, 5.0));
+        CategoryAxis domainAxis = new ShiftedCategoryAxis(null);
+        plot.setDomainAxis(domainAxis);
+        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+        domainAxis.setLowerMargin(0.0);
+        domainAxis.setUpperMargin(0.0);
+        domainAxis.setCategoryMargin(0.0);
 
-		return chart;
-	}
+        CategoryItemRenderer renderer = plot.getRenderer();
+        renderer.setSeriesPaint(0, ColorPalette.BLUE);
+        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 
-  public void doExecutionTimeGraph(StaplerRequest request,
-			StaplerResponse response) throws IOException {
-		ChartUtil.generateGraph(request, response, createExecutionTimeGraph(),
-				800, 250);
-	}
+        // crop extra space around the graph
+        plot.setInsets(new RectangleInsets(0, 0, 0, 5.0));
 
-	private JFreeChart createExecutionTimeGraph() {
-		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+        return chart;
+    }
 
-		for (Object build : _owner.getProject().getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
-			if (!abstractBuild.isBuilding()
-					&& abstractBuild.getResult().isBetterOrEqualTo(
-							Result.SUCCESS)) {
-				PerfPublisherBuildAction action = abstractBuild
-						.getAction(PerfPublisherBuildAction.class);
-				if (action!=null && action.getReport() != null) {
-					for (int i = 0; i < action.getReports().getNumberOfTest(); i++) {
-						if (action.getReports().getTests().get(i).getName()
-								.equals(test.getName()) && action.getReports().getTests().get(i).isExecutionTime()) {
-							builder.add(action.getReports().getTests().get(i)
-									.getExecutionTime().getMeasure(),
-									"Execution Time", new NumberOnlyBuildLabel(
-											abstractBuild));
-						}
-					}
-				}
-			}
-		}
-		JFreeChart chart = ChartFactory.createLineChart3D(
-				"Evolution of Execution Time", "Build", "Execution time", builder
-						.build(), PlotOrientation.VERTICAL, true, true, false);
+    public void doExecutionTimeGraph(StaplerRequest request,
+                                     StaplerResponse response) throws IOException {
+        ChartUtil.generateGraph(request, response, createExecutionTimeGraph(),
+                800, 250);
+    }
 
-		chart.setBackgroundPaint(Color.WHITE);
+    private JFreeChart createExecutionTimeGraph() {
+        DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
-		CategoryPlot plot = chart.getCategoryPlot();
-		plot.setBackgroundPaint(Color.WHITE);
-		plot.setOutlinePaint(null);
-		plot.setForegroundAlpha(0.4f);
-		plot.setRangeGridlinesVisible(true);
-		plot.setRangeGridlinePaint(Color.black);
+        for (Object build : getBuilds()) {
+            Run abstractBuild = (Run) build;
+            if (!abstractBuild.isBuilding()
+                    && abstractBuild.getResult().isBetterOrEqualTo(
+                    Result.SUCCESS)) {
+                PerfPublisherBuildAction action = abstractBuild
+                        .getAction(PerfPublisherBuildAction.class);
+                if (action != null && action.getReport() != null) {
+                    for (int i = 0; i < action.getReports().getNumberOfTest(); i++) {
+                        if (action.getReports().getTests().get(i).getName()
+                                .equals(test.getName()) && action.getReports().getTests().get(i).isExecutionTime()) {
+                            builder.add(action.getReports().getTests().get(i)
+                                            .getExecutionTime().getMeasure(),
+                                    "Execution Time", new NumberOnlyBuildLabel(
+                                            (Run<?, ?>) abstractBuild));
+                        }
+                    }
+                }
+            }
+        }
+        JFreeChart chart = ChartFactory.createLineChart3D(
+                "Evolution of Execution Time", "Build", "Execution time", builder
+                        .build(), PlotOrientation.VERTICAL, true, true, false);
 
-		CategoryAxis domainAxis = new ShiftedCategoryAxis(null);
-		plot.setDomainAxis(domainAxis);
-		domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
-		domainAxis.setLowerMargin(0.0);
-		domainAxis.setUpperMargin(0.0);
-		domainAxis.setCategoryMargin(0.0);
+        chart.setBackgroundPaint(Color.WHITE);
 
-		CategoryItemRenderer renderer = plot.getRenderer();
-		renderer.setSeriesPaint(0, ColorPalette.BLUE);
-		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        CategoryPlot plot = chart.getCategoryPlot();
+        plot.setBackgroundPaint(Color.WHITE);
+        plot.setOutlinePaint(null);
+        plot.setForegroundAlpha(0.4f);
+        plot.setRangeGridlinesVisible(true);
+        plot.setRangeGridlinePaint(Color.black);
 
-		// crop extra space around the graph
-		plot.setInsets(new RectangleInsets(0, 0, 0, 5.0));
+        CategoryAxis domainAxis = new ShiftedCategoryAxis(null);
+        plot.setDomainAxis(domainAxis);
+        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+        domainAxis.setLowerMargin(0.0);
+        domainAxis.setUpperMargin(0.0);
+        domainAxis.setCategoryMargin(0.0);
 
-		return chart;
-	}
-	
-	
-	public void doCompileTimeGraph(StaplerRequest request,
-			StaplerResponse response) throws IOException {
-		ChartUtil.generateGraph(request, response, createCompileTimeGraph(),
-				800, 250);
-	}
+        CategoryItemRenderer renderer = plot.getRenderer();
+        renderer.setSeriesPaint(0, ColorPalette.BLUE);
+        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 
-	private JFreeChart createCompileTimeGraph() {
-		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+        // crop extra space around the graph
+        plot.setInsets(new RectangleInsets(0, 0, 0, 5.0));
 
-		for (Object build : _owner.getProject().getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
-			if (!abstractBuild.isBuilding()
-					&& abstractBuild.getResult().isBetterOrEqualTo(
-							Result.SUCCESS)) {
-				PerfPublisherBuildAction action = abstractBuild
-						.getAction(PerfPublisherBuildAction.class);
-				if (action!=null && action.getReport() != null) {
-					for (int i = 0; i < action.getReports().getNumberOfTest(); i++) {
-						if (action.getReports().getTests().get(i).getName()
-								.equals(test.getName()) && action.getReports().getTests().get(i).isCompileTime()) {
-							builder.add(action.getReports().getTests().get(i)
-									.getCompileTime().getMeasure(),
-									"Compile Time", new NumberOnlyBuildLabel(
-											abstractBuild));
-						}
-					}
-				}
-			}
-		}
-		JFreeChart chart = ChartFactory.createLineChart3D(
-				"Evolution of Compile Time", "Build", "Compile time", builder
-						.build(), PlotOrientation.VERTICAL, true, true, false);
+        return chart;
+    }
 
-		chart.setBackgroundPaint(Color.WHITE);
 
-		CategoryPlot plot = chart.getCategoryPlot();
-		plot.setBackgroundPaint(Color.WHITE);
-		plot.setOutlinePaint(null);
-		plot.setForegroundAlpha(0.4f);
-		plot.setRangeGridlinesVisible(true);
-		plot.setRangeGridlinePaint(Color.black);
+    public void doCompileTimeGraph(StaplerRequest request,
+                                   StaplerResponse response) throws IOException {
+        ChartUtil.generateGraph(request, response, createCompileTimeGraph(),
+                800, 250);
+    }
 
-		CategoryAxis domainAxis = new ShiftedCategoryAxis(null);
-		plot.setDomainAxis(domainAxis);
-		domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
-		domainAxis.setLowerMargin(0.0);
-		domainAxis.setUpperMargin(0.0);
-		domainAxis.setCategoryMargin(0.0);
+    private JFreeChart createCompileTimeGraph() {
+        DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
-		CategoryItemRenderer renderer = plot.getRenderer();
-		renderer.setSeriesPaint(0, ColorPalette.BLUE);
-		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        for (Object build : getBuilds()) {
+            Run abstractBuild = (Run) build;
+            if (!abstractBuild.isBuilding()
+                    && abstractBuild.getResult().isBetterOrEqualTo(
+                    Result.SUCCESS)) {
+                PerfPublisherBuildAction action = abstractBuild
+                        .getAction(PerfPublisherBuildAction.class);
+                if (action != null && action.getReport() != null) {
+                    for (int i = 0; i < action.getReports().getNumberOfTest(); i++) {
+                        if (action.getReports().getTests().get(i).getName()
+                                .equals(test.getName()) && action.getReports().getTests().get(i).isCompileTime()) {
+                            builder.add(action.getReports().getTests().get(i)
+                                            .getCompileTime().getMeasure(),
+                                    "Compile Time", new NumberOnlyBuildLabel(
+                                            (Run<?, ?>) abstractBuild));
+                        }
+                    }
+                }
+            }
+        }
+        JFreeChart chart = ChartFactory.createLineChart3D(
+                "Evolution of Compile Time", "Build", "Compile time", builder
+                        .build(), PlotOrientation.VERTICAL, true, true, false);
 
-		// crop extra space around the graph
-		plot.setInsets(new RectangleInsets(0, 0, 0, 5.0));
+        chart.setBackgroundPaint(Color.WHITE);
 
-		return chart;
-	}
+        CategoryPlot plot = chart.getCategoryPlot();
+        plot.setBackgroundPaint(Color.WHITE);
+        plot.setOutlinePaint(null);
+        plot.setForegroundAlpha(0.4f);
+        plot.setRangeGridlinesVisible(true);
+        plot.setRangeGridlinePaint(Color.black);
 
-	public static class SuccessGraphBuild {
-		private String color;
-		private float width;
-		private int number;
+        CategoryAxis domainAxis = new ShiftedCategoryAxis(null);
+        plot.setDomainAxis(domainAxis);
+        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+        domainAxis.setLowerMargin(0.0);
+        domainAxis.setUpperMargin(0.0);
+        domainAxis.setCategoryMargin(0.0);
 
-		public SuccessGraphBuild(String color, float width, int number) {
-			this.color = color;
-			this.width = width;
-			this.number = number;
-		}
+        CategoryItemRenderer renderer = plot.getRenderer();
+        renderer.setSeriesPaint(0, ColorPalette.BLUE);
+        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 
-		public String getColor() {
-			return color;
-		}
+        // crop extra space around the graph
+        plot.setInsets(new RectangleInsets(0, 0, 0, 5.0));
 
-		public float getWidth() {
-			return width;
-		}
+        return chart;
+    }
 
-		public int getNumber() {
-			return number;
-		}
-	}
+    public static class SuccessGraphBuild {
+        private String color;
+        private float width;
+        private int number;
+
+        public SuccessGraphBuild(String color, float width, int number) {
+            this.color = color;
+            this.width = width;
+            this.number = number;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public float getWidth() {
+            return width;
+        }
+
+        public int getNumber() {
+            return number;
+        }
+    }
 }

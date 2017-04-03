@@ -42,8 +42,7 @@ public class ChartUtil extends hudson.util.ChartUtil {
                 for (int i = 0; i < rows; i++) {
                     for (int j = 0; j < cols; j++) {
                         Number value = categoryDataset.getValue(i, j);
-                        if (value != null && value.doubleValue() != 0 && !Double.isNaN(value.doubleValue()))
-                        {
+                        if (value != null && value.doubleValue() != 0 && !Double.isNaN(value.doubleValue())) {
                             nonEmptyFound = true;
                             break loop;
                         }
@@ -61,15 +60,15 @@ public class ChartUtil extends hudson.util.ChartUtil {
 
     }
 
-    private static void generateEmptyImage(StaplerRequest req, StaplerResponse rsp) throws IOException{
-        if(!req.checkIfModified(-1, rsp)) {
+    private static void generateEmptyImage(StaplerRequest req, StaplerResponse rsp) throws IOException {
+        if (!req.checkIfModified(-1, rsp)) {
             try {
                 rsp.setContentType("image/png");
                 ServletOutputStream os = rsp.getOutputStream();
                 ImageIO.write(EMPTY_IMAGE, "PNG", os);
                 os.close();
             } catch (Error error) {
-                if(error.getMessage().contains("Probable fatal error:No fonts found")) {
+                if (error.getMessage().contains("Probable fatal error:No fonts found")) {
                     rsp.sendRedirect2(req.getContextPath() + "/images/headless.png");
                     return;
                 }

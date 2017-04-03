@@ -6,11 +6,11 @@ package hudson.plugins.PerfPublisher;
  * @author Georges Bossert
  */
 public class PerfPublisherParseException extends RuntimeException {
-   public PerfPublisherParseException(String msg, Exception e) {
-      super(msg, e);
-   }
+    public PerfPublisherParseException(String msg, Exception e) {
+        super(msg, e);
+    }
 
-   public PerfPublisherParseException(String msg) {
-      super(msg);
-   }
+    public PerfPublisherParseException(String msg) {
+        super(msg);
+    }
 }
