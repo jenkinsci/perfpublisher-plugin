@@ -1,6 +1,5 @@
 package hudson.plugins.PerfPublisher;
 
-import hudson.model.AbstractBuild;
 import hudson.model.ModelObject;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -9,6 +8,7 @@ import hudson.plugins.PerfPublisher.Report.Test;
 import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 import hudson.util.ColorPalette;
 import hudson.util.DataSetBuilder;
+import hudson.util.RunList;
 import hudson.util.ShiftedCategoryAxis;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -115,9 +115,8 @@ public class TestDetails implements ModelObject {
         return result;
     }
 
-    private List<Object> getBuilds() {
-//        return _owner.getProject().getBuilds();
-        return null;
+    private RunList<?> getBuilds() {
+        return _owner.getParent().getBuilds();
     }
 
     public void doPerformanceGraph(StaplerRequest request,

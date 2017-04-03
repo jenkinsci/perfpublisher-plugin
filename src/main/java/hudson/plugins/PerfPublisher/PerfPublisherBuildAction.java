@@ -8,6 +8,7 @@ import hudson.plugins.PerfPublisher.Report.ReportContainer;
 import hudson.plugins.PerfPublisher.Report.Test;
 import hudson.util.ColorPalette;
 import hudson.util.DataSetBuilder;
+import hudson.util.RunList;
 import org.apache.commons.lang.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -28,6 +29,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.xmlpull.v1.builder.Iterable;
 
 import java.awt.*;
 import java.io.IOException;
@@ -316,9 +318,8 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
         return strbuilder.toString();
     }
 
-    private List<Run> getBuilds() {
-//        return this.build.getProject().getBuilds();
-        return null;
+    private RunList<?> getBuilds() {
+        return this.build.getParent().getBuilds();
     }
 
     public String getHtmlListOfBuildsInOptionsWithSelected() {
@@ -642,9 +643,8 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
         return resultat;
     }
 
-    private Run getBuildByNumber(int nb_build1) {
-//        return build.getProject().getBuildByNumber(nb_build1);
-        return null;
+    private Run getBuildByNumber(int nb_build) {
+        return getOwner().getParent().getBuildByNumber( nb_build );
     }
 
     /**

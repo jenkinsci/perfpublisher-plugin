@@ -405,8 +405,7 @@ public class ReportsDiff implements ModelObject {
     }
 
     private static Run getBuildByNumber(Run<?, ?> _owner, int nb_build) {
-//        return _owner.getProject().getBuildByNumber(nb_build);
-        return null;
+        return _owner.getParent().getBuildByNumber( nb_build );
     }
 
     public Run<?, ?> getOwner() {
