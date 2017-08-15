@@ -1,1 +1,7 @@
 target
+work
+
+.settings
+.classpath
+.metadata
+.project
