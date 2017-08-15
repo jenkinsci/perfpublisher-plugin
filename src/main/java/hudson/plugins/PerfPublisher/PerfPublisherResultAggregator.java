@@ -23,34 +23,34 @@ import hudson.plugins.PerfPublisher.Report.ReportContainer;
 
 public class PerfPublisherResultAggregator extends MatrixAggregator {
 
-	MatrixTestReportAction result;
-	
-	public PerfPublisherResultAggregator(MatrixBuild build, Launcher launcher,
-			BuildListener listener) {
-		super(build, launcher, listener);
-	}
+    MatrixTestReportAction result;
 
-	public boolean startBuild() throws InterruptedException, IOException {
-		result = new MatrixTestReportAction(build);
-		build.addAction(result);
-		return true;
-	}
-	
+    public PerfPublisherResultAggregator(MatrixBuild build, Launcher launcher,
+                                         BuildListener listener) {
+        super(build, launcher, listener);
+    }
 
-	public boolean endRun(MatrixRun run) throws InterruptedException,
-			IOException {
-		Map<String, String> buildVariables = run.getBuildVariables();
-				
-		PerfPublisherBuildAction buildAction = run.getAction(PerfPublisherBuildAction.class);
-		if (buildAction!=null) {
-			result.addSubBuildResult(buildAction.getReports(), buildVariables);
-		}
-		return true;
-	}
-	
-	public boolean endBuild() throws InterruptedException, IOException {
-		result.computeStats();
-		return true;
+    public boolean startBuild() throws InterruptedException, IOException {
+        result = new MatrixTestReportAction(build);
+        build.addAction(result);
+        return true;
+    }
+
+
+    public boolean endRun(MatrixRun run) throws InterruptedException,
+            IOException {
+        Map<String, String> buildVariables = run.getBuildVariables();
+
+        PerfPublisherBuildAction buildAction = run.getAction(PerfPublisherBuildAction.class);
+        if (buildAction != null) {
+            result.addSubBuildResult(buildAction.getReports(), buildVariables);
+        }
+        return true;
+    }
+
+    public boolean endBuild() throws InterruptedException, IOException {
+        result.computeStats();
+        return true;
     }
 
 }

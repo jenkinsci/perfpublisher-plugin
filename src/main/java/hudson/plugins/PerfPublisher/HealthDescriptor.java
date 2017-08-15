@@ -2,73 +2,73 @@ package hudson.plugins.PerfPublisher;
 
 public class HealthDescriptor {
 
-	private int minHealth;
-	private int maxHealth;
-	
-	private boolean HealthAnalyse;
-	
-	private int unstableHealth;
-	
-	public HealthDescriptor() {
-		this.maxHealth = 0;
-		this.minHealth = 0;
-		this.HealthAnalyse = false;
-		this.unstableHealth = -1;
-	}
+    private int minHealth;
+    private int maxHealth;
 
-	/**
-	 * @return the minHealth
-	 */
-	public int getMinHealth() {
-		return minHealth;
-	}
+    private boolean HealthAnalyse;
 
-	/**
-	 * @param minHealth the minHealth to set
-	 */
-	public void setMinHealth(int minHealth) {
-		this.minHealth = minHealth;
-	}
+    private int unstableHealth;
 
-	/**
-	 * @return the maxHealth
-	 */
-	public int getMaxHealth() {
-		return maxHealth;
-	}
+    public HealthDescriptor() {
+        this.maxHealth = 0;
+        this.minHealth = 0;
+        this.HealthAnalyse = false;
+        this.unstableHealth = -1;
+    }
 
-	/**
-	 * @param maxHealth the maxHealth to set
-	 */
-	public void setMaxHealth(int maxHealth) {
-		this.maxHealth = maxHealth;
-	}
+    /**
+     * @return the minHealth
+     */
+    public int getMinHealth() {
+        return minHealth;
+    }
 
-	/**
-	 * @return the healthAnalyse
-	 */
-	public boolean isHealthAnalyse() {
-		return HealthAnalyse;
-	}
+    /**
+     * @param minHealth the minHealth to set
+     */
+    public void setMinHealth(int minHealth) {
+        this.minHealth = minHealth;
+    }
 
-	/**
-	 * @param healthAnalyse the healthAnalyse to set
-	 */
-	public void setHealthAnalyse(boolean healthAnalyse) {
-		HealthAnalyse = healthAnalyse;
-	}
+    /**
+     * @return the maxHealth
+     */
+    public int getMaxHealth() {
+        return maxHealth;
+    }
 
-	/**
-	 * @return the unstableHealth
-	 */
-	public int getUnstableHealth() {
-		return unstableHealth;
-	}
+    /**
+     * @param maxHealth the maxHealth to set
+     */
+    public void setMaxHealth(int maxHealth) {
+        this.maxHealth = maxHealth;
+    }
 
-	/**
-	 * @param unstableHealth the unstableHealth to set
-	 */
-	public void setUnstableHealth(int unstableHealth) {
-		this.unstableHealth = unstableHealth;
-	}
+    /**
+     * @return the healthAnalyse
+     */
+    public boolean isHealthAnalyse() {
+        return HealthAnalyse;
+    }
+
+    /**
+     * @param healthAnalyse the healthAnalyse to set
+     */
+    public void setHealthAnalyse(boolean healthAnalyse) {
+        HealthAnalyse = healthAnalyse;
+    }
+
+    /**
+     * @return the unstableHealth
+     */
+    public int getUnstableHealth() {
+        return unstableHealth;
+    }
+
+    /**
+     * @param unstableHealth the unstableHealth to set
+     */
+    public void setUnstableHealth(int unstableHealth) {
+        this.unstableHealth = unstableHealth;
+    }
 }

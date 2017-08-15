@@ -13,19 +13,19 @@ import java.io.IOException;
  * @author Georges Bossert <georges.bossert@caps-entreprise.com>
  */
 public class AbstractPerfPublisherAction implements Action {
-   public String getIconFileName() {
-      return PerfPublisherPlugin.ICON_FILE_NAME;
-   }
+    public String getIconFileName() {
+        return PerfPublisherPlugin.ICON_FILE_NAME;
+    }
 
-   public String getDisplayName() {
-      return PerfPublisherPlugin.DISPLAY_NAME;
-   }
+    public String getDisplayName() {
+        return PerfPublisherPlugin.DISPLAY_NAME;
+    }
 
-   public String getUrlName() {
-      return PerfPublisherPlugin.URL;
-   }
+    public String getUrlName() {
+        return PerfPublisherPlugin.URL;
+    }
 
-   protected boolean shouldReloadGraph(StaplerRequest request, StaplerResponse response, Run build) throws IOException {
-      return !request.checkIfModified(build.getTimestamp(), response);
-   }
+    protected boolean shouldReloadGraph(StaplerRequest request, StaplerResponse response, Run build) throws IOException {
+        return !request.checkIfModified(build.getTimestamp(), response);
+    }
 }

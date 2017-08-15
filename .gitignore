@@ -5,3 +5,6 @@ work
 .classpath
 .metadata
 .project
+
+.idea/
+perfpublisher.iml
