@@ -12,10 +12,16 @@ import hudson.plugins.PerfPublisher.Report.ReportContainer;
  */
 public final class ResultSummary {
     /**
+     * Instantiates a new result summary.
+     */
+    private ResultSummary() {
+        // prevents instantiation
+    }
+
+    /**
      * Returns the message to show as the result summary.
      *
-     * @param result
-     *            the result
+     * @param result the result
      * @return the message
      */
     public static String createSummary(final ReportContainer result) {
@@ -28,24 +34,14 @@ public final class ResultSummary {
         }
         if (numberOfTests == 1) {
             summary.append("1 test");
-        }
-        else {
-            summary.append(numberOfTests+" tests evaluated");
+        } else {
+            summary.append(numberOfTests + " tests evaluated");
         }
         if (numberOfTests > 0) {
             summary.append("</a>");
         }
         summary.append(" ");
         return summary.toString();
-    }
-
-    
-
-    /**
-     * Instantiates a new result summary.
-     */
-    private ResultSummary() {
-        // prevents instantiation
     }
 }
 

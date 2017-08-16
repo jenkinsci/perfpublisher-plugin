@@ -1,61 +1,41 @@
 package hudson.plugins.PerfPublisher;
 
-import java.awt.Color;
 import java.util.Map;
-import java.io.IOException;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.ui.RectangleInsets;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import hudson.model.Run;
 
 import hudson.model.ModelObject;
-import hudson.model.AbstractBuild;
-import hudson.model.Result;
 import hudson.plugins.PerfPublisher.Report.Report;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
-import hudson.plugins.PerfPublisher.Report.Test;
-import hudson.util.ChartUtil;
-import hudson.util.ColorPalette;
-import hudson.util.DataSetBuilder;
-import hudson.util.ShiftedCategoryAxis;
-import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 
 public class FilesDetails implements ModelObject {
 
-	private final ReportContainer report;
-	private final AbstractBuild<?, ?> _owner;
-	private final Map<String, String> metrics;
+    private final ReportContainer report;
+    private final Run<?, ?> _owner;
+    private final Map<String, String> metrics;
 
-	public FilesDetails(final AbstractBuild<?, ?> owner, Report rep, Map<String, String> metrics) {
+    public FilesDetails(final Run<?, ?> owner, Report rep, Map<String, String> metrics) {
 
-		report = new ReportContainer();
-		report.addReport(rep);
-		this._owner = owner;
-		this.metrics = metrics;
-	}
+        report = new ReportContainer();
+        report.addReport(rep);
+        this._owner = owner;
+        this.metrics = metrics;
+    }
 
-	public Map<String, String> getMetrics() {
-		return metrics;
-	}
-	
-	public AbstractBuild<?, ?> getOwner() {
-		return _owner;
-	}
+    public Map<String, String> getMetrics() {
+        return metrics;
+    }
 
-	public String getDisplayName() {
-		return "Details...";
-	}
+    public Run<?, ?> getOwner() {
+        return _owner;
+    }
 
-	public ReportContainer getReport() {
-		return report;
-	}
+    public String getDisplayName() {
+        return "Details...";
+    }
+
+    public ReportContainer getReport() {
+        return report;
+    }
 
 }
