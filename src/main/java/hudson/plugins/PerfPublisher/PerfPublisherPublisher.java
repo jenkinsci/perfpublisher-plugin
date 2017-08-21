@@ -14,6 +14,8 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.util.FormFieldValidator;
+
+import org.jenkinsci.remoting.RoleChecker;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -251,5 +253,10 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
       FilePath[] r = new FilePath(f).list(reportFilePath);
       return r;
     }
+
+	@Override
+	public void checkRoles(RoleChecker checker) throws SecurityException {
+		// Do nothing.
+	}
   }
 }

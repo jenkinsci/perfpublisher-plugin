@@ -4,6 +4,7 @@ import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixProject;
 import hudson.model.AbstractBuild;
 import hudson.model.Result;
+import hudson.model.Run;
 import hudson.plugins.PerfPublisher.*;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
 import hudson.plugins.PerfPublisher.matrixBuild.PerfPublisherMatrixBuild;
@@ -452,7 +453,7 @@ public class PerfPublisherMatrixProjectAction extends
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {

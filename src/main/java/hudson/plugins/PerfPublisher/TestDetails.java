@@ -3,6 +3,7 @@ package hudson.plugins.PerfPublisher;
 import hudson.model.AbstractBuild;
 import hudson.model.ModelObject;
 import hudson.model.Result;
+import hudson.model.Run;
 import hudson.plugins.PerfPublisher.Report.Metric;
 import hudson.plugins.PerfPublisher.Report.Test;
 import hudson.util.ChartUtil.NumberOnlyBuildLabel;
@@ -79,7 +80,7 @@ public class TestDetails implements ModelObject {
 		for (int j = 0; j< buildsCount; j++) {
 			Object build = builds.get(j);
 			String color = "white";
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 						
 			if (!abstractBuild.isBuilding()	&& abstractBuild.getResult().isBetterOrEqualTo(Result.FAILURE)) {
 				PerfPublisherBuildAction action = abstractBuild.getAction(PerfPublisherBuildAction.class);
@@ -125,7 +126,7 @@ public class TestDetails implements ModelObject {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : _owner.getProject().getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.SUCCESS)) {
@@ -184,7 +185,7 @@ public class TestDetails implements ModelObject {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 		String unit = null;
 		for (Object build : _owner.getProject().getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
@@ -248,7 +249,7 @@ public class TestDetails implements ModelObject {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : _owner.getProject().getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.SUCCESS)) {
@@ -309,7 +310,7 @@ public class TestDetails implements ModelObject {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : _owner.getProject().getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.SUCCESS)) {
