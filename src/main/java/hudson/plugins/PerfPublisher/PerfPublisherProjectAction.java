@@ -1,9 +1,8 @@
 package hudson.plugins.PerfPublisher;
 
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.Project;
 import hudson.model.Result;
-import hudson.model.Run;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
 import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 import hudson.util.ColorPalette;
@@ -47,7 +46,7 @@ public class PerfPublisherProjectAction extends AbstractPerfPublisherAction {
 
 	public ReportContainer getReports() {
 		Object ob = getProject().getLastSuccessfulBuild();
-		AbstractBuild build = (AbstractBuild) ob;
+		Run<?,?> build = (Run<?,?>) ob;
 		if (build != null) {
 			PerfPublisherBuildAction ac = build
 					.getAction(PerfPublisherBuildAction.class);

@@ -1,6 +1,6 @@
 package hudson.plugins.PerfPublisher.projectsAction;
 
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.FreeStyleProject;
 import hudson.model.Project;
 import hudson.model.Result;
@@ -78,7 +78,7 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 
 	public ReportContainer getReports() {
 		Object ob = getProject().getLastSuccessfulBuild();
-		AbstractBuild build = (AbstractBuild) ob;
+		Run<?,?> build = (Run<?,?>) ob;
 		if (build != null) {
 			PerfPublisherBuildAction ac = build
 					.getAction(PerfPublisherBuildAction.class);

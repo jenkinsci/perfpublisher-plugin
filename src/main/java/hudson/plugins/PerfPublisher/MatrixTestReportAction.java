@@ -16,7 +16,7 @@ import org.apache.commons.lang.text.StrBuilder;
 import hudson.matrix.AxisList;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixProject;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.Action;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
 import hudson.plugins.PerfPublisher.Report.Test;

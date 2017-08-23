@@ -1,6 +1,6 @@
 package hudson.plugins.PerfPublisher;
 
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.ModelObject;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -32,17 +32,17 @@ import java.util.Map;
 public class TestDetails implements ModelObject {
 
 	private final Test test;
-	private final AbstractBuild<?, ?> _owner;
+	private final Run<?, ?> _owner;
 	private final Map<String, String> metrics;
 
-	public TestDetails(final AbstractBuild<?, ?> owner, Test test, Map<String, String> metrics) {
+	public TestDetails(final Run<?, ?> owner, Test test, Map<String, String> metrics) {
 
 		this.test = test;
 		this._owner = owner;
 		this.metrics = metrics;
 	}
 
-	public AbstractBuild<?, ?> getOwner() {
+	public Run<?, ?> getOwner() {
 		return _owner;
 	}
 
@@ -67,7 +67,7 @@ public class TestDetails implements ModelObject {
 	}
 
 	public List<SuccessGraphBuild> getSuccessGraph() {
-		Object ob_builds = _owner.getProject().getBuilds();
+		Object ob_builds = _owner.getParent().getBuilds();
 		List<Object> builds = (List<Object>) ob_builds;
 
 		int buildsCount = Math.min(builds.size(), 25);
@@ -125,7 +125,7 @@ public class TestDetails implements ModelObject {
 	private JFreeChart createPerformanceGraph() {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
-		for (Object build : _owner.getProject().getBuilds()) {
+		for (Object build : _owner.getParent().getBuilds()) {
 			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
@@ -184,7 +184,7 @@ public class TestDetails implements ModelObject {
 	private JFreeChart createMetricGraph(String metric) {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 		String unit = null;
-		for (Object build : _owner.getProject().getBuilds()) {
+		for (Object build : _owner.getParent().getBuilds()) {
 			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
@@ -248,7 +248,7 @@ public class TestDetails implements ModelObject {
 	private JFreeChart createExecutionTimeGraph() {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
-		for (Object build : _owner.getProject().getBuilds()) {
+		for (Object build : _owner.getParent().getBuilds()) {
 			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
@@ -309,7 +309,7 @@ public class TestDetails implements ModelObject {
 	private JFreeChart createCompileTimeGraph() {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
-		for (Object build : _owner.getProject().getBuilds()) {
+		for (Object build : _owner.getParent().getBuilds()) {
 			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(

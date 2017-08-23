@@ -2,7 +2,7 @@ package hudson.plugins.PerfPublisher.projectsAction;
 
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixProject;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.plugins.PerfPublisher.*;
@@ -96,7 +96,7 @@ public class PerfPublisherMatrixProjectAction extends
 	 */
 	public ReportContainer getReports() {
 		Object ob = getProject().getLastSuccessfulBuild();
-		AbstractBuild build = (AbstractBuild) ob;
+		Run<?,?> build = (Run<?,?>) ob;
 		if (build != null) {
 			PerfPublisherBuildAction ac = build
 					.getAction(PerfPublisherBuildAction.class);
