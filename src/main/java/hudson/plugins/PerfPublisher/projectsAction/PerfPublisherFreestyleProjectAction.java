@@ -2,6 +2,7 @@ package hudson.plugins.PerfPublisher.projectsAction;
 
 import hudson.model.Run;
 import hudson.model.FreeStyleProject;
+import hudson.model.Job;
 import hudson.model.Project;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -40,10 +41,10 @@ import java.util.Set;
  */
 public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAction {
 
-	private final Project project;
-  private final Map<String, String> metrics;
+	private final Job<?,?> project;
+    private final Map<String, String> metrics;
 
-	public PerfPublisherFreestyleProjectAction(FreeStyleProject project, Map<String, String> metrics) {
+	public PerfPublisherFreestyleProjectAction(Job<?,?> project, Map<String, String> metrics) {
 		this.project = project;
 		this.metrics = metrics;
 	}
@@ -72,7 +73,7 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 		return PerfPublisherPlugin.GENERAL_DISPLAY_NAME;
 	}
 
-	public Project getProject() {
+	public Job<?,?> getProject() {
 		return project;
 	}
 
