@@ -22,7 +22,6 @@ import hudson.util.DataSetBuilder;
 import jenkins.tasks.SimpleBuildStep.LastBuildAction;
 
 import org.apache.commons.lang.StringUtils;
-import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
