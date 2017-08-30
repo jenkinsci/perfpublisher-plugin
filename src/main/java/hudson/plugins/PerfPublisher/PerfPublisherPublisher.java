@@ -16,6 +16,7 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormFieldValidator;
 
+import org.jenkinsci.Symbol;
 import org.jenkinsci.remoting.RoleChecker;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -205,6 +206,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
    * @author gbossert
    *
    */
+  @Symbol("perfpublisher")
   public static final class PerfPublisherDescriptor extends BuildStepDescriptor<Publisher> {
     protected PerfPublisherDescriptor() {
       super(PerfPublisherPublisher.class);
