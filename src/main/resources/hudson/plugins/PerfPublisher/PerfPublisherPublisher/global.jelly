@@ -1,3 +1,2 @@
-<?jelly escape-by-default='true'?>
 <!-- default configuration page. Nothing to configure -->
 <j:jelly xmlns:j="jelly:core"/>
