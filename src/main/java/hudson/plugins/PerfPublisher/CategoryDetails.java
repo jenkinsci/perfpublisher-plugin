@@ -17,7 +17,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import hudson.model.ModelObject;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.Result;
 import hudson.plugins.PerfPublisher.Report.Report;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
@@ -31,10 +31,10 @@ import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 public class CategoryDetails implements ModelObject {
 
 	private final ReportContainer report;
-	private final AbstractBuild<?, ?> _owner;
+	private final Run<?, ?> _owner;
 	private final Map<String, String> metrics;
 
-	public CategoryDetails(final AbstractBuild<?, ?> owner, Report rep, Map<String, String> metrics) {
+	public CategoryDetails(final Run<?, ?> owner, Report rep, Map<String, String> metrics) {
 
 		report = new ReportContainer();
 		report.addReport(rep);
@@ -46,7 +46,7 @@ public class CategoryDetails implements ModelObject {
 		return metrics;
 	}
 
-	public AbstractBuild<?, ?> getOwner() {
+	public Run<?, ?> getOwner() {
 		return _owner;
 	}
 

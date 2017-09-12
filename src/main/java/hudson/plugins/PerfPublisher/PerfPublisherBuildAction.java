@@ -1,16 +1,26 @@
 package hudson.plugins.PerfPublisher;
 
 import hudson.FilePath;
-import hudson.model.AbstractBuild;
+import hudson.matrix.MatrixConfiguration;
+import hudson.matrix.MatrixProject;
+import hudson.model.Action;
+import hudson.model.FreeStyleProject;
 import hudson.model.HealthReport;
 import hudson.model.HealthReportingAction;
+import hudson.model.Job;
 import hudson.model.Result;
+import hudson.model.Run;
 import hudson.plugins.PerfPublisher.Report.FileContainer;
 import hudson.plugins.PerfPublisher.Report.Report;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
 import hudson.plugins.PerfPublisher.Report.Test;
+import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherFreestyleProjectAction;
+import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixConfigurationAction;
+import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixProjectAction;
 import hudson.util.ColorPalette;
 import hudson.util.DataSetBuilder;
+import jenkins.tasks.SimpleBuildStep.LastBuildAction;
+
 import org.apache.commons.lang.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -45,9 +55,9 @@ import java.util.List;
  * @author Georges Bossert
  */
 public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
-		implements HealthReportingAction {
+		implements HealthReportingAction, LastBuildAction {
 
-	private final AbstractBuild<?, ?> build;
+	private final Run<?, ?> build;
 	private Report report;
 	private ReportContainer reports = new ReportContainer();
 	private FileContainer reportsFiles = new FileContainer();
@@ -88,15 +98,15 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 * 
 	 * @return the owner
 	 */
-	public final AbstractBuild<?, ?> getOwner() {
+	public final Run<?, ?> getOwner() {
 		return build;
 	}
-
+	
 	public String getDisplayName() {
 		return PerfPublisherPlugin.BUILD_DISPLAY_NAME;
 	}
 
-	public PerfPublisherBuildAction(AbstractBuild<?, ?> build,
+	public PerfPublisherBuildAction(Run<?, ?> build,
 			ArrayList<FilePath> files, PrintStream logger,
 			HealthDescriptor healthDescriptor, Map<String, String> metrics) {
 		this.build = build;
@@ -235,7 +245,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 		return this.executedTests;
 	}
 
-	public AbstractBuild<?, ?> getBuild() {
+	public Run<?, ?> getBuild() {
 		return build;
 	}
 
@@ -297,8 +307,8 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	 */
 	public String getHtmlListOfBuildsInOptions() {
 		StringBuilder strbuilder = new StringBuilder();
-		for (Object build : this.build.getProject().getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+		for (Object build : this.build.getParent().getBuilds()) {
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.FAILURE)) {
@@ -316,8 +326,8 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 
 	public String getHtmlListOfBuildsInOptionsWithSelected() {
 		StringBuilder strbuilder = new StringBuilder();
-		for (Object build : this.build.getProject().getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+		for (Object build : this.build.getParent().getBuilds()) {
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.FAILURE)) {
@@ -441,7 +451,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 
 	private TrendReport computeTrendReport() {
 		Object ob = build.getPreviousNotFailedBuild();
-		AbstractBuild build = (AbstractBuild) ob;
+		Run<?,?> build = (Run<?,?>) ob;
 		if (build != null) {
 			PerfPublisherBuildAction ac = build
 					.getAction(PerfPublisherBuildAction.class);
@@ -598,14 +608,14 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 				int nb_build1 = 0;
 				int nb_build2 = 0;
 				int nb_build3 = 0;
-				AbstractBuild build1 = null;
-				AbstractBuild build2 = null;
-				AbstractBuild build3 = null;
+				Run<?,?> build1 = null;
+				Run<?,?> build2 = null;
+				Run<?,?> build3 = null;
 				ReportContainer report1 = null, report2 = null, report3 = null;
 				if (!request.getParameter("build1").equals("none")) {
 					nb_build1 = Integer
 							.parseInt(request.getParameter("build1"));
-					build1 = build.getProject().getBuildByNumber(nb_build1);
+					build1 = build.getParent().getBuildByNumber(nb_build1);
 					PerfPublisherBuildAction ac = build1
 							.getAction(PerfPublisherBuildAction.class);
 					if (ac != null) {
@@ -615,7 +625,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 				if (!request.getParameter("build2").equals("none")) {
 					nb_build2 = Integer
 							.parseInt(request.getParameter("build2"));
-					build2 = build.getProject().getBuildByNumber(nb_build2);
+					build2 = build.getParent().getBuildByNumber(nb_build2);
 					PerfPublisherBuildAction ac2 = build2
 							.getAction(PerfPublisherBuildAction.class);
 					if (ac2 != null) {
@@ -625,7 +635,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 				if (!request.getParameter("build3").equals("none")) {
 					nb_build3 = Integer
 							.parseInt(request.getParameter("build3"));
-					build3 = build.getProject().getBuildByNumber(nb_build3);
+					build3 = build.getParent().getBuildByNumber(nb_build3);
 					PerfPublisherBuildAction ac3 = build3
 							.getAction(PerfPublisherBuildAction.class);
 					if (ac3 != null) {
@@ -919,6 +929,20 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 					.getPercentOfExecutionStatusChangedTests();
 		}
 		return this.percentOfExecutionStatusChangedTests;
+	}
+
+	@Override
+	public Collection<? extends Action> getProjectActions() {
+		Job<?,?> job = this.build.getParent();
+	    if (job instanceof MatrixProject) {
+	        return Collections.singleton(new PerfPublisherMatrixProjectAction((MatrixProject)job, metrics));
+	      }else if (job instanceof MatrixConfiguration) {
+	        return Collections.singleton(new PerfPublisherMatrixConfigurationAction((MatrixConfiguration) job));
+	      }else if (job instanceof FreeStyleProject) {
+	        return Collections.singleton(new PerfPublisherFreestyleProjectAction((FreeStyleProject)job, metrics));
+	      }
+	    // WorkflowJob will come here, but others could too. Let's keep it generic.
+		return Collections.singleton(new PerfPublisherFreestyleProjectAction(job, metrics));
 	}
 
 }

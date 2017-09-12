@@ -1,9 +1,11 @@
 package hudson.plugins.PerfPublisher.projectsAction;
 
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.FreeStyleProject;
+import hudson.model.Job;
 import hudson.model.Project;
 import hudson.model.Result;
+import hudson.model.Run;
 import hudson.plugins.PerfPublisher.AbstractPerfPublisherAction;
 import hudson.plugins.PerfPublisher.ChartUtil;
 import hudson.plugins.PerfPublisher.PerfPublisherBuildAction;
@@ -39,10 +41,10 @@ import java.util.Set;
  */
 public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAction {
 
-	private final Project project;
-  private final Map<String, String> metrics;
+	private final Job<?,?> project;
+    private final Map<String, String> metrics;
 
-	public PerfPublisherFreestyleProjectAction(FreeStyleProject project, Map<String, String> metrics) {
+	public PerfPublisherFreestyleProjectAction(Job<?,?> project, Map<String, String> metrics) {
 		this.project = project;
 		this.metrics = metrics;
 	}
@@ -71,13 +73,13 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 		return PerfPublisherPlugin.GENERAL_DISPLAY_NAME;
 	}
 
-	public Project getProject() {
+	public Job<?,?> getProject() {
 		return project;
 	}
 
 	public ReportContainer getReports() {
 		Object ob = getProject().getLastSuccessfulBuild();
-		AbstractBuild build = (AbstractBuild) ob;
+		Run<?,?> build = (Run<?,?>) ob;
 		if (build != null) {
 			PerfPublisherBuildAction ac = build
 					.getAction(PerfPublisherBuildAction.class);
@@ -192,7 +194,7 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
@@ -251,7 +253,7 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 		String unit = null;
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
@@ -310,7 +312,7 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 	private JFreeChart createPerformanceGraph() {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
@@ -366,7 +368,7 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
@@ -427,7 +429,7 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
@@ -488,7 +490,7 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
@@ -551,7 +553,7 @@ public class PerfPublisherFreestyleProjectAction extends AbstractPerfPublisherAc
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {

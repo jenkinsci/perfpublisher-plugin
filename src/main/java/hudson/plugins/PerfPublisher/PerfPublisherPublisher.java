@@ -13,7 +13,11 @@ import hudson.remoting.VirtualChannel;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
+import hudson.tasks.Recorder;
 import hudson.util.FormFieldValidator;
+
+import org.jenkinsci.Symbol;
+import org.jenkinsci.remoting.RoleChecker;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -98,7 +102,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
     }.process();
   }
 
-  public Descriptor<Publisher> getDescriptor() {
+  public BuildStepDescriptor<Publisher> getDescriptor() {
     return DESCRIPTOR;
   }
   public MatrixAggregator createAggregator(final MatrixBuild matrixBuild, Launcher launcher, BuildListener listener) {
@@ -121,8 +125,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
     return list_metrics;
   }
 
-  public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-
+  public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
     PrintStream logger = listener.getLogger();
     /**
      * Compute metrics parametring
@@ -159,9 +162,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
     }
     ArrayList<FilePath> filesToParse = new ArrayList<FilePath>();
 	
-    final FilePath[] moduleRoots = build.getModuleRoots();
-    final boolean multipleModuleRoots = moduleRoots != null && moduleRoots.length > 1;
-    final FilePath moduleRoot = multipleModuleRoots ? build.getWorkspace() : build.getModuleRoot();
+    final FilePath moduleRoot = workspace;
     final File buildCoberturaDir = build.getRootDir();
     FilePath buildTarget = new FilePath(buildCoberturaDir);
 		
@@ -195,29 +196,17 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
       logger.println("[CapsAnalysis] generating reports analysis failed!");
       build.setResult(Result.UNSTABLE);
     }
-    return true;
-  }
-
-  public Action getProjectAction(AbstractProject project) {
-    Map<String, String> list_metrics = parseMetrics(metrics);
-    if (project instanceof MatrixProject) {
-      return new PerfPublisherMatrixProjectAction((MatrixProject)project, list_metrics);
-    }else if (project instanceof MatrixConfiguration) {
-      return new PerfPublisherMatrixConfigurationAction((MatrixConfiguration) project);
-    }else if (project instanceof FreeStyleProject) {
-      return new PerfPublisherFreestyleProjectAction((FreeStyleProject)project, list_metrics);
-    }
-    return null;
   }
 
   @Extension
-  public static final Descriptor<Publisher> DESCRIPTOR = new PerfPublisherDescriptor();
+  public static final BuildStepDescriptor<Publisher> DESCRIPTOR = new PerfPublisherDescriptor();
   /**
    * Descriptor for the PerfPublisher plugin
    * Must extends BuildStepDescriptor since issue HUDSON-5612
    * @author gbossert
    *
    */
+  @Symbol("perfpublisher")
   public static final class PerfPublisherDescriptor extends BuildStepDescriptor<Publisher> {
     protected PerfPublisherDescriptor() {
       super(PerfPublisherPublisher.class);
@@ -251,5 +240,10 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
       FilePath[] r = new FilePath(f).list(reportFilePath);
       return r;
     }
+
+	@Override
+	public void checkRoles(RoleChecker checker) throws SecurityException {
+		// Do nothing.
+	}
   }
 }

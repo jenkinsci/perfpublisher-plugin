@@ -14,7 +14,7 @@ import hudson.matrix.Combination;
 import hudson.matrix.MatrixAggregator;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixRun;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.Cause;

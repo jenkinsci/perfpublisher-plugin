@@ -17,7 +17,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import hudson.model.ModelObject;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.Result;
 import hudson.plugins.PerfPublisher.Report.Report;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
@@ -31,14 +31,14 @@ import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 public class ChangedStatusTestsDetails implements ModelObject {
 
 	private final TrendReport report;
-	private final AbstractBuild<?, ?> _owner;
+	private final Run<?, ?> _owner;
 
-	public ChangedStatusTestsDetails(final AbstractBuild<?, ?> owner, TrendReport rep) {
+	public ChangedStatusTestsDetails(final Run<?, ?> owner, TrendReport rep) {
 		report = rep;
 		this._owner = owner;
 	}
 
-	public AbstractBuild<?, ?> getOwner() {
+	public Run<?, ?> getOwner() {
 		return _owner;
 	}
 

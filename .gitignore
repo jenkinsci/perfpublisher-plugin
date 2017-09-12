@@ -1,1 +1,10 @@
 target
+work
+
+.settings
+.classpath
+.metadata
+.project
+
+.idea/
+perfpublisher.iml

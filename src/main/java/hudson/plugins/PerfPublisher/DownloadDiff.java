@@ -1,18 +1,18 @@
 package hudson.plugins.PerfPublisher;
 
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
 
 public class DownloadDiff {
 	private final ReportContainer report;
-	private final AbstractBuild<?, ?> _owner;
+	private final Run<?, ?> _owner;
 
-	public DownloadDiff(final AbstractBuild<?, ?> owner, ReportContainer rep) {
+	public DownloadDiff(final Run<?, ?> owner, ReportContainer rep) {
 		report = rep;
 		this._owner = owner;
 	}
 
-	public AbstractBuild<?, ?> getOwner() {
+	public Run<?, ?> getOwner() {
 		return _owner;
 	}
 

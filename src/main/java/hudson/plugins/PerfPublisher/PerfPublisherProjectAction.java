@@ -1,6 +1,6 @@
 package hudson.plugins.PerfPublisher;
 
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.Project;
 import hudson.model.Result;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
@@ -46,7 +46,7 @@ public class PerfPublisherProjectAction extends AbstractPerfPublisherAction {
 
 	public ReportContainer getReports() {
 		Object ob = getProject().getLastSuccessfulBuild();
-		AbstractBuild build = (AbstractBuild) ob;
+		Run<?,?> build = (Run<?,?>) ob;
 		if (build != null) {
 			PerfPublisherBuildAction ac = build
 					.getAction(PerfPublisherBuildAction.class);
@@ -152,7 +152,7 @@ public class PerfPublisherProjectAction extends AbstractPerfPublisherAction {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
@@ -210,7 +210,7 @@ public class PerfPublisherProjectAction extends AbstractPerfPublisherAction {
 	private JFreeChart createPerformanceGraph() {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
@@ -266,7 +266,7 @@ public class PerfPublisherProjectAction extends AbstractPerfPublisherAction {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
@@ -327,7 +327,7 @@ public class PerfPublisherProjectAction extends AbstractPerfPublisherAction {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
@@ -388,7 +388,7 @@ public class PerfPublisherProjectAction extends AbstractPerfPublisherAction {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {
@@ -451,7 +451,7 @@ public class PerfPublisherProjectAction extends AbstractPerfPublisherAction {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 
 		for (Object build : project.getBuilds()) {
-			AbstractBuild abstractBuild = (AbstractBuild) build;
+			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
 					&& abstractBuild.getResult().isBetterOrEqualTo(
 							Result.UNSTABLE)) {

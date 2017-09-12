@@ -4,13 +4,14 @@ import java.io.PrintStream;
 
 import hudson.model.Descriptor;
 import hudson.tasks.Publisher;
-import hudson.model.AbstractBuild;
+import hudson.tasks.Recorder;
+import jenkins.tasks.SimpleBuildStep;
+import hudson.model.Run;
+import hudson.model.TaskListener;
+import hudson.FilePath;
 import hudson.Launcher;
+import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 
-public abstract class HealthPublisher extends Publisher {
-
-	public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener) throws InterruptedException, IOException {
-        return true;
-    }
+public abstract class HealthPublisher extends Recorder implements SimpleBuildStep {
 }

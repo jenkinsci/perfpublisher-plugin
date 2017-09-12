@@ -24,7 +24,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import hudson.model.ModelObject;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.model.Result;
 import hudson.plugins.PerfPublisher.Report.Report;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
@@ -44,7 +44,7 @@ import hudson.util.ChartUtil.NumberOnlyBuildLabel;
  */
 public class ReportsDiff implements ModelObject {
 
-	private final AbstractBuild<?, ?> _owner;
+	private final Run<?, ?> _owner;
 
 	/**
 	 * The 2 reports to compare
@@ -80,7 +80,7 @@ public class ReportsDiff implements ModelObject {
 	 * @param nb_build3 number of the third build
 	 * @param report3 third report
 	 */
-	public ReportsDiff(final AbstractBuild<?, ?> owner, StaplerRequest request, int nb_build1, ReportContainer report1, int nb_build2, ReportContainer report2, int nb_build3, ReportContainer report3) {
+	public ReportsDiff(final Run<?, ?> owner, StaplerRequest request, int nb_build1, ReportContainer report1, int nb_build2, ReportContainer report2, int nb_build3, ReportContainer report3) {
 		this._owner = owner;
 		this.report1 = report1;
 		this.report2 = report2;
@@ -192,9 +192,9 @@ public class ReportsDiff implements ModelObject {
 		
 		strb.append("<div class=\"line\">");
 		strb.append("<div class=\"header\">Build date</div>");
-		strb.append("<div class=\""+style+"\">"+this._owner.getProject().getBuildByNumber(nb_build1).getTimestampString2()+"</div>");
-		strb.append("<div class=\""+style+"\">"+this._owner.getProject().getBuildByNumber(nb_build2).getTimestampString2()+"</div>");
-		if (nb_build3!=0) strb.append("<div class=\""+style+"\">"+this._owner.getProject().getBuildByNumber(nb_build3).getTimestampString2()+"</div>");
+		strb.append("<div class=\""+style+"\">"+this._owner.getParent().getBuildByNumber(nb_build1).getTimestampString2()+"</div>");
+		strb.append("<div class=\""+style+"\">"+this._owner.getParent().getBuildByNumber(nb_build2).getTimestampString2()+"</div>");
+		if (nb_build3!=0) strb.append("<div class=\""+style+"\">"+this._owner.getParent().getBuildByNumber(nb_build3).getTimestampString2()+"</div>");
 		strb.append("</div>");
 		
 		strb.append("<div class=\"line\">");
@@ -401,7 +401,7 @@ public class ReportsDiff implements ModelObject {
 		return strb.toString();
 	}
 	
-	public AbstractBuild<?, ?> getOwner() {
+	public Run<?, ?> getOwner() {
 		return _owner;
 	}
 
