@@ -35,6 +35,7 @@
 			Maven plugin version required by the plugin. -->
 		<jelly.requirePI>false</jelly.requirePI>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
+		<findbugs.skip>true</findbugs.skip>
 	</properties>
 
 	<licenses>

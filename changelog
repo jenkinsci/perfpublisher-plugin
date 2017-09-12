@@ -1,3 +1,6 @@
+What's new in 8.05 :
+  - Pipeline support
+
 What's new in 8.01 :
 	- Fix bug when working in distributed master/slave environment (copies files from slave as prerequisite)
 	- Fix problem with not saved metric settings
