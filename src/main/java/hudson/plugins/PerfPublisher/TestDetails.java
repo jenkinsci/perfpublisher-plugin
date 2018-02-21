@@ -1,6 +1,5 @@
 package hudson.plugins.PerfPublisher;
 
-import hudson.model.Run;
 import hudson.model.ModelObject;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -123,13 +122,12 @@ public class TestDetails implements ModelObject {
 	}
 
 	private JFreeChart createPerformanceGraph() {
-		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<>();
 
 		for (Object build : _owner.getParent().getBuilds()) {
 			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
-					&& abstractBuild.getResult().isBetterOrEqualTo(
-							Result.SUCCESS)) {
+					&& abstractBuild.getResult().isBetterOrEqualTo(Result.UNSTABLE)) {
 				PerfPublisherBuildAction action = abstractBuild
 						.getAction(PerfPublisherBuildAction.class);
 				if (action!=null && action.getReport() != null) {
@@ -182,13 +180,12 @@ public class TestDetails implements ModelObject {
 	}
 	
 	private JFreeChart createMetricGraph(String metric) {
-		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<>();
 		String unit = null;
 		for (Object build : _owner.getParent().getBuilds()) {
 			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
-					&& abstractBuild.getResult().isBetterOrEqualTo(
-							Result.UNSTABLE)) {
+					&& abstractBuild.getResult().isBetterOrEqualTo(Result.UNSTABLE)) {
 				PerfPublisherBuildAction action = abstractBuild
 						.getAction(PerfPublisherBuildAction.class);
 				if (action!=null && action.getReports() != null) {
@@ -246,13 +243,12 @@ public class TestDetails implements ModelObject {
 	}
 
 	private JFreeChart createExecutionTimeGraph() {
-		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<>();
 
 		for (Object build : _owner.getParent().getBuilds()) {
 			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
-					&& abstractBuild.getResult().isBetterOrEqualTo(
-							Result.SUCCESS)) {
+					&& abstractBuild.getResult().isBetterOrEqualTo(Result.UNSTABLE)) {
 				PerfPublisherBuildAction action = abstractBuild
 						.getAction(PerfPublisherBuildAction.class);
 				if (action!=null && action.getReport() != null) {
@@ -307,13 +303,12 @@ public class TestDetails implements ModelObject {
 	}
 
 	private JFreeChart createCompileTimeGraph() {
-		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<>();
 
 		for (Object build : _owner.getParent().getBuilds()) {
 			Run<?,?> abstractBuild = (Run<?,?>) build;
 			if (!abstractBuild.isBuilding()
-					&& abstractBuild.getResult().isBetterOrEqualTo(
-							Result.SUCCESS)) {
+					&& abstractBuild.getResult().isBetterOrEqualTo(Result.FAILURE)) {
 				PerfPublisherBuildAction action = abstractBuild
 						.getAction(PerfPublisherBuildAction.class);
 				if (action!=null && action.getReport() != null) {
