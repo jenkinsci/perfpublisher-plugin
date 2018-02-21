@@ -108,7 +108,8 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 
 	public PerfPublisherBuildAction(Run<?, ?> build,
 			ArrayList<FilePath> files, PrintStream logger,
-			HealthDescriptor healthDescriptor, Map<String, String> metrics) {
+			HealthDescriptor healthDescriptor,
+			Map<String, String> metrics, boolean parseAllMetrics) {
 		this.build = build;
 		this.executedTests = new ArrayList<Test>();
 		/**
@@ -135,16 +136,12 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 				is = current_report.toURI();
 				logger.println("[PerfPublisher] Parsing du Report : "
 						+ current_report);
-				ReportReader rs = new ReportReader(is, logger, metrics);
+				ReportReader rs = new ReportReader(is, logger, parseAllMetrics ? null : metrics.values());
 				report = rs.getReport();
 				report.setFile(current_report.getName());
 				reports.addReport(report, false);
 				reports.addFile(current_report.getName());
-			} catch (IOException e) {
-				logger.println("[PerfPublisher] Impossible to analyse report "
-						+ current_report + ", file can't be read.");
-				build.setResult(Result.UNSTABLE);
-			} catch (InterruptedException e) {
+			} catch (IOException | InterruptedException e) {
 				logger.println("[PerfPublisher] Impossible to analyse report "
 						+ current_report + ", file can't be read.");
 				build.setResult(Result.UNSTABLE);

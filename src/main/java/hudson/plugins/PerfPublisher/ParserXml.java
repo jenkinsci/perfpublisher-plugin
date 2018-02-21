@@ -1,8 +1,3 @@
-/**
- * Hudson PerfPublisher plugin
- *
- * @author Georges Bossert <gbossert@gmail.com>
- */
 package hudson.plugins.PerfPublisher;
 
 import hudson.plugins.PerfPublisher.Report.*;
@@ -21,6 +16,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Hudson PerfPublisher plugin
+ *
+ * @author Georges Bossert <gbossert@gmail.com>
+ */
 public class ParserXml {
 
 	static class Analyse extends DefaultHandler {
@@ -288,8 +288,7 @@ public class ParserXml {
 		 */
 		@Override
 		public void startElement(final String uri, final String localName,
-				final String qName, final Attributes attributes)
-				throws SAXException {
+				final String qName, final Attributes attributes) {
 			if (qName.equals("report")) {
 				report = new Report();
 				report.setName(attributes.getValue("name"));
@@ -453,7 +452,7 @@ public class ParserXml {
 				f_metrics = true;
 				this.metrics = new HashMap<String, Metric>();
 				buffer = new StringBuffer();
-			} else if (this.metrics_name.contains(qName) && f_report && f_test && f_result && f_metrics) {
+			} else if ((metrics_name == null || metrics_name.contains(qName)) && f_report && f_test && f_result && f_metrics) {
 				//We have discovered a metric
 				//It should have attribute value
 				if (attributes.getValue("mesure")!=null) {

@@ -42,9 +42,20 @@
 		  </f:entry>
 			
 			
-	      <f:entry title="Metrics configuration" description="Configure your own metrics to be used and extracted from your xml. Format : metric name=metric_name;exemple of another metric=another_metric">
-	        <f:textbox field="metrics"/>			        
-	      </f:entry>
-
-   
+      <f:entry title="Metrics configuration" description="${%description.metrics}">
+        <table width="100%">
+          <tbody>
+            <tr>
+              <td>
+                <f:textbox field="metrics"/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <f:checkbox field="parseAllMetrics"/> Parse all metrics (to use by other Jenkins plugins)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </f:entry>
 </j:jelly>

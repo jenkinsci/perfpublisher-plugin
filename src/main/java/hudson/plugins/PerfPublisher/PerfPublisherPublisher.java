@@ -40,9 +40,10 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
   private String healthy;
   private String unhealthy;
   private String metrics;
+  private boolean parseAllMetrics;
 
   @DataBoundConstructor
-  public PerfPublisherPublisher(String name, String threshold, String healthy, String unhealthy, String metrics) {
+  public PerfPublisherPublisher(String name, String threshold, String healthy, String unhealthy, String metrics, boolean parseAllMetrics) {
     this.name = name;
     if (threshold != "") {
       this.threshold = threshold;
@@ -60,6 +61,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
       this.unhealthy = "0";
     }
     this.metrics = metrics;
+    this.parseAllMetrics = parseAllMetrics;
   }
   /**
    * Return the metrics
@@ -85,6 +87,10 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
 
   public String getThreshold() {
     return threshold;
+  }
+
+  public boolean isParseAllMetrics() {
+    return parseAllMetrics;
   }
 
   public String getName() {
@@ -125,7 +131,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
     return list_metrics;
   }
 
-  public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
+  public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException {
     PrintStream logger = listener.getLogger();
     /**
      * Compute metrics parametring
@@ -191,7 +197,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
     }
 
     try {
-      build.addAction(new PerfPublisherBuildAction(build, filesToParse, logger, hl, list_metrics));
+      build.addAction(new PerfPublisherBuildAction(build, filesToParse, logger, hl, list_metrics, parseAllMetrics));
     } catch (PerfPublisherParseException gpe) {
       logger.println("[CapsAnalysis] generating reports analysis failed!");
       build.setResult(Result.UNSTABLE);
