@@ -39,7 +39,7 @@
 				      	</j:forEach>
 				      </td>
 		              <td align="left">
-				      	<a class="info_bulle" href="../testDetails.${test.nameForUrl}">${test.adaptedName}</a>
+				      	<a class="info_bulle" href="../testDetails.${test.nameForUrl}"><j:out value="${test.adaptedName}"/></a>
 				      	<br />
 				      	<small><i>${test.shortedMessage}</i></small>
 				      </td>

@@ -7,7 +7,7 @@
   <st:include page="/tabview/css.jelly" />	 
   <st:include page="/tabview/css2.jelly" />	 
     <l:main-panel>
-    	${it.pageContent}
+      <j:out value="${it.pageContent}"/>
     </l:main-panel>
 </l:layout>
 </j:jelly>

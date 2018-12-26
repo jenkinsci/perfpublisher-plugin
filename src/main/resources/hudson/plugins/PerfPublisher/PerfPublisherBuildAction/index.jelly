@@ -14,24 +14,24 @@
         <f:form  method="get" action="reportsDiff">
           <select name="build1">
             <option value="none">None</option>
-            ${it.htmlListOfBuildsInOptionsWithSelected}
+            <j:out value="${it.htmlListOfBuildsInOptionsWithSelected}"/>
           </select>
 
           <select name="build2">
             <option value="none">None</option>
-            ${it.htmlListOfBuildsInOptions}
+            <j:out value="${it.htmlListOfBuildsInOptions}"/>
           </select>
 
           <select name="build3">
             <option value="none">None</option>
-            ${it.htmlListOfBuildsInOptions}
+            <j:out value="${it.htmlListOfBuildsInOptions}"/>
           </select>
           <input type="submit" name="action" value="GO" />
         </f:form>
       </div>
       <h1>Build Report </h1>
 
-        ${it.summary}
+        <j:out value="${it.summary}"/>
 
         <div class="progress-container">
           ${it.reports.targetsGraphic}
@@ -193,7 +193,7 @@
                   </j:if>
                 </td>
               </tr>
-              ${it.htmlMetricTable}
+              <j:out value="${it.htmlMetricTable}"/>
             </table>
             <table style="border:0px;">
               <tr>
@@ -281,10 +281,10 @@
 
               <tr style="${row_style}">
                 <td align="left">
-                  ${test.htmlDefinitionOfTargets}
+                  <j:out value="${it.htmlDefinitionOfTargets}"/>
                 </td>
                 <td align="left">
-                  <a class="info_bulle" href="./testDetails.${test.nameForUrl}">${test.adaptedName}</a>
+                  <a class="info_bulle" href="./testDetails.${test.nameForUrl}"><j:out value="${test.adaptedName}"/></a>
                   <br />
                   <small><i>${test.shortedMessage}</i></small>
                 </td>

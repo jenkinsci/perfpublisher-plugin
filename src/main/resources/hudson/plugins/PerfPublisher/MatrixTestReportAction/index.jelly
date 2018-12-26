@@ -3,8 +3,8 @@
 	<l:layout>
 		<st:include it="${it.build}" page="sidepanel.jelly" />
 		<l:main-panel>
-		<st:include page="/tabview/css_matrix.jelly" />
-		${it.htmlArrayDisplay}
+		  <st:include page="/tabview/css_matrix.jelly" />
+		  <j:out value="${it.htmlArrayDisplay}"/>
 		 </l:main-panel>
 	</l:layout>
 </j:jelly>

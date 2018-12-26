@@ -4,8 +4,8 @@
 	
 	<st:include page="/tabview/css2.jelly" />	
 	<t:summary icon="graph.gif">	
-	${it.summary}	
-	${it.detailSummary}
-	${it.regression}
+    <j:out value="${it.summary}"/>
+    <j:out value="${it.detailSummary}"/>
+    <j:out value="${it.regression}"/>
 	</t:summary>
 </j:jelly>
