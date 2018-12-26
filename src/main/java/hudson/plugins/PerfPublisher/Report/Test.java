@@ -372,12 +372,12 @@ public class Test implements java.lang.Comparable<Test> {
 	public boolean isSuccessfull() {
 		return success.isPassed();
 	}
-	public boolean isHasTimedOut() {
-		return success.isHasTimedOut();
+	public boolean isUnstable() {
+		return success.isUnstable();
 	}
-	public boolean isHasNotTimedOutButHasFailed() {
-		return (!success.isHasTimedOut() && !success.isPassed());
-	}
+//	public boolean isHasNotTimedOutButHasFailed() {
+//		return (!success.isUnstable() && !success.isPassed());
+//	}
 
 	/**
 	 * @return the isPerformance

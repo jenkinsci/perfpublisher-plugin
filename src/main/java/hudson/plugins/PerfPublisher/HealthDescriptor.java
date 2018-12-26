@@ -7,13 +7,15 @@ public class HealthDescriptor {
 	
 	private boolean HealthAnalyse;
 	
-	private int unstableHealth;
-	
+	private int unstableFailedHealth;
+	private int unstableUnstableHealth;
+
 	public HealthDescriptor() {
 		this.maxHealth = 0;
 		this.minHealth = 0;
 		this.HealthAnalyse = false;
-		this.unstableHealth = -1;
+		this.unstableFailedHealth = -1;
+		this.unstableUnstableHealth = -1;
 	}
 
 	/**
@@ -61,14 +63,22 @@ public class HealthDescriptor {
 	/**
 	 * @return the unstableHealth
 	 */
-	public int getUnstableHealth() {
-		return unstableHealth;
+	public int getUnstableFailedHealth() {
+		return unstableFailedHealth;
 	}
 
 	/**
 	 * @param unstableHealth the unstableHealth to set
 	 */
-	public void setUnstableHealth(int unstableHealth) {
-		this.unstableHealth = unstableHealth;
+	public void setUnstableFailedHealth(int unstableHealth) {
+		this.unstableFailedHealth = unstableHealth;
+	}
+
+	public int getUnstableUnstableHealth() {
+		return unstableUnstableHealth;
+	}
+
+	public void setUnstableUnstableHealth(int unstableUnstableHealth) {
+		this.unstableUnstableHealth = unstableUnstableHealth;
 	}
 }

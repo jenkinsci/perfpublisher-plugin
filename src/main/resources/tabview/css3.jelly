@@ -70,6 +70,24 @@
         line-height: 20px;
    }
 
+   div.success_graph>div#yellow {
+        float: left;
+        vertical-align: middle;
+        text-align: center;
+        background-color: yellow;
+        height: 20px;
+        font-weight:bold;
+        color:#FFFFFF;
+   }
+
+   div.success_graph>div#yellow>a {
+        font-weight:bold;
+        color:#FFFFFF;
+        font-size:50%;
+        line-height: 20px;
+   }
+
+
 	 div.success_graph>div#grey { 
 	      float: left; 
 	      vertical-align: middle; 

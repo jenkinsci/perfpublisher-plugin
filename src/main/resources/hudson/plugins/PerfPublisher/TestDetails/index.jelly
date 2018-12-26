@@ -23,7 +23,7 @@
           <j:forEach var="build" items="${it.successGraph}">
               <div id="${build.color}" style="width:${build.width}%;">
                 <j:choose>
-                  <j:when test="${build.color == 'blue' || build.color == 'red'}">
+                  <j:when test="${build.color == 'blue' || build.color == 'red' || build.color == 'yellow'}">
                     <a href="../../../${build.number}/PerfPublisher/testDetails.${it.test.nameForUrl}/">#${build.number}</a>
                   </j:when>
                   <j:otherwise>#${build.number}</j:otherwise>

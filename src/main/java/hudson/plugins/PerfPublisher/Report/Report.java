@@ -2,8 +2,6 @@ package hudson.plugins.PerfPublisher.Report;
 
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 
@@ -285,6 +283,34 @@ public class Report {
 		}
 		return result;
 	}
+
+	/**
+	 * @return number of success tests
+	 */
+	public int getNumberofSuccessTest() {
+		int result = 0;
+		for (int i=0; i<getNumberOfExecutedTest(); i++) {
+			Test test = getExecutedTests().get(i);
+			if (test.isSuccessfull() && !test.isUnstable()) {
+				result ++;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * @return number of unstable tests
+	 */
+	public int getNumberOfUnstableTest() {
+		int result = 0;
+		for (int i=0; i<getNumberOfExecutedTest(); i++) {
+			if (getExecutedTests().get(i).isUnstable()) {
+				result ++;
+			}
+		}
+		return result;
+	}
+
 	/**
 	 * @return percent of failed tests
 	 */

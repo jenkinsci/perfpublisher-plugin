@@ -74,6 +74,10 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	private double percentOfNotExecutedTest = -1;
 	private int numberOfPassedTest = -1;
 	private double percentOfPassedTest = -1;
+	private int numberOfSuccessTest = -1;
+	private double percentOfSuccessTest = -1;
+	private int numberOfUnstableTest = -1;
+	private double percentOfUnstableTest = -1;
 	private int numberOfFailedTest = -1;
 	private double percentOfFailedTest = -1;
 	private int numberOfCompileTimeTest = -1;
@@ -111,16 +115,13 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 			HealthDescriptor healthDescriptor,
 			Map<String, String> metrics, boolean parseAllMetrics) {
 		this.build = build;
-		this.executedTests = new ArrayList<Test>();
-		/**
-		 * Compute the healthDescription
-		 */
+		this.executedTests = new ArrayList<>();
+		// Compute the healthDescription
 		this.healthDescriptor = healthDescriptor;
 		this.metrics = metrics;
 		int failedTests = 0;
-		/**
-		 * Log the metrics
-		 */
+		int unstableTests = 0;
+		// Log the metrics
 		if (metrics.keySet().size() > 0) {
 			logger.println("[PerfPublisher] The following metrics will be computed");
 		} else {
@@ -147,20 +148,23 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 				build.setResult(Result.UNSTABLE);
 			}
 			failedTests += reports.getNumberOfFailedTest();
+			unstableTests += reports.getNumberOfUnstableTest();
 		}
 
-		if (healthDescriptor.getUnstableHealth() >= 0
-				&& failedTests > healthDescriptor.getUnstableHealth()) {
-			build.setResult(Result.UNSTABLE);
-			logger.println("[PerfPublisher] Build status set to UNSTABLE (number of failed test greater than acceptable health level");
-		}
-		/**
-		 * Insert name metrics
-		 */
+		// optionally mark build as unstable if success only
+		if (build.getResult() == Result.SUCCESS) {
+            if (healthDescriptor.getUnstableFailedHealth() >= 0 && failedTests > healthDescriptor.getUnstableFailedHealth()) {
+                build.setResult(Result.UNSTABLE);
+                logger.println("[PerfPublisher] Build status set to UNSTABLE (number of failed tests greater than acceptable health level)");
+            } else if (healthDescriptor.getUnstableUnstableHealth() >= 0 && unstableTests > healthDescriptor.getUnstableUnstableHealth()) {
+                build.setResult(Result.UNSTABLE);
+                logger.println("[PerfPublisher] Build status set to UNSTABLE (number of unstable tests greater than acceptable health level)");
+            }
+        }
+
+		// Insert name metrics
 		reports.setMetricsName(this.metrics);
-		/**
-		 * Compute Reports Stats
-		 */
+		// Compute Reports Stats
 		logger.println("[PerfPublisher] Compute global statistics...");
 		reports.computeStats();
 
@@ -349,24 +353,39 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	public String getSummary() {
 		StringBuilder strbuilder = new StringBuilder();
 		strbuilder.append("<div class=\"progress-container\">");
-		int tmp1 = this.getNumberOfFailedTest();
-		int tmp2 = this.getNumberOfPassedTest();
-		double tmp3 = this.getPercentOfFailedTest();
-		double tmp4 = this.getPercentOfPassedTest();
+		int numberOfFailedTest = this.getNumberOfFailedTest();
+		int numberOfSuccessTest = this.getNumberOfSuccessTest();
+		int numberOfUnstableTest = this.getNumberOfUnstableTest();
+		double percentOfFailedTest = this.getPercentOfFailedTest();
+		double percentOfSuccessTest = this.getPercentOfSuccessTest();
+		double percentOfUnstableTest = this.getPercentOfUnstableTest();
 
-		if (tmp3 < 15) {
-			strbuilder.append("<div id=\"red\" style=\"width:15%;\">" + tmp1
-					+ "</div>");
-			strbuilder.append("<div id=\"blue\" style=\"width:85%;\">" + tmp2
-					+ "</div>");
-		} else {
-			strbuilder.append("<div id=\"red\" style=\"width:" + tmp3 + "%;\">"
-					+ tmp3 + "% (" + tmp1 + ")</div>");
-			strbuilder.append("<div id=\"blue\" style=\"width:" + tmp4
-					+ "%;\">" + tmp4 + "% (" + tmp2 + ")</div>");
-		}
+		boolean showPct = percentOfFailedTest >= 15 || percentOfUnstableTest >= 15;
+		boolean showUnstable = numberOfUnstableTest > 0;
+
+		WidthCalculator widthCalculator = new WidthCalculator(15);
+		widthCalculator.addWidth(percentOfFailedTest);
+		if (showUnstable)
+			widthCalculator.addWidth(percentOfUnstableTest);
+		widthCalculator.addWidth(percentOfSuccessTest);
+
+		int i = 0;
+		appendSummary(strbuilder, "red", widthCalculator.getWidth(i++), percentOfFailedTest, numberOfFailedTest, showPct);
+		if (showUnstable)
+			appendSummary(strbuilder, "yellow", widthCalculator.getWidth(i++), percentOfUnstableTest, numberOfUnstableTest, showPct);
+		appendSummary(strbuilder, "blue", widthCalculator.getWidth(i), percentOfSuccessTest, numberOfSuccessTest, showPct);
+
 		strbuilder.append("</div>");
 		return strbuilder.toString();
+	}
+
+	private void appendSummary(StringBuilder builder, String id, double width, double pct, int number, boolean showPct) {
+		builder.append("<div id=\"").append(id).append("\" style=\"width:").append(width).append("%;\">");
+		if (showPct)
+			builder.append(pct).append("% (").append(number).append(")");
+		else
+			builder.append(number);
+		builder.append("</div>");
 	}
 
 	public String getDetailSummary() {
@@ -385,7 +404,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 	public String getRegression() {
 
 		StringBuilder strb = new StringBuilder();
-		List<Test> regressions = new ArrayList<Test>();
+		List<Test> regressions = new ArrayList<>();
 		if (this.getTrendReport() != null) {
 			List<Test> tmpTests = this.getTrendReport()
 					.getSuccessStatusChangedTests();
@@ -774,6 +793,46 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 					.getPercentOfFailedTest();
 		}
 		return this.percentOfFailedTest;
+	}
+	
+	/**
+	 * @return the numberOfSuccessTest
+	 */
+	public int getNumberOfSuccessTest() {
+		if (this.numberOfSuccessTest == -1 || this.numberOfSuccessTest == 0) {
+			this.numberOfSuccessTest = this.getReports().getNumberOfSuccessTest();
+		}
+		return this.numberOfSuccessTest;
+	}
+
+	/**
+	 * @return the percentOfSuccessTest
+	 */
+	public double getPercentOfSuccessTest() {
+		if (this.percentOfSuccessTest == -1 || this.percentOfSuccessTest == 0) {
+			this.percentOfSuccessTest = this.getReports().getPercentOfSuccessTest();
+		}
+		return this.percentOfSuccessTest;
+	}
+
+	/**
+	 * @return the numberOfUnstableTest
+	 */
+	public int getNumberOfUnstableTest() {
+		if (this.numberOfUnstableTest == -1 || this.numberOfUnstableTest == 0) {
+			this.numberOfUnstableTest = this.getReports().getNumberOfUnstableTest();
+		}
+		return this.numberOfUnstableTest;
+	}
+
+	/**
+	 * @return the percentOfUnstableTest
+	 */
+	public double getPercentOfUnstableTest() {
+		if (this.percentOfUnstableTest == -1 || this.percentOfUnstableTest == 0) {
+			this.percentOfUnstableTest = this.getReports().getPercentOfUnstableTest();
+		}
+		return this.percentOfUnstableTest;
 	}
 
 	/**

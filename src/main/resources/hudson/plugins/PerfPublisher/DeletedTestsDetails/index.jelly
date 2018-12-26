@@ -23,10 +23,10 @@
                <j:forEach indexVar="index" var="test" items="${it.report.deletedTests}">
 
                  <j:choose>
-                    <j:when test="${test.hasTimedOut == 'true'}">
+                    <j:when test="${test.unstable == 'true'}">
                        <j:set var="row_style" value="background-color:yellow"/>
                     </j:when>
-                    <j:when test="${test.hasNotTimedOutButHasFailed == 'true'}">
+                    <j:when test="${test.successfull == 'false'}">
                        <j:set var="row_style" value="background-color:#ef2929"/>
                     </j:when>
                     <j:otherwise>

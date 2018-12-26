@@ -10,18 +10,7 @@
 	<h1>Category Report</h1>
 	      
 	      <div class="progress-container">
-			
-			<j:if test="${it.report.percentOfFailedTestLowFifteen}">
-			 <div id="red" style="width:10%">${it.report.percentOfFailedTest}% (${it.report.numberOfFailedTest})</div>
-			 <div id="blue" style="width:90%;">${it.report.percentOfPassedTest}% (${it.report.numberOfPassedTest})</div>
-			</j:if>
-			<j:if test="${it.report.percentOfFailedTestSupFifteen}">
-			 <div id="red" style="width:${it.report.percentOfFailedTest}%;">${it.report.percentOfFailedTest}% (${it.report.numberOfFailedTest})</div>
-			 <div id="blue" style="width:${it.report.percentOfPassedTest}%;">${it.report.percentOfPassedTest}% (${it.report.numberOfPassedTest})</div>
-			</j:if>
-			
-	      	
-	      	
+	        <j:out value="${it.report.testsChart}"/>
 	      </div>
 	      <br style="clear:left;"/>
 	      <div class="content">
@@ -125,10 +114,10 @@
                 </tr> 
               <j:forEach indexVar="index" var="test" items="${it.report.executedTests}">
                 <j:choose>
-                   <j:when test="${test.hasTimedOut == 'true'}">
+                   <j:when test="${test.unstable == 'true'}">
                       <j:set var="row_style" value="background-color:yellow"/>
                    </j:when>
-                   <j:when test="${test.hasNotTimedOutButHasFailed == 'true'}">
+                   <j:when test="${test.successfull == 'false'}">
                       <j:set var="row_style" value="background-color:#ef2929"/>
                    </j:when>
                    <j:otherwise>

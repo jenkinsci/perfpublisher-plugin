@@ -4,12 +4,12 @@ public class Success {
 
 	private boolean passed;
 	private float state;
-	private boolean hasTimedOut;
-	
+	private boolean unstable;
+
 	public Success() {
 		passed = false;
 		state = 0;
-		hasTimedOut = false;
+		unstable = false;
 	}
 
 	/**
@@ -40,19 +40,11 @@ public class Success {
 		this.state = state;
 	}
 
-	/**
-	 * @return the hasTimedOut
-	 */
-	public boolean isHasTimedOut() {
-		return hasTimedOut;
-	}
+    public boolean isUnstable() {
+        return unstable;
+    }
 
-	/**
-	 * @param hasTimedOut the hasTimedOut to set
-	 */
-	public void setHasTimedOut(boolean hasTimedOut) {
-		this.hasTimedOut = hasTimedOut;
-	}
-	
-	
+    public void setUnstable(boolean unstable) {
+        this.unstable = unstable;
+    }
 }

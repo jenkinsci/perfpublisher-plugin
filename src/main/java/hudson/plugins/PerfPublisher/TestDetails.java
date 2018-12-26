@@ -92,7 +92,7 @@ public class TestDetails implements ModelObject {
 							color="orange";
 						} else {
 							if (prev_test.isSuccessfull() && prev_test.isExecuted()) {
-								color="blue";
+								color= prev_test.isUnstable() ? "yellow" : "blue";
 							} else {
 								color="red";
 							}

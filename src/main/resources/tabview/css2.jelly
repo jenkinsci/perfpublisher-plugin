@@ -39,7 +39,7 @@ div.progress-container {
       background-color: #608ec2; 
       line-height: 30px; 
       text-align: center; 
-      height: 30px 
+      height: 30px;
       font-size:110%;
  }
  

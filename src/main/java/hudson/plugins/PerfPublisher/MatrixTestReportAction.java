@@ -1,27 +1,14 @@
 package hudson.plugins.PerfPublisher;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang.text.StrBuilder;
-
-import hudson.matrix.AxisList;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixProject;
-import hudson.model.Run;
 import hudson.model.Action;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
-import hudson.plugins.PerfPublisher.Report.Test;
 import hudson.plugins.PerfPublisher.matrixBuild.PerfPublisherMatrixBuild;
 import hudson.plugins.PerfPublisher.matrixBuild.PerfPublisherMatrixSubBuild;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class MatrixTestReportAction extends AbstractPerfPublisherAction
 		implements Action {
@@ -33,6 +20,8 @@ public class MatrixTestReportAction extends AbstractPerfPublisherAction
 	private int numberOfNotExecutedTest;
 	private int numberOfTrueFalseTest;
 	private int numberOfFailedTest;
+    private int numberOfSuccessTest;
+    private int numberOfUnstableTest;
 	private MatrixBuild build;
 	private MatrixProject project;
 
@@ -88,59 +77,59 @@ public class MatrixTestReportAction extends AbstractPerfPublisherAction
 		numberOfTest = 0;
 		numberOfPassedTest = 0;
 		numberOfTrueFalseTest = 0;
+        numberOfSuccessTest = 0;
+        numberOfUnstableTest = 0;
 		
 		List<PerfPublisherMatrixSubBuild> subBuilds = this.matrixbuild.getSubBuilds();
-		for (int i=0; i<subBuilds.size(); i++) {
-			this.numberOfExecutedTest+=subBuilds.get(i).getReport().getNumberOfExecutedTest();
-			this.numberOfFailedTest+=subBuilds.get(i).getReport().getNumberOfFailedTest();
-			this.numberOfTest+=subBuilds.get(i).getReport().getNumberOfTest();
-			this.numberOfPassedTest+=subBuilds.get(i).getReport().getNumberOfPassedTest();
-			this.numberOfTrueFalseTest+=subBuilds.get(i).getReport().getNumberOfTrueFalseTest();
-		}
-		
-		
+        for (PerfPublisherMatrixSubBuild subBuild : subBuilds) {
+            ReportContainer report = subBuild.getReport();
+            this.numberOfExecutedTest += report.getNumberOfExecutedTest();
+            this.numberOfFailedTest += report.getNumberOfFailedTest();
+            this.numberOfTest += report.getNumberOfTest();
+            this.numberOfPassedTest += report.getNumberOfPassedTest();
+            this.numberOfTrueFalseTest += report.getNumberOfTrueFalseTest();
+            this.numberOfSuccessTest += report.getNumberOfSuccessTest();
+            this.numberOfUnstableTest += report.getNumberOfUnstableTest();
+        }
 	}
 	
 	/**
 	 * @return Summary HTML
 	 */
 	public String getSummary() {
-		StringBuilder strbuilder = new StringBuilder();
-		strbuilder.append("<div class=\"progress-container\">");
-		int tmp1 = this.getNumberOfFailedTest();
-		int tmp2 = this.getNumberOfPassedTest();
-		double tmp3 = this.getPercentOfFailedTest();
-		double tmp4 = this.getPercentOfPassedTest();
-		
-		if (tmp3<15) {
-			strbuilder.append("<div id=\"red\" style=\"width:15%;\">"+tmp1+"</div>");
-			strbuilder.append("<div id=\"blue\" style=\"width:85%;\">"+tmp2+"</div>");
-		} else {
-			strbuilder.append("<div id=\"red\" style=\"width:"+tmp3+"%;\">"+tmp3+"% ("+tmp1+")</div>");
-			strbuilder.append("<div id=\"blue\" style=\"width:"+tmp4+"%;\">"+tmp4+"% ("+tmp2+")</div>");
-		}
-		strbuilder.append("</div>");
+        StringBuilder strbuilder = new StringBuilder();
+        strbuilder.append("<div class=\"progress-container\">");
+        double percentOfFailedTest = floor(100.0 * numberOfFailedTest / numberOfTrueFalseTest, 2);
+        double percentOfSuccessTest = floor(100.0 * numberOfSuccessTest / numberOfTrueFalseTest, 2);
+        double percentOfUnstableTest = floor(100.0 * numberOfUnstableTest / numberOfTrueFalseTest, 2);
+
+        boolean showPct = percentOfFailedTest >= 15 || percentOfUnstableTest >= 15;
+        boolean showUnstable = numberOfUnstableTest > 0;
+
+        WidthCalculator widthCalculator = new WidthCalculator(15);
+        widthCalculator.addWidth(percentOfFailedTest);
+        if (showUnstable)
+            widthCalculator.addWidth(percentOfUnstableTest);
+        widthCalculator.addWidth(percentOfSuccessTest);
+
+        int i = 0;
+        appendSummary(strbuilder, "red", widthCalculator.getWidth(i++), percentOfFailedTest, numberOfFailedTest, showPct);
+        if (showUnstable)
+            appendSummary(strbuilder, "yellow", widthCalculator.getWidth(i++), percentOfUnstableTest, numberOfUnstableTest, showPct);
+        appendSummary(strbuilder, "blue", widthCalculator.getWidth(i), percentOfSuccessTest, numberOfSuccessTest, showPct);
+        strbuilder.append("</div>");
 		return strbuilder.toString();
 	}
-	private int getNumberOfFailedTest() {
-		return this.numberOfFailedTest;
-	}
-	private int getNumberOfPassedTest() {
-		return this.numberOfPassedTest;
-	}
-	private int getNumberOfTrueFalseTest() {
-		return this.numberOfTrueFalseTest;
-	}
-	private double getPercentOfFailedTest() {
-		double resultat = 0;
-		resultat = ((double) getNumberOfFailedTest() / getNumberOfTrueFalseTest()) * 100;
-		return floor(resultat, 2);
-	}
-	private double getPercentOfPassedTest() {
-		double resultat = 0;
-		resultat = ((double) getNumberOfPassedTest() / getNumberOfTrueFalseTest()) * 100;
-		return floor(resultat, 2);
-	}
+
+    private void appendSummary(StringBuilder builder, String id, double width, double pct, int number, boolean showPct) {
+  		builder.append("<div id=\"").append(id).append("\" style=\"width:").append(width).append("%;\">");
+  		if (showPct)
+  			builder.append(pct).append("% (").append(number).append(")");
+  		else
+  			builder.append(number);
+  		builder.append("</div>");
+  	}
+
 	/**
 	 * Round a double with n decimals
 	 * 

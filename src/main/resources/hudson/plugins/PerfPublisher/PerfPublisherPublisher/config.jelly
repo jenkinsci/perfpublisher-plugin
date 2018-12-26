@@ -9,8 +9,11 @@
         
 			
 		    
-		  <f:entry title="${%Unstable threshold}" description="${%description.threshold}">
+		  <f:entry title="${%Failed threshold}" description="${%description.threshold}">
     			<f:textbox field="threshold"/>
+ 		  </f:entry>
+      <f:entry title="${%Unstable threshold}" description="${%description.unstableThreshold}">
+    			<f:textbox field="unstableThreshold"/>
  		  </f:entry>
 		  <f:entry title="${%Health reporting}" description="${%description.healthy}">
 		    <table>

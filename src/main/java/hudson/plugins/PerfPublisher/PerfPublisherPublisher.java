@@ -4,18 +4,15 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
-import hudson.matrix.*;
+import hudson.matrix.MatrixAggregatable;
+import hudson.matrix.MatrixAggregator;
+import hudson.matrix.MatrixBuild;
 import hudson.model.*;
-import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherFreestyleProjectAction;
-import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixConfigurationAction;
-import hudson.plugins.PerfPublisher.projectsAction.PerfPublisherMatrixProjectAction;
 import hudson.remoting.VirtualChannel;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
-import hudson.tasks.Recorder;
 import hudson.util.FormFieldValidator;
-
 import org.jenkinsci.Symbol;
 import org.jenkinsci.remoting.RoleChecker;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -37,19 +34,17 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
 
   private String name;
   private String threshold;
+  private String unstableThreshold;
   private String healthy;
   private String unhealthy;
   private String metrics;
   private boolean parseAllMetrics;
 
   @DataBoundConstructor
-  public PerfPublisherPublisher(String name, String threshold, String healthy, String unhealthy, String metrics, boolean parseAllMetrics) {
+  public PerfPublisherPublisher(String name, String threshold, String unstableThreshold, String healthy, String unhealthy, String metrics, boolean parseAllMetrics) {
     this.name = name;
-    if (threshold != "") {
-      this.threshold = threshold;
-    } else {
-      this.threshold = "0";
-    }
+    this.threshold = threshold;
+    this.unstableThreshold = unstableThreshold;
     if (healthy != "") {
       this.healthy = healthy;
     } else {
@@ -87,6 +82,10 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
 
   public String getThreshold() {
     return threshold;
+  }
+
+  public String getUnstableThreshold() {
+    return unstableThreshold;
   }
 
   public boolean isParseAllMetrics() {
@@ -153,9 +152,15 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
       hl.setMinHealth(0);
     }
     try {
-      hl.setUnstableHealth(Integer.parseInt(threshold));
+      hl.setUnstableFailedHealth(Integer.parseInt(threshold));
     } catch (java.lang.NumberFormatException e) {
-      hl.setUnstableHealth(-1);
+      hl.setUnstableFailedHealth(-1);
+    }
+
+    try {
+      hl.setUnstableUnstableHealth(Integer.parseInt(unstableThreshold));
+    } catch (java.lang.NumberFormatException e) {
+      hl.setUnstableUnstableHealth(-1);
     }
 
     /**

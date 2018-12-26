@@ -120,7 +120,7 @@ public class ParserXml {
 		 */
 		@Override
 		public void characters(final char[] ch, final int start,
-				final int length) throws SAXException {
+				final int length) {
 
 			final String lecture = new String(ch, start, length);
 			if (buffer != null) {
@@ -132,7 +132,7 @@ public class ParserXml {
 		 * 
 		 */
 		@Override
-		public void endDocument() throws SAXException {
+		public void endDocument() {
 			resultat = report;
 		}
 
@@ -142,7 +142,7 @@ public class ParserXml {
 		 */
 		@Override
 		public void endElement(final String uri, final String localName,
-				final String qName) throws SAXException {
+				final String qName) {
 
 			if (qName.equals("report") && f_report) {
 				buffer = new StringBuffer();
@@ -420,7 +420,9 @@ public class ParserXml {
 					tmp_success.setPassed(true);
 				} else { tmp_success.setPassed(false); }
 				tmp_success.setState(Float.parseFloat(attributes.getValue("state")));
-				tmp_success.setHasTimedOut(Boolean.parseBoolean(attributes.getValue("hasTimedOut")));
+				boolean unstable = Boolean.parseBoolean(attributes.getValue("hasTimedOut")) // obsolete value
+						|| Boolean.parseBoolean(attributes.getValue("unstable"));
+				tmp_success.setUnstable(unstable);
 				buffer = new StringBuffer();
 				tmp_test.setIsSuccess(true);
 			} else if (qName.equals("compiletime") && f_report && f_test && f_result) {
@@ -450,7 +452,7 @@ public class ParserXml {
 				buffer = new StringBuffer();
 			} else if (qName.equals("metrics") && f_report && f_test && f_result) {
 				f_metrics = true;
-				this.metrics = new HashMap<String, Metric>();
+				this.metrics = new HashMap<>();
 				buffer = new StringBuffer();
 			} else if ((metrics_name == null || metrics_name.contains(qName)) && f_report && f_test && f_result && f_metrics) {
 				//We have discovered a metric
@@ -503,11 +505,6 @@ public class ParserXml {
 		this.metrics = metrics;
 	}
 
-	/**
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
-	 */
 	public void parse() throws ParserConfigurationException, SAXException,
 			IOException {
 
@@ -517,9 +514,6 @@ public class ParserXml {
 		parseur.parse(new File(xml_path), gestionnaire);
 	}
 
-	/**
-	 * @return HashMap<String, Rule>
-	 */
 	public Report result() {
 
 		return resultat;

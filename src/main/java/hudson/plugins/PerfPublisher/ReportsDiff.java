@@ -1,39 +1,15 @@
 package hudson.plugins.PerfPublisher;
 
-import java.awt.Color;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.ui.RectangleInsets;
 import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
 
 import hudson.model.ModelObject;
 import hudson.model.Run;
-import hudson.model.Result;
-import hudson.plugins.PerfPublisher.Report.Report;
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
 import hudson.plugins.PerfPublisher.Report.Test;
-import hudson.util.ChartUtil;
-import hudson.util.ColorPalette;
-import hudson.util.DataSetBuilder;
-import hudson.util.ShiftedCategoryAxis;
-import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 
 /**
  * This class is dedicated to the report diff display
@@ -320,7 +296,7 @@ public class ReportsDiff implements ModelObject {
 				if (!test1.isExecuted()) {
 					color1="grey";
 				} else {
-					if (test1.isHasTimedOut()) {
+					if (test1.isUnstable()) {
 						color1 = "yellow";
 					} else {
 						if (test1.isSuccessfull()) {
@@ -337,7 +313,7 @@ public class ReportsDiff implements ModelObject {
 				if (!test2.isExecuted()) {
 					color2="grey";
 				} else {
-					if (test2.isHasTimedOut()) {
+					if (test2.isUnstable()) {
 						color2 = "yellow";
 					} else {
 						if (test2.isSuccessfull()) {
@@ -354,7 +330,7 @@ public class ReportsDiff implements ModelObject {
 					if (!test3.isExecuted()) {
 						color3="grey";
 					} else {
-						if (test3.isHasTimedOut()) {
+						if (test3.isUnstable()) {
 							color3 = "yellow";
 						} else {
 							if (test3.isSuccessfull()) {

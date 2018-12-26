@@ -1,20 +1,7 @@
 package hudson.plugins.PerfPublisher.Report;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.Map.Entry;
-
-import org.apache.log4j.FileAppender;
 
 public class ReportContainer {
 
@@ -50,8 +37,10 @@ public class ReportContainer {
 
 	private int numberOfTest;
 	private int numberOfPassedTest;
-	private int numberOfNotExecutedTest;
-	private int numberOfFailedTest;
+	private int numberOfSuccessTest;
+    private int numberOfUnstableTest;
+    private int numberOfNotExecutedTest;
+    private int numberOfFailedTest;
 
 	public ReportContainer() {
 		tests = new ArrayList<Test>();
@@ -146,6 +135,8 @@ public class ReportContainer {
 		this.numberOfFailedTest = computeNumberOfFailedTest();
 		this.numberOfNotExecutedTest = computeNumberOfNotExecutedTest();
 		this.numberOfPassedTest = computeNumberOfPassedTest();
+		this.numberOfSuccessTest = computeNumberOfSuccessTest();
+		this.numberOfUnstableTest = computeNumberOfUnstableTest();
 		this.bestCompileTimeTest = computeBestCompileTimeTest();
 		this.averageCompileTime = computeAverageOfCompileTime();
 		this.worstCompileTimeTest = computeWorstCompileTimeTest();
@@ -322,12 +313,16 @@ public class ReportContainer {
 		return floor(resultat, 2);
 	}
 
-	public boolean isPercentOfFailedTestLowFifteen() {
-		return (getPercentOfFailedTest() < 15);
-	}
+	public String getTestsChart() {
+        // TODO: add unstable tests
 
-	public boolean isPercentOfFailedTestSupFifteen() {
-		return (getPercentOfFailedTest() >= 15);
+		if (getPercentOfFailedTest() < 15) {
+			return "<div id=\"red\" style=\"width:10%\">" + getPercentOfFailedTest() + "% (" + getNumberOfFailedTest() + ")</div>\n" +
+					"<div id=\"blue\" style=\"width:90%;\">" + getPercentOfPassedTest() + "% (" + getNumberOfPassedTest() + ")</div>";
+		} else {
+			return "<div id=\"red\" style=\"width:" + getPercentOfFailedTest() + "%\">" + getPercentOfFailedTest() + "% (" + getNumberOfFailedTest() + ")</div>\n" +
+					"<div id=\"blue\" style=\"width:" + getPercentOfPassedTest() + "%;\">" + getPercentOfPassedTest() + "% (" + getNumberOfPassedTest() + ")</div>";
+		}
 	}
 
 	public int getNumberOfPassedTest() {
@@ -361,6 +356,38 @@ public class ReportContainer {
 		}
 		return result;
 	}
+	
+    public int getNumberOfSuccessTest() {
+  		if (this.numberOfSuccessTest != 0) {
+  			return this.numberOfSuccessTest;
+  		} else {
+  			this.numberOfSuccessTest = computeNumberOfSuccessTest();
+  			return this.numberOfSuccessTest;
+  		}
+  	}
+  
+  	public int computeNumberOfSuccessTest() {
+  		int result = 0;
+  		for (int i = 0; i < getNumberOfReports(); i++) {
+  			result += reports.get(i).getNumberofSuccessTest();
+  		}
+  		return result;
+  	}
+
+	public int getNumberOfUnstableTest() {
+		if (this.numberOfUnstableTest == 0) {
+			this.numberOfUnstableTest = computeNumberOfUnstableTest();
+		}
+		return this.numberOfUnstableTest;
+	}
+
+	public int computeNumberOfUnstableTest() {
+		int result = 0;
+		for (int i = 0; i < getNumberOfReports(); i++) {
+			result += getReports().get(i).getNumberOfUnstableTest();
+		}
+		return result;
+	}
 
 	public double getPercentOfFailedTest() {
 		double resultat = 0;
@@ -373,6 +400,16 @@ public class ReportContainer {
 		resultat = ((double) getNumberOfPassedTest() / getNumberOfTrueFalseTest()) * 100;
 		return floor(resultat, 2);
 	}
+
+    public double getPercentOfSuccessTest() {
+  		double result = ((double) getNumberOfSuccessTest() / getNumberOfTrueFalseTest()) * 100;
+        return floor(result, 2);
+  	}
+
+    public double getPercentOfUnstableTest() {
+  		double result = ((double) getNumberOfUnstableTest() / getNumberOfTrueFalseTest()) * 100;
+        return floor(result, 2);
+  	}
 
 	public double getNumberOfTrueFalseTest() {
 		int result = 0;
