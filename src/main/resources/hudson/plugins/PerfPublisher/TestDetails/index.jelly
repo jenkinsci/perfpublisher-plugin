@@ -148,7 +148,7 @@
       <div class="cadre_orange">
         <b>Log : </b>${log.name}
         <br />
-        ${log.log}
+        <j:out value="${log.log}"/>
       </div>
     </j:forEach>
 
