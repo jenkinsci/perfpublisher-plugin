@@ -151,8 +151,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 			unstableTests += reports.getNumberOfUnstableTest();
 		}
 
-		// optionally mark build as unstable if success only
-		if (build.getResult() == Result.SUCCESS) {
+		// Check thresholds for marking result as unstable
             if (healthDescriptor.getUnstableFailedHealth() >= 0 && failedTests > healthDescriptor.getUnstableFailedHealth()) {
                 build.setResult(Result.UNSTABLE);
                 logger.println("[PerfPublisher] Build status set to UNSTABLE (number of failed tests greater than acceptable health level)");
@@ -160,7 +159,6 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
                 build.setResult(Result.UNSTABLE);
                 logger.println("[PerfPublisher] Build status set to UNSTABLE (number of unstable tests greater than acceptable health level)");
             }
-        }
 
 		// Insert name metrics
 		reports.setMetricsName(this.metrics);
