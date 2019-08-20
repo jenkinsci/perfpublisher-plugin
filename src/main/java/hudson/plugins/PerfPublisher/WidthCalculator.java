@@ -49,7 +49,7 @@ public class WidthCalculator {
         for (ListIterator<Double> iterator = widthList.listIterator(); iterator.hasNext(); ) {
             double width = iterator.next();
             if (width > minWidth) {
-                int newWidth = (int) ((totalWidth - usedWidth) * width / unusedWidth);
+                int newWidth = (int) Math.round((totalWidth - usedWidth) * width / unusedWidth);
                 usedWidth += newWidth;
                 unusedWidth -= width;
                 iterator.set((double) newWidth);

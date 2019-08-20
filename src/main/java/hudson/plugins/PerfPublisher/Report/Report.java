@@ -304,7 +304,8 @@ public class Report {
 	public int getNumberOfUnstableTest() {
 		int result = 0;
 		for (int i=0; i<getNumberOfExecutedTest(); i++) {
-			if (getExecutedTests().get(i).isUnstable()) {
+			Test test = getExecutedTests().get(i);
+			if (test.isSuccessfull() && test.isUnstable()) { // count only successful unstable tests
 				result ++;
 			}
 		}
