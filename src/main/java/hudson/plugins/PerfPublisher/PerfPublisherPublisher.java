@@ -169,7 +169,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
      */
     String[] files = name.split(",");
     if (files.length > 1) {
-      logger.println("[CapsAnalysis] Multiple reports detected.");
+      logger.println("[PerfPublisher] Multiple reports detected.");
     }
     ArrayList<FilePath> filesToParse = new ArrayList<FilePath>();
 	
@@ -188,9 +188,10 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
       }
       
       for (int j = 0; j < reports.length; j++) {
-        logger.println("[CapsAnalysis] FilePath Found and copied to master: " + reports[j].getRemote());
-        final FilePath targetPath = new FilePath(buildTarget, reports[j].getName());
         try {
+          logger.println("[PerfPublisher] FilePath found and copied to master: " + reports[j].getRemote());
+          final String targetFileName = moduleRoot.toURI().relativize(reports[j].toURI()).toString();
+          final FilePath targetPath = new FilePath(buildTarget, targetFileName);
           reports[j].copyTo(targetPath);
           filesToParse.add(targetPath);
         } catch (IOException e) {
@@ -204,7 +205,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
     try {
       build.addAction(new PerfPublisherBuildAction(build, filesToParse, logger, hl, list_metrics, parseAllMetrics));
     } catch (PerfPublisherParseException gpe) {
-      logger.println("[CapsAnalysis] generating reports analysis failed!");
+      logger.println("[PerfPublisher] generating reports analysis failed!");
       build.setResult(Result.UNSTABLE);
     }
   }

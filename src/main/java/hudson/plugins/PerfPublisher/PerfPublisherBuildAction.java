@@ -135,7 +135,7 @@ public class PerfPublisherBuildAction extends AbstractPerfPublisherAction
 			URI is;
 			try {
 				is = current_report.toURI();
-				logger.println("[PerfPublisher] Parsing du Report : "
+				logger.println("[PerfPublisher] Parsing the report : "
 						+ current_report);
 				ReportReader rs = new ReportReader(is, logger, parseAllMetrics ? null : metrics.values());
 				report = rs.getReport();
