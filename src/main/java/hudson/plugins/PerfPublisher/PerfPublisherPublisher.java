@@ -234,7 +234,7 @@ public class PerfPublisherPublisher extends HealthPublisher implements MatrixAgg
   }
 
   public BuildStepMonitor getRequiredMonitorService() {
-    return BuildStepMonitor.BUILD;
+    return BuildStepMonitor.NONE;
   }
 	
   public static class ParseReportCallable implements FilePath.FileCallable<FilePath[]> {
