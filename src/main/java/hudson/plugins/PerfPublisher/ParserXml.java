@@ -1,5 +1,6 @@
 package hudson.plugins.PerfPublisher;
 
+import hudson.plugins.PerfPublisher.ParserXml.Analyse;
 import hudson.plugins.PerfPublisher.Report.*;
 import hudson.plugins.PerfPublisher.Report.Compiler;
 import org.xml.sax.Attributes;
@@ -15,6 +16,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.XMLConstants;
 
 /**
  * Hudson PerfPublisher plugin
@@ -509,11 +511,35 @@ public class ParserXml {
 			IOException {
 
 		final SAXParserFactory fabrique = SAXParserFactory.newInstance();
+
+		// Enable secure XML processing.
+		fabrique.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+		// Reject DOCTYPE declarations entirely.
+		fabrique.setFeature(
+				"http://apache.org/xml/features/disallow-doctype-decl", true);
+
+		// Disable external entity processing.
+		fabrique.setFeature(
+				"http://xml.org/sax/features/external-general-entities", false);
+		fabrique.setFeature(
+				"http://xml.org/sax/features/external-parameter-entities", false);
+
+		// Prevent loading external DTDs.
+		fabrique.setFeature(
+				"http://apache.org/xml/features/nonvalidating/load-external-dtd",
+				false);
+
 		final SAXParser parseur = fabrique.newSAXParser();
+
+		// Restrict access to external DTDs and XML schemas.
+		parseur.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		parseur.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+
 		final DefaultHandler gestionnaire = new Analyse(metrics);
 		parseur.parse(new File(xml_path), gestionnaire);
 	}
-
+	
 	public Report result() {
 
 		return resultat;
