@@ -1,5 +1,6 @@
-
 package hudson.plugins.PerfPublisher;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -7,20 +8,19 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-public class ParserXmlTest extends TestCase {
+class ParserXmlTest {
 
-    public void testRejectsExternalEntityDeclarations()
+    @Test
+    void testRejectsExternalEntityDeclarations()
             throws IOException, ParserConfigurationException {
 
         File xml = File.createTempFile("perfpublisher-xxe-", ".xml");
 
         try {
-            FileWriter writer = new FileWriter(xml);
-            try {
+            try (FileWriter writer = new FileWriter(xml)) {
                 writer.write(
                     "<?xml version=\"1.0\"?>\n" +
                     "<!DOCTYPE report [\n" +
@@ -30,18 +30,15 @@ public class ParserXmlTest extends TestCase {
                     "  &xxe;\n" +
                     "</report>"
                 );
-            } finally {
-                writer.close();
             }
 
             ParserXml parser = new ParserXml(xml.toURI(), null);
 
-            try {
-                parser.parse();
-                fail("Parser should reject XML containing a DOCTYPE declaration.");
-            } catch (SAXException expected) {
-                // Expected: DOCTYPE declarations are disabled.
-            }
+            assertThrows(
+                SAXException.class,
+                () -> parser.parse(),
+                "Parser should reject XML containing a DOCTYPE declaration."
+            );
 
         } finally {
             if (xml.exists()) {
