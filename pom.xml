@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>structs</artifactId>
-			<version>343.vdcf37b_a_c81d5</version>
+			<version>362.va_b_695ef4fdf9</version>
 		</dependency>
 
 		<!-- Test Scopes -->
