@@ -1,5 +1,5 @@
 +--------------------------------------------------+
-+	README - HOW TO COMPILE - PLUGIN	   +
++	README - HOW TO COMPILE - PLUGIN	   
 +--------------------------------------------------+
 @author  : Georges Bossert
 	   <gbossert@caps-entreprise.com
@@ -52,7 +52,7 @@ Internet.
   		7. Add M2 environment variable to your path.
 			export PATH=$M2:$PATH
   		8. Make sure that JAVA_HOME is set to the location of your JDK.
-		9. Test your new Maven setup.
+		9. Test your new Maven setup
 			mvn --version
   			If your setup is correct you should now see something like:
 				Maven version: 2.0.9

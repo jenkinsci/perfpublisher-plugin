@@ -1,7 +1,5 @@
 package hudson.plugins.PerfPublisher;
 
-import java.util.Date;
-
 import hudson.plugins.PerfPublisher.Report.ReportContainer;
 
 /**
@@ -28,9 +26,8 @@ public final class ResultSummary {
         }
         if (numberOfTests == 1) {
             summary.append("1 test");
-        }
-        else {
-            summary.append(numberOfTests+" tests evaluated");
+        } else {
+            summary.append(numberOfTests + " tests evaluated");
         }
         if (numberOfTests > 0) {
             summary.append("</a>");
@@ -39,8 +36,6 @@ public final class ResultSummary {
         return summary.toString();
     }
 
-    
-
     /**
      * Instantiates a new result summary.
      */
@@ -48,4 +43,3 @@ public final class ResultSummary {
         // prevents instantiation
     }
 }
-

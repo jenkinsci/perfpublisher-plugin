@@ -2,83 +2,83 @@ package hudson.plugins.PerfPublisher;
 
 public class HealthDescriptor {
 
-	private int minHealth;
-	private int maxHealth;
-	
-	private boolean HealthAnalyse;
-	
-	private int unstableFailedHealth;
-	private int unstableUnstableHealth;
+    private int minHealth;
+    private int maxHealth;
 
-	public HealthDescriptor() {
-		this.maxHealth = 0;
-		this.minHealth = 0;
-		this.HealthAnalyse = false;
-		this.unstableFailedHealth = -1;
-		this.unstableUnstableHealth = -1;
-	}
+    private boolean HealthAnalyse;
 
-	/**
-	 * @return the minHealth
-	 */
-	public int getMinHealth() {
-		return minHealth;
-	}
+    private int unstableFailedHealth;
+    private int unstableUnstableHealth;
 
-	/**
-	 * @param minHealth the minHealth to set
-	 */
-	public void setMinHealth(int minHealth) {
-		this.minHealth = minHealth;
-	}
+    public HealthDescriptor() {
+        this.maxHealth = 0;
+        this.minHealth = 0;
+        this.HealthAnalyse = false;
+        this.unstableFailedHealth = -1;
+        this.unstableUnstableHealth = -1;
+    }
 
-	/**
-	 * @return the maxHealth
-	 */
-	public int getMaxHealth() {
-		return maxHealth;
-	}
+    /**
+     * @return the minHealth
+     */
+    public int getMinHealth() {
+        return minHealth;
+    }
 
-	/**
-	 * @param maxHealth the maxHealth to set
-	 */
-	public void setMaxHealth(int maxHealth) {
-		this.maxHealth = maxHealth;
-	}
+    /**
+     * @param minHealth the minHealth to set
+     */
+    public void setMinHealth(int minHealth) {
+        this.minHealth = minHealth;
+    }
 
-	/**
-	 * @return the healthAnalyse
-	 */
-	public boolean isHealthAnalyse() {
-		return HealthAnalyse;
-	}
+    /**
+     * @return the maxHealth
+     */
+    public int getMaxHealth() {
+        return maxHealth;
+    }
 
-	/**
-	 * @param healthAnalyse the healthAnalyse to set
-	 */
-	public void setHealthAnalyse(boolean healthAnalyse) {
-		HealthAnalyse = healthAnalyse;
-	}
+    /**
+     * @param maxHealth the maxHealth to set
+     */
+    public void setMaxHealth(int maxHealth) {
+        this.maxHealth = maxHealth;
+    }
 
-	/**
-	 * @return the unstableHealth
-	 */
-	public int getUnstableFailedHealth() {
-		return unstableFailedHealth;
-	}
+    /**
+     * @return the healthAnalyse
+     */
+    public boolean isHealthAnalyse() {
+        return HealthAnalyse;
+    }
 
-	/**
-	 * @param unstableHealth the unstableHealth to set
-	 */
-	public void setUnstableFailedHealth(int unstableHealth) {
-		this.unstableFailedHealth = unstableHealth;
-	}
+    /**
+     * @param healthAnalyse the healthAnalyse to set
+     */
+    public void setHealthAnalyse(boolean healthAnalyse) {
+        HealthAnalyse = healthAnalyse;
+    }
 
-	public int getUnstableUnstableHealth() {
-		return unstableUnstableHealth;
-	}
+    /**
+     * @return the unstableHealth
+     */
+    public int getUnstableFailedHealth() {
+        return unstableFailedHealth;
+    }
 
-	public void setUnstableUnstableHealth(int unstableUnstableHealth) {
-		this.unstableUnstableHealth = unstableUnstableHealth;
-	}
+    /**
+     * @param unstableHealth the unstableHealth to set
+     */
+    public void setUnstableFailedHealth(int unstableHealth) {
+        this.unstableFailedHealth = unstableHealth;
+    }
+
+    public int getUnstableUnstableHealth() {
+        return unstableUnstableHealth;
+    }
+
+    public void setUnstableUnstableHealth(int unstableUnstableHealth) {
+        this.unstableUnstableHealth = unstableUnstableHealth;
+    }
 }
