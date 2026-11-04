@@ -7,7 +7,7 @@ import java.util.ListIterator;
 /**
  * Calculate width of columns
  *
- * @author Eugene Schava <eschava@gmail.com>
+ * @author Eugene Schava (eschava@gmail.com)
  */
 public class WidthCalculator {
     private final double minWidth;
@@ -53,8 +53,7 @@ public class WidthCalculator {
                 usedWidth += newWidth;
                 unusedWidth -= width;
                 iterator.set((double) newWidth);
-            }
-            else if (Double.isNaN(width)) {
+            } else if (Double.isNaN(width)) {
                 iterator.set(unusedWidth / widthList.size());
             }
         }
