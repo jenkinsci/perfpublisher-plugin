@@ -159,7 +159,7 @@ public class Test implements java.lang.Comparable<Test> {
         return result;
     }
 
-    public static String ResolveTestNameInUrl(String name) {
+    public static String resolveTestNameInUrl(String name) {
         String result = name.replace("..", "/");
         return result;
     }

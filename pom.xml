@@ -61,19 +61,24 @@
   </scm>
 
   <properties>
-    <changelist>8.10-SNAPSHOT</changelist>
+      <changelist>8.10-SNAPSHOT</changelist>
 
-    <!-- Jenkins baseline -->
-    <jenkins.baseline>2.568</jenkins.baseline>
-    <jenkins.version>${jenkins.baseline}.3</jenkins.version>
+      <!-- Java version -->
+      <java.level>25</java.level>
+      <maven.compiler.release>25</maven.compiler.release>
+      <maven.compiler.source>25</maven.compiler.source>
+      <maven.compiler.target>25</maven.compiler.target>
+      <!-- Jenkins baseline -->
+      <jenkins.baseline>2.568</jenkins.baseline>
+      <jenkins.version>${jenkins.baseline}.3</jenkins.version>
 
-    <!-- Quality checks -->
-    <spotless.check.skip>false</spotless.check.skip>
-    <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
-    <ban-deprecated-stapler.skip>false</ban-deprecated-stapler.skip>
-    <ban-commons-lang-2.skip>false</ban-commons-lang-2.skip>
-    <hpi.strictBundledArtifacts>true</hpi.strictBundledArtifacts>
-    <banObsoleteDependencyOverrides.skip>false</banObsoleteDependencyOverrides.skip>
+      <!-- Quality checks -->
+      <spotless.check.skip>false</spotless.check.skip>
+      <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
+      <ban-deprecated-stapler.skip>false</ban-deprecated-stapler.skip>
+      <ban-commons-lang-2.skip>false</ban-commons-lang-2.skip>
+      <hpi.strictBundledArtifacts>true</hpi.strictBundledArtifacts>
+      <banObsoleteDependencyOverrides.skip>false</banObsoleteDependencyOverrides.skip>
   </properties>
 
   <dependencyManagement>
