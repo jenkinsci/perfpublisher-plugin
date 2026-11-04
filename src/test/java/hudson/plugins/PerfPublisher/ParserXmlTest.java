@@ -22,13 +22,13 @@ class ParserXmlTest {
         try {
             try (FileWriter writer = new FileWriter(xml)) {
                 writer.write(
-                    "<?xml version=\"1.0\"?>\n" +
-                    "<!DOCTYPE report [\n" +
-                    "  <!ENTITY xxe SYSTEM \"file:///etc/passwd\">\n" +
-                    "]>\n" +
-                    "<report name=\"XXE Test\" categ=\"test\">\n" +
-                    "  &xxe;\n" +
-                    "</report>"
+                    "<?xml version=\"1.0\"?>\n"
+                    + "<!DOCTYPE report [\n"
+                    + "  <!ENTITY xxe SYSTEM \"file:///etc/passwd\">\n"
+                    + "]>\n"
+                    + "<report name=\"XXE Test\" categ=\"test\">\n"
+                    + "  &xxe;\n"
+                    + "</report>"
                 );
             }
 

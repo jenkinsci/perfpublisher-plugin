@@ -1,6 +1,5 @@
 package hudson.plugins.PerfPublisher;
 
-import hudson.plugins.PerfPublisher.ParserXml.Analyse;
 import hudson.plugins.PerfPublisher.Report.*;
 import hudson.plugins.PerfPublisher.Report.Compiler;
 import org.xml.sax.Attributes;
@@ -25,7 +24,7 @@ import javax.xml.XMLConstants;
  */
 public class ParserXml {
 
-	static class Analyse extends DefaultHandler {
+	class Analyse extends DefaultHandler {
 		private Report report;
 		private Collection<String> metrics_name;
 		private Map<String, Metric> metrics;
@@ -495,9 +494,9 @@ public class ParserXml {
 	}
 
 	// Attribute
-	private static Report resultat;
-	private static URI xml_path;
-	private static Collection<String> metrics;
+	private Report resultat;
+	private URI xml_path;
+	private Collection<String> metrics;
 	/**
 	 * @param xml URI Path to the xml file
 	 */
