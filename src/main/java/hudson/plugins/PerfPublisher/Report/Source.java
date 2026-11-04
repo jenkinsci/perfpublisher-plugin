@@ -2,71 +2,68 @@ package hudson.plugins.PerfPublisher.Report;
 
 public class Source {
 
-	private String comment;
-	private String path;
-	private String language;
-	private String source;
-	
-	
-	public Source() {
-		// TODO Auto-generated constructor stub
-	}
+    private String comment;
+    private String path;
+    private String language;
+    private String source;
 
-	/**
-	 * @return the comment
-	 */
-	public String getComment() {
-		return comment;
-	}
+    public Source() {
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * @param comment the comment to set
-	 */
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
+    /**
+     * @return the comment
+     */
+    public String getComment() {
+        return comment;
+    }
 
-	/**
-	 * @return the path
-	 */
-	public String getPath() {
-		return path;
-	}
+    /**
+     * @param comment the comment to set
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
-	/**
-	 * @param path the path to set
-	 */
-	public void setPath(String path) {
-		this.path = path;
-	}
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
 
-	/**
-	 * @return the language
-	 */
-	public String getLanguage() {
-		return language;
-	}
+    /**
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	/**
-	 * @param language the language to set
-	 */
-	public void setLanguage(String language) {
-		this.language = language;
-	}
-	
-	/**
-	 * @return the source
-	 */
-	public String getSource() {
-		return source.replaceAll("\n", "<br />");
-	}
+    /**
+     * @return the language
+     */
+    public String getLanguage() {
+        return language;
+    }
 
-	/**
-	 * @param source the source to set
-	 */
-	public void setSource(String source) {
-		this.source = source;
-	}
+    /**
+     * @param language the language to set
+     */
+    public void setLanguage(String language) {
+        this.language = language;
+    }
 
-	
+    /**
+     * @return the source
+     */
+    public String getSource() {
+        return source.replaceAll("\n", "<br />");
+    }
+
+    /**
+     * @param source the source to set
+     */
+    public void setSource(String source) {
+        this.source = source;
+    }
 }

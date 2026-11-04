@@ -1,10 +1,26 @@
-target
-work
 
-.settings
+# Maven
+target/
+
+# Jenkins
+work/
+
+# Eclipse
+.settings/
 .classpath
-.metadata
 .project
+.metadata/
 
+# IntelliJ IDEA
 .idea/
-perfpublisher.iml
+*.iml
+
+# VS Code
+.vscode/
+
+# Operating systems
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
