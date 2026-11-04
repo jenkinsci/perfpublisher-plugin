@@ -828,7 +828,7 @@ public class ReportContainer {
     /**
      * Return the report having the same category
      *
-     * @param category
+     * @param cat
      *            to search for
      * @return Report if it exists
      */
@@ -844,7 +844,7 @@ public class ReportContainer {
     /**
      * Return the report having the same file
      *
-     * @param file
+     * @param cat
      *            to search for
      * @return Report if it exists
      */

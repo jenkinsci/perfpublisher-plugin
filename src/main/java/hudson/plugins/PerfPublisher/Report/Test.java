@@ -424,7 +424,7 @@ public class Test implements java.lang.Comparable<Test> {
     }
 
     /**
-     * @param isExecutionTion the isExecutionTion to set
+     * @param isExecutionTime the isExecutionTion to set
      */
     public void setIsExecutionTime(boolean isExecutionTime) {
         this.isExecutionTime = isExecutionTime;

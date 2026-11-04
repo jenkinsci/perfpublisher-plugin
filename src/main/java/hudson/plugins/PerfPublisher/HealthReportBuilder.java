@@ -30,8 +30,8 @@ public class HealthReportBuilder implements Serializable {
     /**
      * Computes the healthiness of a build based on the specified results.
      * Reports a health of 100% when the specified counter is less than
-     * {@link #healthy}. Reports a health of 0% when the specified counter is
-     * greater than {@link #unHealthy}. The computation takes only annotations
+     * healthy. Reports a health of 0% when the specified counter is
+     * greater than unHealthy. The computation takes only annotations
      * of the specified severity into account.
      *
      * @param result

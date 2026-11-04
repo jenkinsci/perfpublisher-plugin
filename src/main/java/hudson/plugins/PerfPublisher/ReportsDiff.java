@@ -47,7 +47,6 @@ public class ReportsDiff implements ModelObject {
     /**
      * The constructor
      * @param owner
-     * @param shortDiff activate or not the short display
      * @param nb_build1 number of the first build
      * @param report1 first report
      * @param nb_build2 number of the second build

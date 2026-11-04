@@ -44,7 +44,7 @@ public class TrendReport {
     }
 
     /**
-     * @param actualReport
+     * @param actualReportContainer
      *            the actual report
      */
     public void setActualReportContainer(ReportContainer actualReportContainer) {
@@ -59,7 +59,7 @@ public class TrendReport {
     }
 
     /**
-     * @param oldReport
+     * @param oldReportContainer
      *            the old report
      */
     public void setOldReport(ReportContainer oldReportContainer) {

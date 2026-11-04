@@ -185,7 +185,7 @@ public class Report {
     }
     /**
      * Getter for all the executed test
-     * @return an ArrayList<Test> containing all the executed test
+     * @return an {@code ArrayList<Test>} containing all the executed tests
      */
     public ArrayList<Test> getExecutedTests() {
         if (this.executedTests == null || this.executedTests.size() == 0) {

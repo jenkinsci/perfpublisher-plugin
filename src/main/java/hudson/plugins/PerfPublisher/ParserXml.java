@@ -18,7 +18,7 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * Hudson PerfPublisher plugin
  *
- * @author Georges Bossert <gbossert@gmail.com>
+ * @author Georges Bossert (gbossert@gmail.com)
  */
 public class ParserXml {
 

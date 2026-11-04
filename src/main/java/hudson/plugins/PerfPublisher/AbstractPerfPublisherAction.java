@@ -9,7 +9,7 @@ import org.kohsuke.stapler.StaplerResponse2;
 /**
  * Abstract class with functionality common to all PerfPublisher actions.
  *
- * @author Georges Bossert <georges.bossert@caps-entreprise.com>
+ * @author Georges Bossert (georges.bossert@caps-entreprise.com)
  */
 public class AbstractPerfPublisherAction implements Action {
     public String getIconFileName() {
