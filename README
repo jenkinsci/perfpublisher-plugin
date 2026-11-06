@@ -149,7 +149,7 @@ In a shell, juste use the maven commands :
 > mvn compile :
 	compile the sources
 
-----------------------------------------------------
+---------------------------------------------------
 4. Debug a project
 ----------------------------------------------------
 Before starting debug, the environnement must be set.
